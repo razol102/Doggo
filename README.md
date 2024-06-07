@@ -4,4 +4,4 @@ Doggo is a mobile application that helps dog owners effortlessly monitor and man
 
 Doggo comes with a compact attachment that easily fits onto your dog's collar or harness, tracking their activity and seamlessly communicating with the mobile app.
 
-For more details please read our project proposal file.
+For more details please read the project proposal file.
