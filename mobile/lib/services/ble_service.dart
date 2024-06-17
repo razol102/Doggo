@@ -50,4 +50,30 @@ class BleService {
       print('Error reading characteristic: $error');
     });
   }
-}
+
+  void readBatteryLevelPeriodically(String deviceId, Function(int) onBatteryLevelRead) {
+    final characteristic = QualifiedCharacteristic(
+      deviceId: deviceId,
+      serviceId: Uuid.parse(DOG_COLLAR_SERVICE),
+      characteristicId: Uuid.parse(BATTERY_LEVEL_CHARACTERISTIC_UUID),
+    );
+
+    // Subscribe to characteristic notifications
+    final subscription = flutterReactiveBle.subscribeToCharacteristic(characteristic).listen((value) {
+      int batteryLevel = value[0];
+      onBatteryLevelRead(batteryLevel);
+      print('update battery level');
+    }, onError: (error) {
+      print('Error reading characteristic: $error');
+    });
+
+    // Use a Timer to trigger periodic readings
+    Timer.periodic(Duration(seconds: 30), (_) {
+      // No need to re-subscribe, already subscribed above
+      print('Triggering periodic read'); // Optional for debugging
+    });
+  }
+
+  }
+
+

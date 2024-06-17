@@ -31,11 +31,13 @@ class _DeviceScanScreenState extends State<DeviceScanScreen> {
           deviceId = 'not_found';
         });
       } else {
-        BleService().connectToDevice(deviceId!, (level) {
+        BleService bleService = BleService();
+        bleService.connectToDevice(deviceId!, (level) {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => BatteryLevelScreen(batteryLevel: level),
+              //builder: (context) => BatteryLevelScreen(batteryLevel: level),
+              builder: (context) => BatteryLevelScreen(deviceId: deviceId!, bleService: bleService)
             ),
           );
         });
