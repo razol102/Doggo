@@ -1,29 +1,38 @@
 import 'package:flutter/material.dart';
-import '../common_widgets/round_button.dart';
-import '../utils/app_colors.dart';
+import '../../common_widgets/round_button.dart';
+import '../../utils/app_colors.dart';
 import '../../common_widgets/round_textfield.dart';
 
-class SignUpScreen extends StatefulWidget {
-  static String routeName = "/SignUpScreen";
+class SignUpStep2Screen extends StatefulWidget {
+  static String routeName = "/SignUpStep2Screen";
 
-  const SignUpScreen({super.key});
+  const SignUpStep2Screen({super.key});
 
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  _SignUpStep2ScreenState createState() => _SignUpStep2ScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _fullNameController = TextEditingController();
-  final TextEditingController _birthdateController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
+  // To store data passed from the previous screen
+  Map<String, dynamic>? _signupData;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Retrieve arguments passed from SignUpStep1Screen
+    final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (arguments != null) {
+      _signupData = arguments;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    var media = MediaQuery.of(context).size;
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -37,7 +46,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
               return SingleChildScrollView(
-                physics: constraints.maxHeight > 600 ? const NeverScrollableScrollPhysics() : null,
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
                     minHeight: constraints.maxHeight,
@@ -48,11 +56,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: Form(
                         key: _formKey,
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SizedBox(height: constraints.maxHeight * 0.1),
+                            SizedBox(height: constraints.maxHeight * 0.15),
                             const Text(
-                              "Sign Up",
+                              "Almost There...",
                               style: TextStyle(
                                 color: AppColors.whiteColor,
                                 fontSize: 35,
@@ -67,36 +75,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ],
                               ),
                             ),
-                            SizedBox(height: constraints.maxHeight * 0.05),
-                            RoundTextField(
-                              textEditingController: _fullNameController,
-                              hintText: "Full Name",
-                              icon: 'assets/icons/profile_icon.png',
-                              textInputType: TextInputType.name,
-                              isObscureText: false,
-                            ),
-                            SizedBox(height: constraints.maxHeight * 0.02),
-                            RoundTextField(
-                              textEditingController: _birthdateController,
-                              hintText: "Birthdate",
-                              icon: 'assets/icons/date_icon.png',
-                              textInputType: TextInputType.name,
-                              isObscureText: false,
-                            ),
-                            SizedBox(height: constraints.maxHeight * 0.02),
+                            SizedBox(height: constraints.maxHeight * 0.04),
                             RoundTextField(
                               textEditingController: _emailController,
                               hintText: "Email",
                               icon: 'assets/icons/message_icon.png',
                               textInputType: TextInputType.emailAddress,
-                              isObscureText: false,
-                            ),
-                            SizedBox(height: constraints.maxHeight * 0.02),
-                            RoundTextField(
-                              textEditingController: _phoneController,
-                              hintText: "Phone Number",
-                              icon: 'assets/icons/phone_icon.png',
-                              textInputType: TextInputType.phone,
                               isObscureText: false,
                             ),
                             SizedBox(height: constraints.maxHeight * 0.02),
@@ -115,18 +99,42 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               textInputType: TextInputType.text,
                               isObscureText: true,
                             ),
-                            SizedBox(height: constraints.maxHeight * 0.05),
+                            SizedBox(height: constraints.maxHeight * 0.04),
                             RoundButton(
-                              title: "Sign Up",
+                              title: "Register",
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
-                                  // Perform sign-up action
+                                  // Ensure passwords match
+                                  if (_passwordController.text != _confirmPasswordController.text) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text("Passwords do not match")),
+                                    );
+                                    return;
+                                  }
+
+                                  // Use the retrieved data
+                                  final fullName = _signupData?['fullName'];
+                                  final birthdate = _signupData?['birthdate'];
+                                  final phoneNumber = _signupData?['phoneNumber'];
+                                  final email = _emailController.text;
+                                  final password = _passwordController.text;
+
+                                  // Perform the registration action
+                                  //TODO: delete after implementation
+                                  print("Full Name: $fullName");
+                                  print("Birthdate: $birthdate");
+                                  print("Phone Number: $phoneNumber");
+                                  print("Email: $email");
+                                  print("Password: $password");
+
+                                  // await registerUser(fullName, birthdate, phoneNumber, email, password);
+                                  // After successful registration, navigate to a different screen or show a success message
                                 }
                               },
                               backgroundColor: AppColors.whiteColor,
-                              titleColor: AppColors.blackColor,
+                              titleColor: AppColors.secondaryColor1,
                             ),
-                            const Spacer(),
+                            SizedBox(height: constraints.maxHeight * 0.04),
                           ],
                         ),
                       ),

@@ -1,9 +1,9 @@
-import 'package:mobile/screens/signup_screen.dart';
+import 'package:mobile/screens/auth/signup_step1_screen.dart';
 import 'package:mobile/utils/app_colors.dart';
 
 import 'package:flutter/material.dart';
 import '../../common_widgets/round_gradient_button.dart';
-import 'login_screen.dart';
+import 'auth/login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   static String routeName = "/WelcomeScreen";
@@ -60,7 +60,7 @@ class WelcomeScreen extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(context, SignUpScreen.routeName);
+                  Navigator.pushNamed(context, SignUpStep1Screen.routeName);
                 },
                 child: RichText(
                   text: const TextSpan(
