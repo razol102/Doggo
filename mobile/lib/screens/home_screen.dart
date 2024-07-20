@@ -3,6 +3,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'device_scan_screen.dart';
 
 class HomeScreen extends StatefulWidget {
+
+  static String routeName = "/HomeScreen";
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
