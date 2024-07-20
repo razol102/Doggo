@@ -1,12 +1,8 @@
 // import 'dart:io';
 //
 // import 'package:mobile/utils/app_colors.dart';
-// //import 'package:fitnessapp/view/activity/activity_screen.dart';
-// //import 'package:fitnessapp/view/camera/camera_screen.dart';
-// //import 'package:fitnessapp/view/profile/user_profile.dart';
 // import 'package:flutter/material.dart';
 //
-// //import '../home/home_screen.dart';
 //
 // class DashboardScreen extends StatefulWidget {
 //   static String routeName = "/DashboardScreen";
