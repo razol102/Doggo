@@ -3,7 +3,7 @@ import 'package:mobile/routes.dart';
 import 'package:mobile/screens/welcome_screen.dart';
 import 'package:mobile/utils/app_colors.dart';
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

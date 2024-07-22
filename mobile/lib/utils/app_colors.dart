@@ -15,4 +15,5 @@ class AppColors{
 
   static List<Color> get primaryG => [primaryColor1,primaryColor2];
   static List<Color> get secondaryG => [secondaryColor1,secondaryColor2];
+  static List<Color> get darkG => [secondaryColor1, const Color(0xFFB73A00)];
 }

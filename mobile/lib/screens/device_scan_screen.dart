@@ -5,6 +5,8 @@ import 'package:mobile/services/ble_service.dart';
 import 'battery_level_screen.dart';
 
 class DeviceScanScreen extends StatefulWidget {
+  const DeviceScanScreen({super.key});
+
   @override
   _DeviceScanScreenState createState() => _DeviceScanScreenState();
 }
@@ -24,7 +26,7 @@ class _DeviceScanScreenState extends State<DeviceScanScreen> {
     });
 
     Future.any(
-        <Future>[scanCompleter.future, Future.delayed(Duration(seconds: 30))])
+        <Future>[scanCompleter.future, Future.delayed(const Duration(seconds: 30))])
         .then((_) {
       if (deviceId == null) {
         setState(() {
@@ -49,14 +51,14 @@ class _DeviceScanScreenState extends State<DeviceScanScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Scanning for Devices'),
+        title: const Text('Scanning for Devices'),
       ),
       body: Center(
         child: deviceId == 'not_found'
-            ? Text('DoggoCollar not found :(\nPlease try again.')
+            ? const Text('DoggoCollar not found :(\nPlease try again.')
             : (deviceId == null
-            ? Text('Scanning for DoggoCollar...')
-            : Text('Connecting to DoggoCollar...')),
+            ? const Text('Scanning for DoggoCollar...')
+            : const Text('Connecting to DoggoCollar...')),
       ),
     );
   }

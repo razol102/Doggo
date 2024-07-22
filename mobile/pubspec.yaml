@@ -30,6 +30,8 @@ dependencies:
     sdk: flutter
   intl_phone_number_input: ^0.7.0+2
   animated_toggle_switch: ^0.8.2
+  carousel_slider: ^4.2.1
+
   flutter_reactive_ble: ^5.2.0
   permission_handler: ^10.2.0
   async: ^2.8.2

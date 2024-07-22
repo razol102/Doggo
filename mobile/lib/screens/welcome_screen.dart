@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/screens/profile/user_profile_screen.dart';
+import 'package:mobile/screens/bottom_menu.dart';
+import 'package:mobile/screens/goals_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'auth/signup_step1_screen.dart';
 import 'auth/login_screen.dart';
 import '../../common_widgets/round_gradient_button.dart';
 import 'package:mobile/utils/app_colors.dart';
+import 'package:mobile/screens/home/home_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static String routeName = "/WelcomeScreen";
@@ -44,12 +46,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Permission Denied'),
-        content: Text('The app cannot function without the required permissions. Please grant them in your device settings.'),
+        title: const Text('Permission Denied'),
+        content: const Text('The app cannot function without the required permissions. Please grant them in your device settings.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('OK'),
+            child: const Text('OK'),
           ),
         ],
       ),
@@ -103,23 +105,24 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 RoundGradientButton(
                   title: "Login",
                   onPressed: () {
-                    Navigator.pushNamed(context, LoginScreen.routeName);
+                    //Navigator.pushNamed(context, LoginScreen.routeName);
+                    Navigator.pushNamed(context, BottomMenu.routeName);
                   },
                 )
               else if (_permissionDenied)
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Permission Denied'),
-                    SizedBox(height: 20),
+                    const Text('Permission Denied'),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _showPermissionDeniedMessage,
-                      child: Text('Show Message'),
+                      child: const Text('Show Message'),
                     ),
                   ],
                 )
               else
-                CircularProgressIndicator(),
+                const CircularProgressIndicator(),
               GestureDetector(
                 onTap: () {
                   Navigator.pushNamed(context, SignUpStep1Screen.routeName);

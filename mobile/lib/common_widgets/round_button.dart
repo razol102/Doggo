@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
 
 class RoundButton extends StatelessWidget {
-  final String title;
+  final String? title;  // Nullable title
   final Function() onPressed;
   final Color backgroundColor;
   final Color titleColor;
+  final IconData? icon;  // Optional icon parameter
+  final double? iconSize;
 
   const RoundButton({
     super.key,
-    required this.title,
+    this.title,  // Nullable title
     required this.onPressed,
     required this.backgroundColor,
     required this.titleColor,
+    this.icon,  // Optional icon parameter
+    this.iconSize
+
   });
 
   @override
@@ -37,17 +42,28 @@ class RoundButton extends StatelessWidget {
           onPressed: onPressed,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           textColor: AppColors.primaryColor1,
-          child: Text(
-            title,
-            style: TextStyle(  // Changed from const TextStyle
-              fontSize: 16,
-              color: titleColor,
-              fontFamily: "Poppins",
-              fontWeight: FontWeight.w700,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null) ...[
+
+                Icon(icon, color: titleColor,size: iconSize),
+              ],
+              if (icon != null && title != null) const SizedBox(width: 8),
+              if (title != null) Text(
+                title!,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: titleColor,
+                  fontFamily: "Poppins",
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 }
+

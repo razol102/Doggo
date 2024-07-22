@@ -11,14 +11,13 @@ class RoundTextField extends StatelessWidget {
   final Widget? rightIcon;
 
   const RoundTextField(
-      {Key? key,
+      {super.key,
         this.textEditingController,
         required this.hintText,
         required this.icon,
         required this.textInputType,
         this.isObscureText = false,
-        this.rightIcon})
-      : super(key: key);
+        this.rightIcon});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +47,7 @@ class RoundTextField extends StatelessWidget {
                   color: AppColors.grayColor,
                 )),
             suffixIcon: rightIcon,
-            hintStyle: TextStyle(fontSize: 12, color: AppColors.grayColor)),
+            hintStyle: const TextStyle(fontSize: 12, color: AppColors.grayColor)),
       ),
     );
   }

@@ -5,7 +5,7 @@ import '../utils/app_colors.dart';
 class RoundGradientButton extends StatelessWidget {
   final String title;
   final Function() onPressed;
-  const RoundGradientButton({Key? key, required this.title, required this.onPressed}) : super(key: key);
+  const RoundGradientButton({super.key, required this.title, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class RoundGradientButton extends StatelessWidget {
           textColor: AppColors.primaryColor1,
           child: Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               color: AppColors.whiteColor,
               fontFamily: "Poppins",

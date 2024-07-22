@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class TitleSubtitleCell extends StatelessWidget {
   final String title;
   final String subtitle;
-  const TitleSubtitleCell({Key? key, required this.title, required this.subtitle}) : super(key: key);
+  const TitleSubtitleCell({super.key, required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class TitleSubtitleCell extends StatelessWidget {
             blendMode: BlendMode.srcIn,
             shaderCallback: (bounds) {
               return LinearGradient(
-                  colors: AppColors.primaryG,
+                  colors: AppColors.darkG,
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight)
                   .createShader(
@@ -36,7 +36,7 @@ class TitleSubtitleCell extends StatelessWidget {
           ),
           Text(
             subtitle,
-            style: TextStyle(
+            style: const TextStyle(
               color: AppColors.grayColor,
               fontSize: 12,
             ),

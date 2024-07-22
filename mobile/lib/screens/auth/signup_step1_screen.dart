@@ -52,7 +52,7 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
           child: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
               return SingleChildScrollView(
-                physics: constraints.maxHeight > 600 ? NeverScrollableScrollPhysics() : null,
+                physics: constraints.maxHeight > 600 ? const NeverScrollableScrollPhysics() : null,
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
                     minHeight: constraints.maxHeight,

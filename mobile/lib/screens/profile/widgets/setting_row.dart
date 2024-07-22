@@ -6,7 +6,7 @@ class SettingRow extends StatelessWidget {
   final String title;
   final VoidCallback onPressed;
 
-  const SettingRow({Key? key, required this.icon, required this.title, required this.onPressed}) : super(key: key);
+  const SettingRow({super.key, required this.icon, required this.title, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class SettingRow extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppColors.blackColor,
                   fontSize: 12,
                 ),

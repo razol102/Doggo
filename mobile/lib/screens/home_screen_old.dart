@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'device_scan_screen.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreenOld extends StatefulWidget {
 
   static String routeName = "/HomeScreen";
 
+  const HomeScreenOld({super.key});
+
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _HomeScreenOldState createState() => _HomeScreenOldState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenOldState extends State<HomeScreenOld> {
   bool _hasPermission = false;
   bool _permissionDenied = false;
 
@@ -39,12 +41,12 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Permission Denied'),
-        content: Text('The app cannot function without the required permissions. Please grant them in your device settings.'),
+        title: const Text('Permission Denied'),
+        content: const Text('The app cannot function without the required permissions. Please grant them in your device settings.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('OK'),
+            child: const Text('OK'),
           ),
         ],
       ),
@@ -55,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Screen'),
+        title: const Text('Home Screen'),
       ),
       body: Center(
         child: _hasPermission
@@ -63,24 +65,24 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => DeviceScanScreen()),
+              MaterialPageRoute(builder: (context) => const DeviceScanScreen()),
             );
           },
-          child: Text('Start Scan'),
+          child: const Text('Start Scan'),
         )
             : _permissionDenied
             ? Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Permission Denied'),
-            SizedBox(height: 20),
+            const Text('Permission Denied'),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _showPermissionDeniedMessage,
-              child: Text('Show Message'),
+              child: const Text('Show Message'),
             ),
           ],
         )
-            : CircularProgressIndicator(),
+            : const CircularProgressIndicator(),
       ),
     );
   }
