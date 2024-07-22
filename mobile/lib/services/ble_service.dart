@@ -68,7 +68,7 @@ class BleService {
     });
 
     // Use a Timer to trigger periodic readings
-    Timer.periodic(Duration(seconds: 30), (_) {
+    Timer.periodic(const Duration(seconds: 30), (_) {
       // No need to re-subscribe, already subscribed above
       print('Triggering periodic read'); // Optional for debugging
     });

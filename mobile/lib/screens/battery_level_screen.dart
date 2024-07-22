@@ -4,7 +4,7 @@ import 'package:mobile/services/ble_service.dart';
 class BatteryLevelScreen extends StatefulWidget {
   final String deviceId;
   final BleService bleService;
-  BatteryLevelScreen({required this.deviceId, required this.bleService});
+  const BatteryLevelScreen({super.key, required this.deviceId, required this.bleService});
 
   @override
   _BatteryLevelScreenState createState() => _BatteryLevelScreenState(deviceId, bleService);
@@ -33,12 +33,12 @@ class _BatteryLevelScreenState extends State<BatteryLevelScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Battery Level'),
+        title: const Text('Battery Level'),
       ),
       body: Center(
         child: Text(
           'Battery Level: $_batteryLevel%',
-          style: TextStyle(fontSize: 24),
+          style: const TextStyle(fontSize: 24),
         ),
       ),
     );
