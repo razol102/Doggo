@@ -2,10 +2,12 @@ from app import app
 from flask import request, jsonify
 import psycopg2
 from config import *
+from exceptions import *
 
 dog_steps = {}  # Dummy data to store steps for each dog
 dog_distances = {}  # Dummy data to store distance for each dog
 BLE_DOG_STEPS_LIMIT = 65535
+
 
 
 @app.route('/api/dogs/<int:dog_id>/fitness/steps', methods=['PUT'])
@@ -46,22 +48,27 @@ def update_distance(dog_id):
 def register_user():
     data = request.json
 
-    # maybe to check this in frontend ?.......... probably in here.. everyone can use this api
-    # if not data.get('username') or not data.get('password'):
-    #     return jsonify({"error": "Username and password are required"}), 400
-
-    db = load_database_config()
-    username_query = "SELECT COUNT(*) FROM users WHERE username = %s"
-    email_query = "SELECT COUNT(*) FROM users WHERE email = %s"
-    phone_number_query = "SELECT COUNT(*) FROM users WHERE phone_number = %s"
-    adding_new_user_query = """
-                            INSERT INTO users 
-                            (username, password, email, first_name, last_name, date_of_birth, phone_number) 
-                            VALUES 
-                            (%(username)s, %(password)s, %(email)s, %(first_name)s, %(last_name)s, %(date_of_birth)s
-                            , %(phone_number)s)
-                            """
+    required_data_for_registration = {"username", "password", "email", "first_name",
+                                      "last_name", "date_of_birth", "phone_number"}
     try:
+        if not required_data_for_registration.issubset(data.keys()):
+            missing_fields = required_data_for_registration - data.keys()
+            raise MissingFieldsError(missing_fields)
+
+        # need to check all data which can't be Null...
+     #   if not data['username']:
+
+        db = load_database_config()
+        username_query = "SELECT COUNT(*) FROM users WHERE username = %s"
+        email_query = "SELECT COUNT(*) FROM users WHERE email = %s"
+        phone_number_query = "SELECT COUNT(*) FROM users WHERE phone_number = %s"
+        adding_new_user_query = """
+                                INSERT INTO users 
+                                (username, password, email, first_name, last_name, date_of_birth, phone_number) 
+                                VALUES 
+                                (%(username)s, %(password)s, %(email)s, %(first_name)s, %(last_name)s, %(date_of_birth)s
+                                , %(phone_number)s)
+                                """
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 if is_in_use(cursor, username_query, data.get('username')):
@@ -88,32 +95,51 @@ def is_in_use(cursor, query, data_to_check):
 @app.route('/api/auth/login', methods=['POST'])  # need to add something to user.. logged (boolean) ?
 def login():
     data = request.json
+
+    try:
+        check_username_and_password_from_user(data)
+    except(Exception, ValueError, psycopg2.DatabaseError) as error:
+        return jsonify({"error": str(error)}), 400
+
+    print("{0} is logged in!".format(data.get("username")))
+
+    return jsonify({"message": "{0} logged in!".format(data.get("username"))}), 201
+
+
+@app.route('/api/auth/logout', methods=['POST'])  # need to add something to user.. logged (boolean) ?
+def logout():
+    data = request.json
+
+    try:
+        check_username_and_password_from_user(data)
+    except(Exception, ValueError, psycopg2.DatabaseError) as error:
+        return jsonify({"error": str(error)}), 400
+
+    print("{0} is logged out!".format(data.get("username")))
+
+    return jsonify({"message": "{0} logged out!".format(data.get('username'))}), 201
+
+
+def check_username_and_password_from_user(data):
     username_from_user = data.get('username')
     password_from_user = data.get('password')
 
-    if not username_from_user or not password_from_user:
-        return jsonify({"error": "Username and password are required"}), 400
+    if not username_from_user:
+        raise MissingFieldsError({"username"})
+    elif not password_from_user:
+        raise MissingFieldsError({"password"})
 
     db = load_database_config()
 
-    try:
-        with psycopg2.connect(**db) as connection:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT password FROM users WHERE username = %s", (username_from_user,))
-                stored_password = cursor.fetchone()
-                # also need to insert logging...
-                if stored_password is None:
-                    raise ValueError("Username '{0}' doesn't exist".format(username_from_user))
-                elif stored_password[0] != password_from_user:
-                    raise ValueError("Incorrect password.")
-                else:
-                    print("{0} is logged in!".format(username_from_user))
-    except ValueError as error:
-        return jsonify({"error": str(error)}), 400
-    except(Exception, psycopg2.DatabaseError) as error:
-        return jsonify({"error": str(error)}), 400
-
-    return jsonify({"message": "{0} logged in!".format(username_from_user)}), 201
+    with psycopg2.connect(**db) as connection:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT password FROM users WHERE username = %s", (data.get('username'),))
+            stored_password = cursor.fetchone()
+            # also need to insert logging...
+            if stored_password is None:
+                raise ValueError("Username '{0}' doesn't exist".format(data.get('username')))
+            elif stored_password[0] != data.get('password'):
+                raise ValueError("Incorrect password.")
 
 
 @app.route("/", methods=['GET'])
