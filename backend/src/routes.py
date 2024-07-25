@@ -44,43 +44,38 @@ def update_distance(dog_id):
     return jsonify({"steps": dog_steps[dog_id]}), 200
 
 
+
+########## Users ##########
 @app.route('/api/register', methods=['POST'])
 def register_user():
     data = request.json
 
-    required_data_for_registration = {"username", "password", "email", "first_name",
-                                      "last_name", "date_of_birth", "phone_number"}
+    required_data_for_registration = {"email", "password", "name",
+                                      "date_of_birth", "phone_number"}
     try:
         if not required_data_for_registration.issubset(data.keys()):
             missing_fields = required_data_for_registration - data.keys()
             raise MissingFieldsError(missing_fields)
 
         # need to check all data which can't be Null...
-     #   if not data['username']:
 
         db = load_database_config()
-        username_query = "SELECT COUNT(*) FROM users WHERE username = %s"
         email_query = "SELECT COUNT(*) FROM users WHERE email = %s"
         phone_number_query = "SELECT COUNT(*) FROM users WHERE phone_number = %s"
         adding_new_user_query = """
                                 INSERT INTO users 
-                                (username, password, email, first_name, last_name, date_of_birth, phone_number) 
-                                VALUES 
-                                (%(username)s, %(password)s, %(email)s, %(first_name)s, %(last_name)s, %(date_of_birth)s
-                                , %(phone_number)s)
+                                (email, password, name, date_of_birth, phone_number) VALUES 
+                                (%(email)s, %(password)s, %(name)s, %(date_of_birth)s, %(phone_number)s)
                                 """
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
-                if is_in_use(cursor, username_query, data.get('username')):
-                    raise Exception("Username is already in use.")
-                elif is_in_use(cursor, email_query, data.get('email')):
+                if is_in_use(cursor, email_query, data.get('email')):
                     raise Exception("Email is already in use.")
                 elif is_in_use(cursor, phone_number_query, data.get('phone_number')):
                     raise Exception("Phone number is already in use.")
                 # also need to insert logging...
                 cursor.execute(adding_new_user_query, data)
                 connection.commit()
-
     except(Exception, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
 
@@ -92,58 +87,138 @@ def is_in_use(cursor, query, data_to_check):
     return cursor.fetchone()[0] > 0
 
 
-@app.route('/api/auth/login', methods=['POST'])  # need to add something to user.. logged (boolean) ?
+@app.route('/api/auth/login', methods=['POST'])
 def login():
     data = request.json
+    email_from_user = data.get('email')
+    password_from_user = data.get('password')
+
+    db = load_database_config()
+    logging_in_query = """
+            UPDATE users
+            SET logged_in = TRUE
+            WHERE email = %s;
+        """
 
     try:
-        check_username_and_password_from_user(data)
+        check_email_and_password_from_user(email_from_user, password_from_user)
+
+        with psycopg2.connect(**db) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT password FROM users WHERE email = %s", (email_from_user,))
+                stored_password = cursor.fetchone()
+                # also need to insert logging...
+                if stored_password is None:
+                    raise ValueError("User does not exist.")
+                elif stored_password[0] != password_from_user:
+                    raise ValueError("Incorrect password.")
+                else:
+                    cursor.execute(logging_in_query, (email_from_user,))
+                    connection.commit()
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
 
-    print("{0} is logged in!".format(data.get("username")))
+    print("{0} is logged in!".format(email_from_user))
 
-    return jsonify({"message": "{0} logged in!".format(data.get("username"))}), 201
+    return jsonify({"message": "User is logged in!"}), 201
 
 
 @app.route('/api/auth/logout', methods=['POST'])  # need to add something to user.. logged (boolean) ?
 def logout():
     data = request.json
+    user_email = data.get('email')
+
+    db = load_database_config()
+    logging_out_query = """
+            UPDATE users
+            SET last_activity = NOW(), logged_in = FALSE
+            WHERE email = %s;
+        """
 
     try:
-        check_username_and_password_from_user(data)
+        with psycopg2.connect(**db) as connection:
+            with connection.cursor() as cursor:
+                check_if_user_exists(cursor, user_email)
+                cursor.execute(logging_out_query, (user_email,))
+                connection.commit()
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
 
-    print("{0} is logged out!".format(data.get("username")))
+    print("{0} is logged out!".format(user_email))
 
-    return jsonify({"message": "{0} logged out!".format(data.get('username'))}), 201
+    return jsonify({"message": "You're logged out!"}), 201
 
 
-def check_username_and_password_from_user(data):
-    username_from_user = data.get('username')
-    password_from_user = data.get('password')
+@app.route('/api/auth/user/profile', methods=['GET'])
+def get_user_info():
+    data = request.json
+    user_email = data.get('email')
+    db = load_database_config()
 
-    if not username_from_user:
-        raise MissingFieldsError({"username"})
+    get_details_query = "SELECT * FROM users WHERE email = %s;"
+
+    try:
+        with psycopg2.connect(**db) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(get_details_query, (user_email,))
+                user_details = cursor.fetchone()
+                if not user_details:
+                    raise ValueError("User does not exist.")
+    except(Exception, ValueError, psycopg2.DatabaseError) as error:
+        return jsonify({"error": str(error)}), 400
+
+    user_data = {
+        "email": user_details[1],
+        "name": user_details[3],
+        "phone_number": user_details[5]
+    }
+
+    return jsonify(user_data), 201
+
+
+
+@app.route('/api/auth/user/profile', methods=['PUT'])
+def update_user_info():
+    data = request.json
+    user_email = data.get("email")
+    new_email = data.get('new_email')
+    new_password = data.get('new_password')
+    new_phone_number = data.get('new_phone_number')
+    db = load_database_config()
+
+    update_details_query = """
+            UPDATE users
+            SET email = %s, password = %s, phone_number = %s
+            WHERE email = %s;
+        """
+
+    try:
+        with psycopg2.connect(**db) as connection:
+            with connection.cursor() as cursor:
+                check_if_user_exists(cursor, user_email)
+                cursor.execute(update_details_query, (new_email, new_password, new_phone_number, user_email))
+    except(Exception, ValueError, psycopg2.DatabaseError) as error:
+        return jsonify({"error": str(error)}), 400
+
+    return jsonify({"message": "Profile is updated!"}), 201
+
+
+
+def check_email_and_password_from_user(email_from_user, password_from_user):
+    if not email_from_user:
+        raise MissingFieldsError({"email"})
     elif not password_from_user:
         raise MissingFieldsError({"password"})
 
-    db = load_database_config()
 
-    with psycopg2.connect(**db) as connection:
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT password FROM users WHERE username = %s", (data.get('username'),))
-            stored_password = cursor.fetchone()
-            # also need to insert logging...
-            if stored_password is None:
-                raise ValueError("Username '{0}' doesn't exist".format(data.get('username')))
-            elif stored_password[0] != data.get('password'):
-                raise ValueError("Incorrect password.")
-
+def check_if_user_exists(cursor, user_email):
+    cursor.execute("SELECT COUNT(*) FROM users WHERE email = %s", (user_email,))
+    user_exists = cursor.fetchone()[0]
+    if user_exists == 0:
+        raise ValueError("User does not exist.")
 
 @app.route("/", methods=['GET'])
 def health_check():
-    db = load_database_config()
-    print(db)
+#    db = load_database_config()
+    print("checking....")
     return "Hello, World!"
