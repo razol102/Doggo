@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/screens/bottom_menu.dart';
-import 'package:mobile/screens/goals_screen.dart';
+import 'package:mobile/screens/activity/activity_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'auth/signup_step1_screen.dart';
 import 'auth/login_screen.dart';
 import '../../common_widgets/round_gradient_button.dart';
 import 'package:mobile/utils/app_colors.dart';
 import 'package:mobile/screens/home/home_screen.dart';
+import 'package:mobile/services/http_service.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static String routeName = "/WelcomeScreen";
@@ -20,6 +21,7 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   bool _hasPermission = false;
   bool _permissionDenied = false;
+  String _responseMessage = ""; // TODO: delete! test! Define _responseMessage as a state variable
 
   @override
   void initState() {
@@ -57,6 +59,35 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       ),
     );
   }
+
+  //TODO: delete! only test
+  Future<void> _testGetRoot() async {
+    try {
+      final response = await HttpService.getRoot();
+      setState(() {
+        _responseMessage = response['message'] ?? 'No message';
+      });
+    } catch (e) {
+      setState(() {
+        _responseMessage = e.toString();
+      });
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Response'),
+        content: Text(_responseMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+//end test
 
   @override
   Widget build(BuildContext context) {
@@ -102,12 +133,21 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ),
               SizedBox(height: media.width * 0.05),
               if (_hasPermission)
-                RoundGradientButton(
-                  title: "Login",
-                  onPressed: () {
-                    //Navigator.pushNamed(context, LoginScreen.routeName);
-                    Navigator.pushNamed(context, BottomMenu.routeName);
-                  },
+                Column(
+                  children: [
+                    // ElevatedButton(
+                    //   onPressed: _testGetRoot,
+                    //   child: const Text('Test Get Root'),
+                    // ),
+                    RoundGradientButton(
+                      title: "Login",
+                      onPressed: () {
+                        Navigator.pushNamed(context, BottomMenu.routeName);
+                        //Navigator.pushNamed(context, LoginScreen.routeName);
+                      },
+                    ),
+
+                  ],
                 )
               else if (_permissionDenied)
                 Column(

@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:mobile/screens/home/home_screen.dart';
 import 'package:mobile/screens/home_screen_old.dart';
 import 'package:mobile/screens/profile/user_profile_screen.dart';
 import 'package:mobile/utils/app_colors.dart';
 import 'package:flutter/material.dart';
 
+import 'activity/activity_screen.dart';
+import 'map/map_screen.dart';
 
 class BottomMenu extends StatefulWidget {
   static String routeName = "/BottomMenu";
@@ -19,10 +22,11 @@ class _BottomMenuState extends State<BottomMenu> {
   int selectTab = 0;
 
   final List<Widget> _widgetOptions = <Widget>[
-    const HomeScreenOld(),
+    //const HomeScreenOld(),
+    const HomeScreen(),
     const UserProfileScreen(),
-    //const ActivityGoalsScreen(),
-    //const MapScreen(),
+    const ActivityScreen(),
+    const MapScreen(),
     //const socialMediaScreen(),
   ];
 
@@ -36,27 +40,26 @@ class _BottomMenuState extends State<BottomMenu> {
           setState(() {
             selectTab = 0; // Home tab
           });
-          //Navigator.pushNamed(context, HomeScreen.routeName);
         },
         child: SizedBox(
           width: 70,
           height: 70,
           child: Container(
-            width: 65,
-            height: 65,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(colors: AppColors.primaryG),
-                borderRadius: BorderRadius.circular(35),
-                border: Border.all(
-                  color: selectTab == 0 ? AppColors.secondaryColor1 : Colors.transparent,
-                  width: 1,
-                ),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black12, blurRadius: 2)
-                ]),
-            child: const Icon(Icons.home_rounded,
-                color: AppColors.whiteColor,
-            size: 40)
+              width: 65,
+              height: 65,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: AppColors.primaryG),
+                  borderRadius: BorderRadius.circular(35),
+                  border: Border.all(
+                    color: selectTab == 0 ? AppColors.secondaryColor1 : Colors.transparent,
+                    width: 1,
+                  ),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black12, blurRadius: 2)
+                  ]),
+              child: const Icon(Icons.home_rounded,
+                  color: AppColors.whiteColor,
+                  size: 40)
           ),
         ),
       ),

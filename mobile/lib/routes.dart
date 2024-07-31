@@ -7,7 +7,7 @@ import 'package:mobile/screens/auth/login_screen.dart';
 import 'package:mobile/screens/auth/signup_step1_screen.dart';
 import 'package:mobile/screens/auth/signup_step2_screen.dart';
 import 'package:mobile/screens/bottom_menu.dart';
-import 'package:mobile/screens/goals_screen.dart';
+import 'package:mobile/screens/activity/activity_screen.dart';
 import 'package:mobile/screens/home/home_screen.dart';
 import 'package:mobile/screens/profile/user_profile_screen.dart';
 
@@ -22,6 +22,8 @@ final Map<String, WidgetBuilder> routes = {
   //profile
   UserProfileScreen.routeName: (context) => const UserProfileScreen(),
   //home
-  //goals
+  HomeScreen.routeName: (context) => const HomeScreen(),
+  //activity
+  ActivityScreen.routeName: (context) => const ActivityScreen(),
   // add screens here
 };

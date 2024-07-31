@@ -42,6 +42,32 @@ String getDayTitle(String dateStr, {String formatStr = "dd/MM/yyyy hh:mm a"} ) {
   }
 }
 
+
+List<String> getCurrentWeekDaysDate() {
+  var today = DateTime.now();
+  List<String> weekDays = [];
+
+  for (int i = -6; i <= 0; i++) {
+    var date = today.add(Duration(days: i));
+    weekDays.add(DateFormat('d').format(date));
+  }
+
+  return weekDays;
+}
+
+List<String> getCurrentWeekDays() {
+  var today = DateTime.now();
+  List<String> weekDays = [];
+
+  for (int i = -6; i <= 0; i++) {
+    var date = today.add(Duration(days: i));
+    weekDays.add(DateFormat('EEE').format(date));
+  }
+
+  return weekDays;
+}
+
+
 extension DateHelpers on DateTime {
   bool get isToday {
     return DateTime(year, month, day).difference(DateTime.now()).inDays == 0;
