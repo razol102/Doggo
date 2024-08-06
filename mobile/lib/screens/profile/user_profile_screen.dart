@@ -1,7 +1,7 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:mobile/utils/app_colors.dart';
 import 'package:mobile/screens/profile/widgets/setting_row.dart';
-import 'package:mobile/screens/profile/widgets/title_subtitle_cell.dart';
+import 'package:mobile/common_widgets/title_subtitle_cell.dart';
 import 'package:flutter/material.dart';
 
 import '../../../common_widgets/round_button.dart';
@@ -142,6 +142,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     child: TitleSubtitleCell(
                       title: "mixed",
                       subtitle: "Breed",
+                      boxHeight: 70,
+                      boxWidth: 0,
+                      titleFontSize: 14,
+                      subtitleFontSize: 12,
                     ),
                   ),
                   SizedBox(
@@ -151,6 +155,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     child: TitleSubtitleCell(
                       title: "25kg",
                       subtitle: "Weight",
+                      boxHeight: 70,
+                      boxWidth: 0,
+                      titleFontSize: 14,
+                      subtitleFontSize: 12,
                     ),
                   ),
                   SizedBox(
@@ -160,6 +168,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     child: TitleSubtitleCell(
                       title: "13yo",
                       subtitle: "Age",
+                      boxHeight: 70,
+                      boxWidth: 0,
+                      titleFontSize: 14,
+                      subtitleFontSize: 12,
                     ),
                   ),
                 ],

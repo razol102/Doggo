@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import '../bottom_menu.dart';
 import 'forgot_password_screen.dart';
 import 'signup_step1_screen.dart';
 import '../../common_widgets/round_button.dart';
@@ -28,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _passwordController.text,
       );
       print(response['message']);
-      // Navigate to home or other screen after successful login
+      Navigator.pushNamed(context, BottomMenu.routeName);
     } catch (e) {
       print(e);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
