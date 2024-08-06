@@ -1,12 +1,20 @@
 from configparser import ConfigParser
 
-
-def load_database_config(filename="..\configurations.ini", section="postgresql"):
+def load_database_config(filename="../configurations.ini"):
     parser = ConfigParser()
-    parser.read(filename)
-    if parser.has_section(section):
-        db = {param[0]: param[1] for param in parser.items(section)}
-    else:
-        raise Exception('Section {0} is not found in the {1} file.'.format(section, filename))
+# /app/configurations.ini
+    try:
+        parser.read(filename)
 
-    return db
+        # Extract and convert database credentials from the INI file
+        db = {
+            'host': parser.get('postgresql', 'db_host').strip(),
+            'port': parser.getint('postgresql', 'db_port'),
+            'dbname': parser.get('postgresql', 'db_name').strip(),
+            'user': parser.get('postgresql', 'db_user').strip(),
+            'password': parser.get('postgresql', 'db_password').strip()
+        }
+        return db
+
+    except Exception as e:
+        raise RuntimeError(f"Error reading configuration file: {e}")
