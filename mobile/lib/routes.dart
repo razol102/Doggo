@@ -6,9 +6,12 @@ import 'package:mobile/screens/auth/forgot_password_screen.dart';
 import 'package:mobile/screens/auth/login_screen.dart';
 import 'package:mobile/screens/auth/signup_step1_screen.dart';
 import 'package:mobile/screens/auth/signup_step2_screen.dart';
+import 'package:mobile/screens/ble_test_screen.dart';
 import 'package:mobile/screens/bottom_menu.dart';
 import 'package:mobile/screens/activity/activity_screen.dart';
+import 'package:mobile/screens/devices/BLE_connection_screen.dart';
 import 'package:mobile/screens/home/home_screen.dart';
+import 'package:mobile/screens/map/map_screen.dart';
 import 'package:mobile/screens/profile/user_profile_screen.dart';
 
 final Map<String, WidgetBuilder> routes = {
@@ -25,5 +28,10 @@ final Map<String, WidgetBuilder> routes = {
   HomeScreen.routeName: (context) => const HomeScreen(),
   //activity
   ActivityScreen.routeName: (context) => const ActivityScreen(),
+  //map
+  MapScreen.routeName: (context) => const MapScreen(),
+  //ble connection
+  BleConnectionScreen.routeName: (context) => BleConnectionScreen(),
+  //BleTestScreen.routeName: (context) => BleTestScreen(),
   // add screens here
 };

@@ -1,4 +1,3 @@
-// map_view.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -63,17 +62,25 @@ class MapView extends StatelessWidget {
               FloatingActionButton(
                 heroTag: 'rotateNorth',
                 onPressed: () => mapController.rotate(0),
-                child: Icon(Icons.compass_calibration, size: 20),
                 backgroundColor: AppColors.primaryColor1.withOpacity(0.8),
                 mini: true,
+                child: Image.asset(
+                  'assets/icons/compass.png',
+                  height: 20,
+                  width: 20,
+                ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               FloatingActionButton(
                 heroTag: 'clearMarkers',
-                onPressed: onClearMarkers, // Set the callback here
-                child: Icon(Icons.remove_circle_outline, size: 20),
+                onPressed: onClearMarkers,
                 backgroundColor: AppColors.primaryColor1.withOpacity(0.8),
-                mini: true,
+                mini: true, // Set the callback here
+                child: Image.asset(
+                  'assets/icons/remove_location.png',
+                  height: 20,
+                  width: 20,
+                ),
               ),
             ],
           ),

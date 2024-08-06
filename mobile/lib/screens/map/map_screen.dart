@@ -1,4 +1,3 @@
-// map_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -11,7 +10,8 @@ import 'favorite_places_list.dart';
 import '../../services/http_service.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({Key? key}) : super(key: key);
+  static String routeName = "/MapScreen";
+  const MapScreen({super.key});
 
   @override
   _MapScreenState createState() => _MapScreenState();
@@ -19,10 +19,10 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   late final MapController _mapController;
-  LatLng _currentPosition = LatLng(32.0853, 34.7818); // Default position in Tel Aviv
-  List<Marker> _markers = [];
+  LatLng _currentPosition = const LatLng(32.0853, 34.7818); // Default position in Tel Aviv
+  final List<Marker> _markers = [];
   Marker? _searchMarker;
-  List<Map<String, dynamic>> _favoritePlaces = [
+  final List<Map<String, dynamic>> _favoritePlaces = [
     {'name': 'Favorite Park', 'address': 'Address of Favorite Park'},
     {'name': 'Favorite Pension', 'address': 'Address of Favorite Pension'},
     {'name': 'Favorite Salon', 'address': 'Address of Favorite Salon'},
