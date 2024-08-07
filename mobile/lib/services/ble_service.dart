@@ -1,79 +1,159 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'http_service.dart';
 
 class BleService {
-  final FlutterReactiveBle flutterReactiveBle = FlutterReactiveBle();
-  static const DOG_COLLAR_SERVICE = '0000180F-0000-1000-8000-00805f9b34fb';
-  static const BATTERY_LEVEL_CHARACTERISTIC_UUID = '00002A19-0000-1000-8000-00805f9b34fb';
+  static final BleService _instance = BleService._internal();
+  factory BleService() => _instance;
+  BleService._internal();
 
-  Completer<void> startScan(Function(String) onDeviceDiscovered) {
-    final completer = Completer<void>();
+  final FlutterReactiveBle flutterReactiveBle = FlutterReactiveBle();
+  static const BATTERY_SERVICE_UUID = '0000180F-0000-1000-8000-00805f9b34fb';
+  static const BATTERY_LEVEL_CHARACTERISTIC_UUID = '00002A19-0000-1000-8000-00805f9b34fb';
+  static const STEP_SERVICE_UUID = '0000180D-0000-1000-8000-00805f9b34fb';
+  static const STEP_COUNT_CHARACTERISTIC_UUID = '00002A37-0000-1000-8000-00805f9b34fb';
+
+  Timer? _timer;
+  int _batteryLevel = 0;
+  int _stepCount = 0;
+  String _deviceId = '';
+  bool isConnected = false;
+
+  Completer<void>? _scanCompleter;
+
+  Future<void> startScan(Function(DiscoveredDevice) onDeviceDiscovered) async {
+    _scanCompleter = Completer<void>();
     flutterReactiveBle.scanForDevices(
-      withServices: [Uuid.parse(DOG_COLLAR_SERVICE)],
+      withServices: [],
       scanMode: ScanMode.lowLatency,
     ).listen((device) {
-      onDeviceDiscovered(device.id);
-      completer.complete(); // Complete the completer when a device is found
+      if (device.name == "DoggoCollar") {
+        if (!_scanCompleter!.isCompleted) {
+          onDeviceDiscovered(device);
+          _scanCompleter!.complete();
+        }
+      }
     }, onError: (error) {
       print('Scan error: $error');
-      completer.completeError(error); // Complete with error if one occurs
+      if (!_scanCompleter!.isCompleted) {
+        _scanCompleter!.completeError(error);
+      }
     });
-    return completer;
+    return _scanCompleter!.future;
   }
 
-
-  // TODO: servicesWithCharacteristicsToDiscover: {serviceId: [char1, char2]},
-  //       connectionTimeout: const Duration(seconds: 2)
-  // TODO: discoverServices?
-  void connectToDevice(String deviceId, Function(int) onBatteryLevelRead) {
-    flutterReactiveBle.connectToDevice(id: deviceId).listen((connectionState) {
+  void connectToDevice(String deviceId, Function(int) onBatteryLevelRead, Function(int) onStepCountRead) {
+    _deviceId = deviceId;
+    flutterReactiveBle.connectToDevice(
+      id: deviceId,
+      connectionTimeout: const Duration(seconds: 5),
+    ).listen((connectionState) {
       if (connectionState.connectionState == DeviceConnectionState.connected) {
-        _onConnected(deviceId, onBatteryLevelRead);
+        print('Connected, discovering services...');
+        isConnected = true;
+        flutterReactiveBle.discoverServices(deviceId).then((_) {
+          print('Services discovered');
+          _onConnected(deviceId, onBatteryLevelRead, onStepCountRead);
+          _startPeriodicUpdates();
+        }).catchError((error) {
+          print('Error discovering services: $error');
+          isConnected = false;
+        });
+      } else if (connectionState.connectionState == DeviceConnectionState.disconnected) {
+        isConnected = false;
+        _timer?.cancel();
       }
     }, onError: (error) {
       print('Connection error: $error');
+      isConnected = false;
     });
   }
 
-  void _onConnected(String deviceId, Function(int) updateState) {
-    final characteristic = QualifiedCharacteristic(
+  void _onConnected(String deviceId, Function(int) updateBatteryLevel, Function(int) updateStepCount) {
+    print('Attempting to read characteristics...');
+    final batteryCharacteristic = QualifiedCharacteristic(
       deviceId: deviceId,
-      serviceId: Uuid.parse(DOG_COLLAR_SERVICE),
+      serviceId: Uuid.parse(BATTERY_SERVICE_UUID),
       characteristicId: Uuid.parse(BATTERY_LEVEL_CHARACTERISTIC_UUID),
     );
 
-    flutterReactiveBle.readCharacteristic(characteristic).then((value) {
-      int batteryLevel = value[0]; // Battery level is a single byte
-      updateState(batteryLevel);
+    final stepCharacteristic = QualifiedCharacteristic(
+      deviceId: deviceId,
+      serviceId: Uuid.parse(STEP_SERVICE_UUID),
+      characteristicId: Uuid.parse(STEP_COUNT_CHARACTERISTIC_UUID),
+    );
+
+    _readAndSendCharacteristics(batteryCharacteristic, stepCharacteristic, updateBatteryLevel, updateStepCount);
+  }
+
+  void _readAndSendCharacteristics(
+      QualifiedCharacteristic batteryCharacteristic,
+      QualifiedCharacteristic stepCharacteristic,
+      Function(int) updateBatteryLevel,
+      Function(int) updateStepCount
+      ) {
+    flutterReactiveBle.readCharacteristic(batteryCharacteristic).then((value) {
+      print('Battery value: $value');
+      _batteryLevel = value[0];
+      updateBatteryLevel(_batteryLevel);
+      HttpService.sendBatteryLevelToBackend(_deviceId, _batteryLevel);
     }).catchError((error) {
-      print('Error reading characteristic: $error');
+      print('Error reading battery characteristic: $error');
+    });
+
+    flutterReactiveBle.readCharacteristic(stepCharacteristic).then((value) {
+      print('Step value: $value');
+      _stepCount = _bytesToInt(value);
+      updateStepCount(_stepCount);
+      HttpService.sendStepCountToBackend(_stepCount);
+    }).catchError((error) {
+      print('Error reading step characteristic: $error');
     });
   }
 
-  void readBatteryLevelPeriodically(String deviceId, Function(int) onBatteryLevelRead) {
-    final characteristic = QualifiedCharacteristic(
-      deviceId: deviceId,
-      serviceId: Uuid.parse(DOG_COLLAR_SERVICE),
-      characteristicId: Uuid.parse(BATTERY_LEVEL_CHARACTERISTIC_UUID),
-    );
+  void _startPeriodicUpdates() {
+    _timer?.cancel();
+    _timer = Timer.periodic(Duration(seconds: 30), (timer) { // TODO: Change the duration if needed
+      if (_deviceId.isNotEmpty && isConnected) {
+        final batteryCharacteristic = QualifiedCharacteristic(
+          deviceId: _deviceId,
+          serviceId: Uuid.parse(BATTERY_SERVICE_UUID),
+          characteristicId: Uuid.parse(BATTERY_LEVEL_CHARACTERISTIC_UUID),
+        );
 
-    // Subscribe to characteristic notifications
-    final subscription = flutterReactiveBle.subscribeToCharacteristic(characteristic).listen((value) {
-      int batteryLevel = value[0];
-      onBatteryLevelRead(batteryLevel);
-      print('update battery level');
-    }, onError: (error) {
-      print('Error reading characteristic: $error');
-    });
+        final stepCharacteristic = QualifiedCharacteristic(
+          deviceId: _deviceId,
+          serviceId: Uuid.parse(STEP_SERVICE_UUID),
+          characteristicId: Uuid.parse(STEP_COUNT_CHARACTERISTIC_UUID),
+        );
 
-    // Use a Timer to trigger periodic readings
-    Timer.periodic(const Duration(seconds: 30), (_) {
-      // No need to re-subscribe, already subscribed above
-      print('Triggering periodic read'); // Optional for debugging
+        _readAndSendCharacteristics(batteryCharacteristic, stepCharacteristic, (batteryLevel) {
+          _batteryLevel = batteryLevel;
+        }, (stepCount) {
+          _stepCount = stepCount;
+        });
+      }
     });
   }
 
+  void disconnectFromDevice() {
+    if (_deviceId.isNotEmpty) {
+      flutterReactiveBle.deinitialize();
+      _timer?.cancel();
+      isConnected = false;
+      _deviceId = '';
+    }
   }
 
+  void resetService() {
+    disconnectFromDevice();
+    _batteryLevel = 0;
+    _stepCount = 0;
+  }
 
+  int _bytesToInt(List<int> bytes) {
+    return ByteData.sublistView(Uint8List.fromList(bytes)).getInt32(0, Endian.little);
+  }
+}

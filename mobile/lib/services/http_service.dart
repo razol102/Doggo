@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 
 class HttpService {
   static const String baseUrl = "https://doggo-api-test.redwave-5a54044b.australiaeast.azurecontainerapps.io";
-  //static const String baseUrl = "http://192.168.1.100:5000/";
 
   static Future<Map<String, dynamic>> login(String username, String password) async {
     const url = '$baseUrl/api/auth/login';
@@ -13,7 +12,7 @@ class HttpService {
       body: jsonEncode({'username': username, 'password': password}),
     );
 
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
       throw Exception(jsonDecode(response.body)['error']);
@@ -45,7 +44,7 @@ class HttpService {
       headers: {'Content-Type': 'application/json'},
     );
 
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to load data: ${response.reasonPhrase}');
@@ -62,7 +61,7 @@ class HttpService {
     //   throw Exception('Failed to load markers');
     // }
 
-      // Dummy data representing marker locations
+    // Dummy data representing marker locations
     List<dynamic> dummyData = [
       {
         'lat': 32.0853,
@@ -96,10 +95,33 @@ class HttpService {
       },
     ];
 
-      // Filter data based on category
-      List<dynamic> filteredData = dummyData.where((marker) => marker['category'] == category).toList();
+    // Filter data based on category
+    List<dynamic> filteredData = dummyData.where((marker) => marker['category'] == category).toList();
 
-      return filteredData;
-    }
+    return filteredData;
   }
 
+  static Future<void> sendStepCountToBackend(int stepCount) async {
+    final url = Uri.parse('$baseUrl/api/dogs/{dog_id}/fitness/steps');
+    // final response = await http.put(url, body: jsonEncode({'steps': stepCount}), headers: {'Content-Type': 'application/json'});
+    // if (response.statusCode == 200) {
+    //   print('Step count updated successfully');
+    // } else {
+    //   print('Failed to update step count: ${response.statusCode}');
+    // }
+
+    print("send steps to server: $stepCount | $DateTime.timestamp()");
+  }
+
+  static Future<void> sendBatteryLevelToBackend(String deviceId, int batteryLevel) async {
+    final url = Uri.parse('$baseUrl/api/devices/battery');
+    // final response = await http.put(url, body: jsonEncode({'device_id': deviceId, 'timestamp': DateTime.now().toUtc().toIso8601String(), 'battery_level': '$batteryLevel%'}), headers: {'Content-Type': 'application/json'});
+    // if (response.statusCode == 200) {
+    //   print('Battery level updated successfully');
+    // } else {
+    //   print('Failed to update battery level: ${response.statusCode}');
+    // }
+
+    print("send battery level to server: $batteryLevel | $DateTime.timestamp()");
+  }
+}
