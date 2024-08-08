@@ -6,8 +6,10 @@
 BLEService batteryService("180F"); // Standard battery service
 BLEUnsignedCharCharacteristic batteryLevelChar("2A19", BLERead | BLENotify);
 
-BLEService stepService("180D"); // Custom service UUID
+BLEService stepService("180D"); // Custom service for steps
 BLEUnsignedIntCharacteristic stepCountCharacteristic("2A37", BLERead | BLENotify);
+
+BLEService distanceService("181A"); // Custom service for distance (new service)
 BLEFloatCharacteristic distanceCharacteristic("2A76", BLERead | BLENotify); // Custom characteristic for distance
 
 volatile int stepCount = 0;
@@ -32,17 +34,21 @@ void setup() {
 
   // Set advertised local name and service UUID
   BLE.setLocalName("DoggoCollar");
+  
+  // Advertise all services
   BLE.setAdvertisedService(batteryService);
   BLE.setAdvertisedService(stepService);
+  BLE.setAdvertisedService(distanceService); // Advertise distance service
 
   // Add the characteristics to the services
   batteryService.addCharacteristic(batteryLevelChar);
   stepService.addCharacteristic(stepCountCharacteristic);
-  stepService.addCharacteristic(distanceCharacteristic); // Add distance characteristic
+  distanceService.addCharacteristic(distanceCharacteristic); // Add distance characteristic to the distance service
 
   // Add services
   BLE.addService(batteryService);
   BLE.addService(stepService);
+  BLE.addService(distanceService); // Add the distance service
 
   // Set initial values for the characteristics
   batteryLevelChar.writeValue(0);
@@ -87,8 +93,8 @@ void loop() {
     stepCount++;
     stepCountCharacteristic.writeValue(stepCount);
 
-    float distance = stepCount * stepLength;
-    distanceCharacteristic.writeValue(distance);
+    float distance = stepCount * stepLength; // Calculate distance in kilometers
+    distanceCharacteristic.writeValue(distance); // Send distance value via BLE
 
     Serial.print("Step count: ");
     Serial.println(stepCount);
