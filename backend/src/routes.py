@@ -22,6 +22,7 @@ DOG_ID_COLUMN = "dog_id"
 COLLAR_ID_COLUMN = "collar_id"
 STEPS_COLUMN = "steps"
 DISTANCE_COLUMN = "distance"
+FITNESS_DATE_COLUMN = "fitness_date"
 
 # http status codes
 HTTP_200_OK = 200
@@ -229,12 +230,12 @@ def add_new_dog():
         db = load_database_config()
         user_id = data.get("user_id")
         add_new_dog_query = """
-                               INSERT INTO {0}
-                               (name, breed, gender, date_of_birth, weight, height, home_latitude, home_longitude) 
-                               VALUES (%(name)s, %(breed)s, %(gender)s, %(date_of_birth)s, %(weight)s, 
-                               %(height)s, %(home_latitude)s, %(home_longitude)s)
-                               RETURNING dog_id;
-                               """.format(DOGS_TABLE)
+                           INSERT INTO {0}
+                           (name, breed, gender, date_of_birth, weight, height, home_latitude, home_longitude) 
+                           VALUES (%(name)s, %(breed)s, %(gender)s, %(date_of_birth)s, %(weight)s, 
+                           %(height)s, %(home_latitude)s, %(home_longitude)s)
+                           RETURNING dog_id;
+                           """.format(DOGS_TABLE)
         add_user_dog_query = """
                              INSERT INTO {0} (user_id, dog_id) 
                              VALUES (%s, %s)""".format(USERS_DOGS_TABLE)
@@ -408,8 +409,6 @@ def update_dog_distance():
         return jsonify({"message": str("Dog's distance were updated successfully!")}), HTTP_200_OK
 
 
-
-
 ########## Fitness ##########
 
 # Endpoint from collar
@@ -419,29 +418,42 @@ def update_data_from_collar():
     required_data = {"collarID", "battery", "steps", "distance"}
 
     collar_id = data['collarID']
-    battery_level = data['battery']
     new_dog_steps = data['steps']
     new_dog_distance = data['distance']
+    battery_level = data['battery']
+    today_date = date.today()
 
-    logger.debug("Got this info: %s", data)
+    add_fitness_query = """ INSERT INTO {0} (dog_id, fitness_date, {1}, {2})
+                            VALUES (%s, %s, %s, %s); """.format(FITNESS_TABLE, DISTANCE_COLUMN, STEPS_COLUMN)
+
+    update_fitness_query = """ 
+    UPDATE {0}
+    SET {1} = %s, {2} = %s
+    WHERE dog_id = %s AND fitness_date = %s;
+    """.format(FITNESS_TABLE, DISTANCE_COLUMN, STEPS_COLUMN)
 
     try:
         if not required_data.issubset(data.keys()):
             missing_fields = required_data - data.keys()
             raise MissingFieldsError(missing_fields)
-
         db = load_database_config()
-
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
-                # update distance
-                # update steps
-                update_battery_level(cursor, battery_level)
+                check_if_exists(cursor, COLLARS_TABLE, COLLAR_ID_COLUMN, collar_id)
+                dog_id = get_dog_id_by_collar_id(cursor, collar_id)
+                update_battery_level(cursor, collar_id, battery_level)
+                if does_exist_by_date(cursor, FITNESS_TABLE, DOG_ID_COLUMN, dog_id, FITNESS_DATE_COLUMN, today_date):
+                    cursor.execute(update_fitness_query, (new_dog_distance, new_dog_steps, dog_id, today_date))
+                    msg = "Fitness was updated"
+                else:
+                    cursor.execute(add_fitness_query, (dog_id, today_date, new_dog_distance, new_dog_steps))
+                    msg = "Fitness was added"
                 connection.commit()
+
     except(Exception, psycopg2.DatabaseError, MissingFieldsError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    return jsonify({"message": "ALL GOOD!"}), HTTP_200_OK
+    return jsonify({"message": msg}), HTTP_200_OK
 
 
 ########## Medical properties ##########
@@ -538,8 +550,6 @@ def get_all_dogs():
 
 
 # Utils
-
-
 def is_in_use(cursor, query, data_to_check):
     cursor.execute(query, (data_to_check,))
     return cursor.fetchone()[0] > 0
@@ -563,15 +573,16 @@ def does_exist(cursor, table_to_check, column_to_check, data_to_check):
     return exists
 
 
+def does_exist_by_date(cursor, table_to_check, column1_to_check, data1_to_check, column2_to_check, data2_to_check):
+    cursor.execute("SELECT COUNT(*) FROM {0} WHERE {1} = %s and {2} = %s"
+                   .format(table_to_check, column1_to_check, column2_to_check), (data1_to_check, data2_to_check))
+    exists = cursor.fetchone()[0]
+    return exists
+
+
 def update_dog_fitness(dog_id, fitness_column, fitness_new_data):
     db = load_database_config()
     today_date = date.today()
-
-    get_current_fitness_query = """ SELECT {0}
-                                    FROM {1}
-                                    WHERE dog_id = %s AND fitness_date = %s; 
-                                    """.format(fitness_column, FITNESS_TABLE)
-
     add_fitness_query = """ INSERT INTO {0} (dog_id, fitness_date, {1})
                             VALUES (%s, %s, %s); """.format(FITNESS_TABLE, fitness_column)
 
@@ -579,25 +590,22 @@ def update_dog_fitness(dog_id, fitness_column, fitness_new_data):
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
-                cursor.execute(get_current_fitness_query, (dog_id, today_date))
-                current_fitness = cursor.fetchone()
-                if current_fitness is None:  # new day
+
+                if does_exist_by_date(cursor, FITNESS_TABLE, DOG_ID_COLUMN, dog_id, FITNESS_DATE_COLUMN, today_date):
                     cursor.execute(add_fitness_query, (dog_id, today_date, fitness_new_data))
                 else:
-                    update_daily_fitness(cursor, current_fitness[0],
-                                         fitness_new_data, dog_id, today_date, fitness_column)
+                    update_daily_fitness(cursor, fitness_new_data, dog_id, today_date, fitness_column)
                     connection.commit()
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
 
-def update_daily_fitness(cursor, current_fitness_data, fitness_new_data, dog_id, today_date, fitness_column):
+def update_daily_fitness(cursor, fitness_new_data, dog_id, today_date, fitness_column):
     update_steps_query = """ UPDATE {0}
                              SET {1} = %s
                              WHERE dog_id = %s AND fitness_date = %s; """.format(FITNESS_TABLE, fitness_column)
-
-    new_dog_fitness = fix_fitness_data(current_fitness_data, fitness_new_data)
-    cursor.execute(update_steps_query, (new_dog_fitness, dog_id, today_date))
+#    new_dog_fitness = fix_fitness_data(current_fitness_data, fitness_new_data)
+    cursor.execute(update_steps_query, (fitness_new_data, dog_id, today_date))
 
 
 def fix_fitness_data(current_fitness_data, new_fitness_data):
@@ -609,14 +617,24 @@ def fix_fitness_data(current_fitness_data, new_fitness_data):
     return new_fitness_data
 
 
-def update_battery_level(cursor, new_level):
+def update_battery_level(cursor, collar_id, new_level):
     update_battery_level_query = """
                                  UPDATE {0}
                                  SET battery_level = %s
                                  WHERE {1} = %s;
                                  """.format(COLLARS_TABLE, COLLAR_ID_COLUMN)
-    cursor.execute(update_battery_level_query, (new_level, ))
+    cursor.execute(update_battery_level_query, (int(new_level), collar_id))
 
+
+def get_dog_id_by_collar_id(cursor, collar_id):
+    get_dog_id_query = "SELECT {0} FROM {1} WHERE {2} = %s;".format(DOG_ID_COLUMN, COLLARS_TABLE, COLLAR_ID_COLUMN)
+    cursor.execute(get_dog_id_query, (collar_id,))
+    dog_id = cursor.fetchone()
+
+    if not dog_id:
+        raise ValueError("There is no collar attached to this dog.")
+    else:
+        return dog_id[0]
 
 def get_dict_for_response(cursor):
     data_from_query = cursor.fetchone()
