@@ -232,6 +232,7 @@ def does_exist(cursor, table_to_check, column_to_check, data_to_check):
 
 ########## Users ##########
 
+
 ########## Dogs ##########
 @app.route('/api/dog/add', methods=['POST'])
 def add_new_dog():
@@ -246,9 +247,9 @@ def add_new_dog():
         db = load_database_config()
         adding_new_dog_query = """
                                INSERT INTO {0}
-                               (name, breed, date_of_birth, weight, height, image, home_latitude, home_longitude) VALUES 
-                               (%(name)s, %(breed)s, %(date_of_birth)s, %(weight)s, %(height), 
-                               %(image)s, %(home_latitude)s, %(home_longitude)s)
+                               (name, breed, gender, date_of_birth, weight, height, home_latitude, home_longitude) VALUES 
+                               (%(name)s, %(breed)s, %(gender)s, %(date_of_birth)s, %(weight)s, %(height)s, 
+                               %(home_latitude)s, %(home_longitude)s)
                                RETURNING dog_id;
                                """.format(DOGS_TABLE)
 
@@ -282,12 +283,13 @@ def get_dog_info():
     dog_data = {
         "name": dog_details[1],
         "breed": dog_details[2],
-        "date_of_birth": dog_details[3],
-        "weight": dog_details[4],
-        "height": dog_details[5],
-        #        "image": dog_details[6],
-        "home_latitude": dog_details[7],
-        "home_longitude": dog_details[8]
+        "gender": dog_details[3],
+        "date_of_birth": dog_details[4],
+        "weight": dog_details[5],
+        "height": dog_details[6],
+        #        "image": dog_details[7],
+        "home_latitude": dog_details[8],
+        "home_longitude": dog_details[9]
     }
 
     return jsonify(dog_data), HTTP_200_OK
@@ -362,6 +364,25 @@ def add_collar():
 
     return jsonify({"message": "Collar {0} connected to dog {1}".format(collar_id, dog_id)}), HTTP_200_OK
 
+
+@app.route("/api/collar/get", methods=['GET'])
+def get_collar_id_by_dog_id():
+    dog_id = request.args.get('dog_id')
+    db = load_database_config()
+    get_collar_id_query = "SELECT collar_id FROM {0} WHERE dog_id = %s;".format(COLLARS_TABLE)
+
+    try:
+        with psycopg2.connect(**db) as connection:
+            with connection.cursor() as cursor:
+                check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
+                cursor.execute(get_collar_id_query, (dog_id,))
+                collar_id = cursor.fetchone()
+                if not collar_id:
+                    raise ValueError("There is no collar attached to this dog.")
+    except(Exception, ValueError, psycopg2.DatabaseError) as error:
+        return jsonify({"error": str(error)}), 400
+
+    return jsonify({"collar_id": collar_id[0]}), HTTP_200_OK
 
 ########## Collars ##########
 @app.route('/api/dog/fitness/steps', methods=['PUT'])
@@ -482,6 +503,48 @@ def update_battery_level(cursor, new_level):
                                  WHERE {1} = %s;
                                  """.format(COLLARS_TABLE, COLLAR_ID_COLUMN)
     cursor.execute(update_battery_level_query, (new_level, ))
+
+
+# For testing
+@app.route("/api/user/all", methods=['GET'])
+def get_all_users():
+    query = "SELECT * FROM {0};".format(USERS_TABLE)
+
+    try:
+        db = load_database_config()
+        with psycopg2.connect(**db) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(query)
+                rows = cursor.fetchall()
+                columns_names = [desc[0] for desc in cursor.description]
+                result = [dict(zip(columns_names, row)) for row in rows]
+    except(Exception, psycopg2.DatabaseError) as error:
+        return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
+
+    return jsonify(result), HTTP_200_OK
+
+
+@app.route("/api/dog/all", methods=['GET'])
+def get_all_dogs():
+    query = "SELECT * FROM {0};".format(DOGS_TABLE)
+
+    try:
+        db = load_database_config()
+        with psycopg2.connect(**db) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(query)
+                rows = cursor.fetchall()
+                columns_names = [desc[0] for desc in cursor.description]
+                result = []
+                for row in rows:
+                    row_dict = dict(zip(columns_names, row))
+                    if 'image' in row_dict:
+                        del row_dict['image']  # Remove the 'image' key
+                    result.append(row_dict)
+    except(Exception, psycopg2.DatabaseError) as error:
+        return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
+
+    return jsonify(result), HTTP_200_OK
 
 
 @app.route("/", methods=['GET'])
