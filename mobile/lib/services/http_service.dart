@@ -1,24 +1,140 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:mobile/services/preferences_service.dart';
 
 class HttpService {
-  static const String baseUrl = "https://doggo-api-test.redwave-5a54044b.australiaeast.azurecontainerapps.io";
+  static const String baseUrl = "http://34.230.176.208:5000";
 
-  static Future<Map<String, dynamic>> login(String username, String password) async {
-    const url = '$baseUrl/api/auth/login';
-    final response = await http.post(
-      Uri.parse(url),
+  //--------------------------------------auth--------------------------------------
+  static Future<Map<String, dynamic>> login(String email, String password) async {
+    final url = Uri.parse('$baseUrl/api/user/login');
+    final response = await http.put(
+      url,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'username': username, 'password': password}),
+      body: jsonEncode({'email': email, 'password': password}),
     );
-
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200) { // user & dog id
       return jsonDecode(response.body);
     } else {
       throw Exception(jsonDecode(response.body)['error']);
     }
   }
 
+  static Future<Map<String, dynamic>> logout(int userId) async {
+    final url = Uri.parse('$baseUrl/api/user/logout?user_id=$userId');
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      print('user $userId logged out!');
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<Map<String, dynamic>> registerUser(String email, String password, String name, String dateOfBirth, String phoneNumber) async {
+    final url = Uri.parse('$baseUrl/api/user/register');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'password': password,
+        'name': name,
+        'date_of_birth': dateOfBirth,
+        'phone_number': phoneNumber,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      print('Register completed');
+      return jsonDecode(response.body);
+    } else {
+      print('Register error');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<bool> isLoggedIn(int userId) async {
+    final url = Uri.parse('$baseUrl/api/user/connection?user_id=$userId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = json.decode(response.body);
+      print('User $userId connection status: ${responseData['user_connection']}');
+      return responseData['user_connection'] ?? false;
+    } else {
+      print('Failed to check user connection status. Status code: ${response.statusCode}');
+      return false;
+    }
+  }
+
+  //--------------------------------------complete register--------------------------------------
+  static Future<int?> addNewDog({
+    required String name,
+    required String breed,
+    required String gender,
+    required String dateOfBirth,
+    required double weight,
+    required double height,
+    required double homeLatitude,
+    required double homeLongitude,
+    required int userId
+  }) async {
+    final url = Uri.parse('$baseUrl/api/dog/add');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'name': name,
+        'breed': breed,
+        'gender': gender,
+        'date_of_birth': dateOfBirth,
+        'weight': weight,
+        'height': height,
+        'home_latitude': homeLatitude,
+        'home_longitude': homeLongitude,
+        'user_id': userId
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      final responseData = jsonDecode(response.body);
+      final dogId = responseData['dog_id'];
+      PreferencesService.saveDogId(dogId);
+      return dogId;  // Return the dogId
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<void> configureCollar(int dogId, String collarId) async{
+    final url = Uri.parse('$baseUrl/api/collar/add');
+    final response = await  http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'collar_id': collarId,
+        'dog_id': dogId,
+      })
+    );
+
+    if (response.statusCode == 200) {
+      print('collar $collarId configured to dog $dogId');
+    } else {
+      print('failed to configure collar $collarId to dog $dogId');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+
+  }
+
+  //--------------------------------------fitness--------------------------------------
   static Future<Map<String, dynamic>> fetchDogActivityStatus(DateTime date) async {
     // const url = '$baseUrl/';
     // final response = await http.get(Uri.parse(url));
@@ -28,7 +144,7 @@ class HttpService {
     // } else {
     //   throw Exception('Failed to fetch dog activity status');
     // }
-    print("fetching data $date");
+    print("Fetching data for $date");
     // Fetch the current steps and total steps from your data source
     int currentSteps = 900; // Replace with actual data fetching
     int totalSteps = 1000; // Replace with actual data fetching
@@ -37,22 +153,9 @@ class HttpService {
     return {'currentSteps': currentSteps, 'totalSteps': totalSteps, 'calories': calories, 'distance': distance};
   }
 
-  static Future<Map<String, dynamic>> getRoot() async {
-    const url = '$baseUrl/';
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load data: ${response.reasonPhrase}');
-    }
-  }
-
+  //--------------------------------------dog friendly places--------------------------------------
   static Future<List<dynamic>> fetchMapMarkers(String category) async {
-    const url = '$baseUrl/'; // TODO: change to the real url
+    final url = Uri.parse('$baseUrl/'); // TODO: change to the real url
     // final response = await http.get(Uri.parse(url));
     //
     // if (response.statusCode == 200) {
@@ -69,8 +172,8 @@ class HttpService {
         'category': 'medical',
       },
       {
-        'lat': 32.0855,
-        'lon': 34.7820,
+        'lat': 32.04866461125274,
+        'lon': 34.76023473261021,
         'category': 'parks',
       },
       {
@@ -101,27 +204,81 @@ class HttpService {
     return filteredData;
   }
 
-  static Future<void> sendStepCountToBackend(int stepCount) async {
-    final url = Uri.parse('$baseUrl/api/dogs/{dog_id}/fitness/steps');
-    // final response = await http.put(url, body: jsonEncode({'steps': stepCount}), headers: {'Content-Type': 'application/json'});
-    // if (response.statusCode == 200) {
-    //   print('Step count updated successfully');
-    // } else {
-    //   print('Failed to update step count: ${response.statusCode}');
-    // }
+  //--------------------------------------collar data--------------------------------------
+  static Future<void> sendStepCountToBackend(String dogId, int stepCount) async {
+    final url = Uri.parse('$baseUrl/api/dog/fitness/steps?dog_id=$dogId&steps=$stepCount');
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
 
-    print("send steps to server: $stepCount | $DateTime.timestamp()");
+    if (response.statusCode == 200) {
+      print('Step count updated successfully');
+    } else {
+      print('Failed to update step count: ${response.statusCode}');
+    }
+  }
+
+  static Future<void> sendDistanceToBackend(String dogId, double distance) async {
+    final url = Uri.parse('$baseUrl/api/dog/fitness/distance?dog_id=$dogId&distance=$distance');
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      print('Distance updated successfully');
+    } else {
+      print('Failed to update distance: ${response.statusCode}');
+    }
   }
 
   static Future<void> sendBatteryLevelToBackend(String deviceId, int batteryLevel) async {
     final url = Uri.parse('$baseUrl/api/devices/battery');
-    // final response = await http.put(url, body: jsonEncode({'device_id': deviceId, 'timestamp': DateTime.now().toUtc().toIso8601String(), 'battery_level': '$batteryLevel%'}), headers: {'Content-Type': 'application/json'});
-    // if (response.statusCode == 200) {
-    //   print('Battery level updated successfully');
-    // } else {
-    //   print('Failed to update battery level: ${response.statusCode}');
-    // }
+    final response = await http.put(
+      url,
+      body: jsonEncode({
+        'device_id': deviceId,
+        'timestamp': DateTime.now().toUtc().toIso8601String(),
+        'battery_level': '$batteryLevel%',
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
 
-    print("send battery level to server: $batteryLevel | $DateTime.timestamp()");
+    if (response.statusCode == 200) {
+      print('Battery level updated successfully');
+    } else {
+      print('Failed to update battery level: ${response.statusCode}');
+    }
   }
+
+  static Future<String> getCollarId(String dogId) async {
+    final url = Uri.parse('$baseUrl/api/collar/get?dog_id=$dogId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body)['collar_id'];
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  //--------------------------------------test--------------------------------------
+  static Future<Map<String, dynamic>> getRoot() async {
+    final url = Uri.parse('$baseUrl/');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load data: ${response.reasonPhrase}');
+    }
+  }
+
 }

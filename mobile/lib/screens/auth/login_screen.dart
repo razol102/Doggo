@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import '../../services/preferences_service.dart';
 import '../bottom_menu.dart';
 import 'forgot_password_screen.dart';
 import 'signup_step1_screen.dart';
@@ -28,7 +29,11 @@ class _LoginScreenState extends State<LoginScreen> {
         _emailController.text,
         _passwordController.text,
       );
-      print(response['message']);
+      print(response['user_id']);
+      print(response['dog_id']);
+      await PreferencesService.saveUserId(response['user_id']);
+      await PreferencesService.saveDogId(response['dog_id']);
+
       Navigator.pushNamed(context, BottomMenu.routeName);
     } catch (e) {
       print(e);

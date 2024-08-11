@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/screens/add_new_dog/add_new_dog_screen.dart';
 import '../../common_widgets/round_button.dart';
+import '../../services/http_service.dart';
+import '../../services/preferences_service.dart';
 import '../../utils/app_colors.dart';
 import '../../common_widgets/round_textfield.dart';
 
@@ -21,6 +24,17 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
   // To store data passed from the previous screen
   Map<String, dynamic>? _signupData;
 
+  Future<void> _register(String fullName, String birthdate, String phoneNumber, String email, String password) async {
+    try {
+      final response = await HttpService.registerUser(email, password, fullName, birthdate, phoneNumber);
+      int user_id = response['user_id'];
+      print('user $user_id was created');
+      await PreferencesService.saveUserId(response['user_id']);
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -127,8 +141,9 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
                                   print("Email: $email");
                                   print("Password: $password");
 
-                                  // await registerUser(fullName, birthdate, phoneNumber, email, password);
-                                  // After successful registration, navigate to a different screen or show a success message
+                                  _register(fullName, birthdate, phoneNumber, email, password);
+                                  // After successful registration, navigate to add new dog screen
+                                  Navigator.pushNamed(context, AddNewDogScreen.routeName);
                                 }
                               },
                               backgroundColor: AppColors.whiteColor,

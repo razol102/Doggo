@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/screens/add_new_dog/add_new_dog_screen.dart';
 import 'package:mobile/screens/bottom_menu.dart';
 import 'package:mobile/screens/activity/activity_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:mobile/services/preferences_service.dart';  // Import PreferencesService
 import 'auth/signup_step1_screen.dart';
 import 'auth/login_screen.dart';
 import '../../common_widgets/round_gradient_button.dart';
@@ -21,12 +23,13 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   bool _hasPermission = false;
   bool _permissionDenied = false;
-  String _responseMessage = ""; // TODO: delete! test! Define _responseMessage as a state variable
+  String _responseMessage = ""; // For testing purposes
 
   @override
   void initState() {
     super.initState();
     _checkPermissions();
+    _checkIfLoggedIn();
   }
 
   Future<void> _checkPermissions() async {
@@ -42,6 +45,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           bluetoothStatus.isDenied ||
           bluetoothConnectStatus.isDenied;
     });
+  }
+
+  Future<void> _checkIfLoggedIn() async {
+    int? userId = await PreferencesService.getUserId();  // Retrieve user ID
+
+    if (userId != null) {
+      bool isLoggedIn = await HttpService.isLoggedIn(userId);  // Check if logged in
+      if (isLoggedIn) {
+        Navigator.pushReplacementNamed(context, BottomMenu.routeName);  // Navigate to BottomMenu
+      }
+    }
   }
 
   void _showPermissionDeniedMessage() {
@@ -60,7 +74,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 
-  //TODO: delete! only test
+  // For testing purposes
   Future<void> _testGetRoot() async {
     try {
       final response = await HttpService.getRoot();
@@ -87,7 +101,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       ),
     );
   }
-//end test
 
   @override
   Widget build(BuildContext context) {
@@ -135,18 +148,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               if (_hasPermission)
                 Column(
                   children: [
-                    // ElevatedButton(
-                    //   onPressed: _testGetRoot,
-                    //   child: const Text('Test Get Root'),
-                    // ),
                     RoundGradientButton(
                       title: "Login",
                       onPressed: () {
-                        Navigator.pushNamed(context, BottomMenu.routeName);
-                        //Navigator.pushNamed(context, LoginScreen.routeName);
+                        Navigator.pushNamed(context, LoginScreen.routeName);
                       },
                     ),
-
                   ],
                 )
               else if (_permissionDenied)

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:mobile/services/preferences_service.dart';
 import 'http_service.dart';
 
 class BleService {
@@ -14,10 +15,13 @@ class BleService {
   static const BATTERY_LEVEL_CHARACTERISTIC_UUID = '00002A19-0000-1000-8000-00805f9b34fb';
   static const STEP_SERVICE_UUID = '0000180D-0000-1000-8000-00805f9b34fb';
   static const STEP_COUNT_CHARACTERISTIC_UUID = '00002A37-0000-1000-8000-00805f9b34fb';
+  static const DISTANCE_SERVICE_UUID = '0000181A-0000-1000-8000-00805f9b34fb';
+  static const DISTANCE_CHARACTERISTIC_UUID = '00002A76-0000-1000-8000-00805f9b34fb';
 
   Timer? _timer;
   int _batteryLevel = 0;
   int _stepCount = 0;
+  double _distance = 0.0;
   String _deviceId = '';
   bool isConnected = false;
 
@@ -44,7 +48,7 @@ class BleService {
     return _scanCompleter!.future;
   }
 
-  void connectToDevice(String deviceId, Function(int) onBatteryLevelRead, Function(int) onStepCountRead) {
+  void connectToDevice(String deviceId, Function(int) onBatteryLevelRead, Function(int) onStepCountRead, Function(double) onDistanceRead) {
     _deviceId = deviceId;
     flutterReactiveBle.connectToDevice(
       id: deviceId,
@@ -55,7 +59,7 @@ class BleService {
         isConnected = true;
         flutterReactiveBle.discoverServices(deviceId).then((_) {
           print('Services discovered');
-          _onConnected(deviceId, onBatteryLevelRead, onStepCountRead);
+          _onConnected(deviceId, onBatteryLevelRead, onStepCountRead, onDistanceRead);
           _startPeriodicUpdates();
         }).catchError((error) {
           print('Error discovering services: $error');
@@ -71,7 +75,7 @@ class BleService {
     });
   }
 
-  void _onConnected(String deviceId, Function(int) updateBatteryLevel, Function(int) updateStepCount) {
+  void _onConnected(String deviceId, Function(int) updateBatteryLevel, Function(int) updateStepCount, Function(double) updateDistance) {
     print('Attempting to read characteristics...');
     final batteryCharacteristic = QualifiedCharacteristic(
       deviceId: deviceId,
@@ -85,20 +89,34 @@ class BleService {
       characteristicId: Uuid.parse(STEP_COUNT_CHARACTERISTIC_UUID),
     );
 
-    _readAndSendCharacteristics(batteryCharacteristic, stepCharacteristic, updateBatteryLevel, updateStepCount);
+    final distanceCharacteristic = QualifiedCharacteristic(
+      deviceId: deviceId,
+      serviceId: Uuid.parse(DISTANCE_SERVICE_UUID),
+      characteristicId: Uuid.parse(DISTANCE_CHARACTERISTIC_UUID),
+    );
+
+
+    _readAndSendCharacteristics(batteryCharacteristic, stepCharacteristic, distanceCharacteristic
+        ,updateBatteryLevel, updateStepCount, updateDistance);
   }
 
-  void _readAndSendCharacteristics(
+  Future<void> _readAndSendCharacteristics(
       QualifiedCharacteristic batteryCharacteristic,
       QualifiedCharacteristic stepCharacteristic,
+      QualifiedCharacteristic distanceCharacteristic,
       Function(int) updateBatteryLevel,
-      Function(int) updateStepCount
-      ) {
+      Function(int) updateStepCount,
+      Function(double) updateDistance,
+
+      ) async {
+
+    int? _dogId = await PreferencesService.getDogId();
+
     flutterReactiveBle.readCharacteristic(batteryCharacteristic).then((value) {
       print('Battery value: $value');
       _batteryLevel = value[0];
       updateBatteryLevel(_batteryLevel);
-      HttpService.sendBatteryLevelToBackend(_deviceId, _batteryLevel);
+      //HttpService.sendBatteryLevelToBackend(_deviceId, _batteryLevel);
     }).catchError((error) {
       print('Error reading battery characteristic: $error');
     });
@@ -107,9 +125,19 @@ class BleService {
       print('Step value: $value');
       _stepCount = _bytesToInt(value);
       updateStepCount(_stepCount);
-      HttpService.sendStepCountToBackend(_stepCount);
+      HttpService.sendStepCountToBackend(_dogId!.toString(), _stepCount);
     }).catchError((error) {
       print('Error reading step characteristic: $error');
+    });
+
+    flutterReactiveBle.readCharacteristic(distanceCharacteristic).then((value) {
+      print('Distance value: $value');
+      _distance = _bytesToFloat(value);
+      updateDistance(_distance);
+      print(_distance);
+      HttpService.sendDistanceToBackend(_dogId!.toString(), _distance);
+    }).catchError((error) {
+      print('Error reading distance characteristic: $error');
     });
   }
 
@@ -129,14 +157,20 @@ class BleService {
           characteristicId: Uuid.parse(STEP_COUNT_CHARACTERISTIC_UUID),
         );
 
-        _readAndSendCharacteristics(batteryCharacteristic, stepCharacteristic, (batteryLevel) {
-          _batteryLevel = batteryLevel;
-        }, (stepCount) {
-          _stepCount = stepCount;
-        });
-      }
-    });
-  }
+        final distanceCharacteristic = QualifiedCharacteristic(
+          deviceId: _deviceId,
+          serviceId: Uuid.parse(DISTANCE_SERVICE_UUID),
+          characteristicId: Uuid.parse(DISTANCE_CHARACTERISTIC_UUID),
+        );
+
+        _readAndSendCharacteristics(batteryCharacteristic, stepCharacteristic, distanceCharacteristic,
+                (batteryLevel) { _batteryLevel = batteryLevel;},
+                (stepCount) { _stepCount = stepCount;},
+                (distance) {_distance = distance;});
+        }
+      });
+    }
+
 
   void disconnectFromDevice() {
     if (_deviceId.isNotEmpty) {
@@ -155,5 +189,10 @@ class BleService {
 
   int _bytesToInt(List<int> bytes) {
     return ByteData.sublistView(Uint8List.fromList(bytes)).getInt32(0, Endian.little);
+  }
+
+  double _bytesToFloat(List<int> bytes) {
+    var buffer = Uint8List.fromList(bytes).buffer;
+    return ByteData.view(buffer).getFloat32(0, Endian.little);
   }
 }
