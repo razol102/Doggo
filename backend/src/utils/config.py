@@ -1,5 +1,6 @@
 from configparser import ConfigParser
 
+
 def load_database_config(filename="/app/configurations.ini"):
     parser = ConfigParser()
     try:
