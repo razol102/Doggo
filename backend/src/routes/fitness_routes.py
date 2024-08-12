@@ -49,7 +49,7 @@ def update_data_from_collar():
     battery_level = data['battery']
     today_date = date.today()
 
-    logger.debug("Values: {0}".format(data))
+    logger.debug("Values from collar: {0}".format(data))
 
     add_fitness_query = """ INSERT INTO {0} (dog_id, fitness_date, {1}, {2})
                             VALUES (%s, %s, %s, %s); """.format(FITNESS_TABLE, DISTANCE_COLUMN, STEPS_COLUMN)
