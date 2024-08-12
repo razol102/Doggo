@@ -51,6 +51,12 @@ class _BleTestScreenState extends State<BleTestScreen> {
             //print(_stepCount);
           });
         },
+        (double distance) {
+          setState(() {
+            //_distance = distance;
+            //print(_distance);
+          });
+        },
       );
     }
   }

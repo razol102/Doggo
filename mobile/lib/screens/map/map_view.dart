@@ -10,7 +10,8 @@ class MapView extends StatelessWidget {
   final LatLng currentPosition;
   final VoidCallback onUpdateLocation;
   final Function(LatLng, String) onSearch;
-  final VoidCallback onClearMarkers; // Add this parameter
+  final VoidCallback onClearMarkers;
+  final bool showClearMarkersButton; // New parameter to control visibility
 
   const MapView({
     Key? key,
@@ -19,7 +20,8 @@ class MapView extends StatelessWidget {
     required this.currentPosition,
     required this.onUpdateLocation,
     required this.onSearch,
-    required this.onClearMarkers, // Add this parameter
+    required this.onClearMarkers,
+    this.showClearMarkersButton = true, // Default to showing the button
   }) : super(key: key);
 
   @override
@@ -41,7 +43,7 @@ class MapView extends StatelessWidget {
           ],
         ),
         Positioned(
-          top: 40,
+          top: 25,
           left: 10,
           right: 10,
           child: PlaceSearchBar(onSearch: onSearch),
@@ -54,7 +56,7 @@ class MapView extends StatelessWidget {
               FloatingActionButton(
                 heroTag: 'updateLocation',
                 onPressed: onUpdateLocation,
-                child: Icon(Icons.my_location, size: 20,),
+                child: Icon(Icons.my_location, size: 20),
                 backgroundColor: AppColors.primaryColor1.withOpacity(0.8),
                 mini: true,
               ),
@@ -71,17 +73,18 @@ class MapView extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              FloatingActionButton(
-                heroTag: 'clearMarkers',
-                onPressed: onClearMarkers,
-                backgroundColor: AppColors.primaryColor1.withOpacity(0.8),
-                mini: true, // Set the callback here
-                child: Image.asset(
-                  'assets/icons/remove_location.png',
-                  height: 20,
-                  width: 20,
+              if (showClearMarkersButton) // Conditionally show the button
+                FloatingActionButton(
+                  heroTag: 'clearMarkers',
+                  onPressed: onClearMarkers,
+                  backgroundColor: AppColors.primaryColor1.withOpacity(0.8),
+                  mini: true,
+                  child: Image.asset(
+                    'assets/icons/remove_location.png',
+                    height: 20,
+                    width: 20,
+                  ),
                 ),
-              ),
             ],
           ),
         ),

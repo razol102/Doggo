@@ -1,10 +1,14 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
+import 'package:mobile/screens/devices/doggo_collar_screen.dart';
+import 'package:mobile/screens/welcome_screen.dart';
+import 'package:mobile/services/http_service.dart';
 import 'package:mobile/utils/app_colors.dart';
 import 'package:mobile/screens/profile/widgets/setting_row.dart';
 import 'package:mobile/common_widgets/title_subtitle_cell.dart';
 import 'package:flutter/material.dart';
 
 import '../../../common_widgets/round_button.dart';
+import '../../services/preferences_service.dart';
 
 class UserProfileScreen extends StatefulWidget {
   static String routeName = "/UserProfileScreen";
@@ -19,7 +23,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   List devicesArr = [
     {"image": "assets/icons/doggo_collar_icon.png", "name": "Doggo Collar", "tag": "1"},
-    {"image": "assets/icons/home_station_icon.png", "name": "Doggo Home Station", "tag": "2"},
   ];
 
   List dogCareArr = [
@@ -39,6 +42,69 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     {"image": "assets/icons/setting_icon.png", "name": "Settings", "tag": "10"},
   ];
 
+  Future<void> _logout() async {
+    try {
+      // Await the result of getUserId to ensure it's fully retrieved before using it
+      final int? userId = await PreferencesService.getUserId();
+
+      if (userId != null) {
+        final response = await HttpService.logout(userId);
+        await PreferencesService.clearUserId();
+        Navigator.pushNamed(context, WelcomeScreen.routeName);
+      } else {
+        // Handle the case where userId is null (if needed)
+        print("User ID is null");
+      }
+
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
+  }
+
+  void _handleSettingTap(String tag) {
+    switch (tag) {
+      case '1':
+      // Navigate to Doggo Collar settings
+        Navigator.pushNamed(context, DoggoCollarScreen.routeName);
+        break;
+      case '3':
+      // Navigate to Food & Nutrition settings or related screen
+        Navigator.pushNamed(context, '/food_nutrition');
+        break;
+      case '4':
+      // Navigate to Medical Records settings or related screen
+        Navigator.pushNamed(context, '/medical_records');
+        break;
+      case '5':
+      // Navigate to Emergency Contacts settings or related screen
+        Navigator.pushNamed(context, '/emergency_contacts');
+        break;
+      case '6':
+      // Navigate to Personal Data settings or related screen
+        Navigator.pushNamed(context, '/personal_data');
+        break;
+      case '7':
+      // Navigate to Dog Data settings or related screen
+        Navigator.pushNamed(context, '/dog_data');
+        break;
+      case '8':
+      // Navigate to Safe Zone settings or related screen
+        Navigator.pushNamed(context, '/safe_zone');
+        break;
+      case '9':
+      // Navigate to Contact Us screen
+        Navigator.pushNamed(context, '/contact_us');
+        break;
+      case '10':
+      // Navigate to Settings screen
+        Navigator.pushNamed(context, '/settings');
+        break;
+      default:
+        print('No action defined for tag: $tag');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,7 +123,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         ),
         actions: [
           InkWell(
-            onTap: () {},
+            onTap: () {
+              _logout();
+            },
             child: Container(
               margin: const EdgeInsets.all(8),
               height: 40,
@@ -66,12 +134,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               decoration: BoxDecoration(
                   color: AppColors.lightGrayColor,
                   borderRadius: BorderRadius.circular(10)),
-              child: Image.asset(
-                "assets/icons/more_icon.png",
-                width: 12,
-                height: 12,
-                fit: BoxFit.contain,
-              ),
+              child: const Icon(Icons.logout_outlined, color: Colors.redAccent,),
             ),
           )
         ],
@@ -210,7 +273,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         return SettingRow(
                           icon: iObj["image"].toString(),
                           title: iObj["name"].toString(),
-                          onPressed: () {},
+                          onPressed: () => _handleSettingTap(iObj["tag"].toString()),
                         );
                       },
                     )

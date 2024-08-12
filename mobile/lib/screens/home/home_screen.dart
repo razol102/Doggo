@@ -1,4 +1,3 @@
-import 'package:mobile/screens/ble_test_screen.dart';
 import 'package:mobile/screens/home/widgets/BCS_pie_chart.dart';
 import 'package:mobile/screens/home/widgets/dog_activity_status.dart';
 import 'package:mobile/screens/home/widgets/workout_progress_line_chart.dart';
@@ -206,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.star, // Replace with your desired icon
+                Icons.home, // Replace with your desired icon
                 color: AppColors.blackColor,
                 size: 20,
               ),
@@ -256,163 +255,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(height: media.width * 0.05),
                 BcsPieChart(),
                 SizedBox(height: media.width * 0.05),
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //   children: [
-                //     const Text(
-                //       "Workout Progress",
-                //       style: TextStyle(
-                //         color: AppColors.blackColor,
-                //         fontSize: 16,
-                //         fontWeight: FontWeight.w600,
-                //       ),
-                //     ),
-                //     Container(
-                //       height: 35,
-                //       padding: EdgeInsets.symmetric(horizontal: 8),
-                //       decoration: BoxDecoration(
-                //           gradient: LinearGradient(colors: AppColors.primaryG),
-                //           borderRadius: BorderRadius.circular(15)),
-                //       child: DropdownButtonHideUnderline(
-                //         child: DropdownButton(
-                //           items: ["Weekly", "Monthly"]
-                //               .map((name) => DropdownMenuItem(
-                //               value: name,
-                //               child: Text(
-                //                 name,
-                //                 style: const TextStyle(
-                //                     color: AppColors.blackColor,
-                //                     fontSize: 14),
-                //               )))
-                //               .toList(),
-                //           onChanged: (value) {},
-                //           icon: const Icon(Icons.expand_more,
-                //               color: AppColors.whiteColor),
-                //           hint: const Text("Weekly",
-                //               textAlign: TextAlign.center,
-                //               style: TextStyle(
-                //                   color: AppColors.whiteColor, fontSize: 12)),
-                //         ),
-                //       ),
-                //     )
-                //   ],
-                // ),
-                // SizedBox(height: media.width * 0.05),
-                // Container(
-                //     padding: const EdgeInsets.only(left: 15),
-                //     height: media.width * 0.5,
-                //     width: double.maxFinite,
-                //     child:
-                //     LineChart(
-                //       LineChartData(
-                //         showingTooltipIndicators:
-                //         showingTooltipOnSpots.map((index) {
-                //           return ShowingTooltipIndicators([
-                //             LineBarSpot(
-                //               tooltipsOnBar,
-                //               lineBarsData.indexOf(tooltipsOnBar),
-                //               tooltipsOnBar.spots[index],
-                //             ),
-                //           ]);
-                //         }).toList(),
-                //         lineTouchData: LineTouchData(
-                //           enabled: true,
-                //           handleBuiltInTouches: false,
-                //           touchCallback: (FlTouchEvent event,
-                //               LineTouchResponse? response) {
-                //             if (response == null ||
-                //                 response.lineBarSpots == null) {
-                //               return;
-                //             }
-                //             if (event is FlTapUpEvent) {
-                //               final spotIndex =
-                //                   response.lineBarSpots!.first.spotIndex;
-                //               showingTooltipOnSpots.clear();
-                //               setState(() {
-                //                 showingTooltipOnSpots.add(spotIndex);
-                //               });
-                //             }
-                //           },
-                //           mouseCursorResolver: (FlTouchEvent event,
-                //               LineTouchResponse? response) {
-                //             if (response == null ||
-                //                 response.lineBarSpots == null) {
-                //               return SystemMouseCursors.basic;
-                //             }
-                //             return SystemMouseCursors.click;
-                //           },
-                //           getTouchedSpotIndicator: (LineChartBarData barData,
-                //               List<int> spotIndexes) {
-                //             return spotIndexes.map((index) {
-                //               return TouchedSpotIndicatorData(
-                //                 FlLine(
-                //                   color: Colors.transparent,
-                //                 ),
-                //                 FlDotData(
-                //                   show: true,
-                //                   getDotPainter:
-                //                       (spot, percent, barData, index) =>
-                //                       FlDotCirclePainter(
-                //                         radius: 3,
-                //                         color: Colors.white,
-                //                         strokeWidth: 3,
-                //                         strokeColor: AppColors.secondaryColor1,
-                //                       ),
-                //                 ),
-                //               );
-                //             }).toList();
-                //           },
-                //           touchTooltipData: LineTouchTooltipData(
-                //             //tooltipBgColor: AppColors.secondaryColor1,
-                //             tooltipRoundedRadius: 20,
-                //             getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
-                //               return lineBarsSpot.map((lineBarSpot) {
-                //                 return LineTooltipItem(
-                //                   "${lineBarSpot.x.toInt()} mins ago",
-                //                   const TextStyle(
-                //                     color: Colors.white,
-                //                     fontSize: 10,
-                //                     fontWeight: FontWeight.bold,
-                //                   ),
-                //                 );
-                //               }).toList();
-                //             },
-                //           ),
-                //         ),
-                //         lineBarsData: lineBarsData1,
-                //         minY: -0.5,
-                //         maxY: 110,
-                //         titlesData: FlTitlesData(
-                //             show: true,
-                //             leftTitles: AxisTitles(),
-                //             topTitles: AxisTitles(),
-                //             bottomTitles: AxisTitles(
-                //               sideTitles: bottomTitles,
-                //             ),
-                //             rightTitles: AxisTitles(
-                //               sideTitles: rightTitles,
-                //             )),
-                //         gridData: FlGridData(
-                //           show: true,
-                //           drawHorizontalLine: true,
-                //           horizontalInterval: 25,
-                //           drawVerticalLine: false,
-                //           getDrawingHorizontalLine: (value) {
-                //             return FlLine(
-                //               color: AppColors.grayColor.withOpacity(0.15),
-                //               strokeWidth: 2,
-                //             );
-                //           },
-                //         ),
-                //         borderData: FlBorderData(
-                //           show: true,
-                //           border: Border.all(
-                //             color: Colors.transparent,
-                //           ),
-                //         ),
-                //       ),
-                //     )
-                // ),
                 WorkoutProgressLineChart(),
                 SizedBox(
                   height: media.width * 0.05,
@@ -420,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    const Text(
                       "Latest Outdoor Activities",
                       style: TextStyle(
                           color: AppColors.blackColor,
@@ -429,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     TextButton(
                       onPressed: () {},
-                      child: Text(
+                      child: const Text(
                         "See More",
                         style: TextStyle(
                             color: AppColors.grayColor,

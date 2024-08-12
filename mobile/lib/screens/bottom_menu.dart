@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:mobile/screens/home/home_screen.dart';
-import 'package:mobile/screens/home_screen_old.dart';
 import 'package:mobile/screens/profile/user_profile_screen.dart';
 import 'package:mobile/utils/app_colors.dart';
 import 'package:flutter/material.dart';

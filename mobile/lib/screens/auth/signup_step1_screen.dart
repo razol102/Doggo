@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:intl/intl.dart';
-import 'signup_step2_screen.dart';
 import 'package:mobile/screens/auth/login_screen.dart';
+import 'signup_step2_screen.dart';
 import '../../common_widgets/round_button.dart';
 import '../../utils/app_colors.dart';
 import '../../common_widgets/round_textfield.dart';
+import 'package:mobile/common_widgets/date_selector.dart';
 
 class SignUpStep1Screen extends StatefulWidget {
   static String routeName = "/SignUpStep1Screen";
@@ -22,20 +22,6 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
   final TextEditingController _birthdateController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final PhoneNumber _initialPhoneNumber = PhoneNumber(isoCode: 'IL'); // Set initial phone number to +972
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != DateTime.now()) {
-      setState(() {
-        _birthdateController.text = DateFormat('yyyy-MM-dd').format(picked);
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,18 +77,7 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                               isObscureText: false,
                             ),
                             SizedBox(height: constraints.maxHeight * 0.02),
-                            GestureDetector(
-                              onTap: () => _selectDate(context),
-                              child: AbsorbPointer(
-                                child: RoundTextField(
-                                  textEditingController: _birthdateController,
-                                  hintText: "Birthdate",
-                                  icon: 'assets/icons/date_icon.png',
-                                  textInputType: TextInputType.datetime,
-                                  isObscureText: false,
-                                ),
-                              ),
-                            ),
+                            DateSelector(birthdateController: _birthdateController),
                             SizedBox(height: constraints.maxHeight * 0.02),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -143,7 +118,6 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                                   );
                                 }
                               },
-
                               backgroundColor: AppColors.whiteColor,
                               titleColor: AppColors.secondaryColor1,
                             ),

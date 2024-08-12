@@ -23,9 +23,9 @@ class _MapScreenState extends State<MapScreen> {
   final List<Marker> _markers = [];
   Marker? _searchMarker;
   final List<Map<String, dynamic>> _favoritePlaces = [
-    {'name': 'Favorite Park', 'address': 'Address of Favorite Park'},
-    {'name': 'Favorite Pension', 'address': 'Address of Favorite Pension'},
-    {'name': 'Favorite Salon', 'address': 'Address of Favorite Salon'},
+    {'name': 'Favorite Park', 'address': 'Save your favorite park'},
+    {'name': 'Favorite Pension', 'address': 'Save your Favorite Pension'},
+    {'name': 'Favorite Salon', 'address': 'Save your Favorite Salon'},
   ];
 
   @override
