@@ -1,5 +1,6 @@
 from flask import request, Blueprint
 from src.utils.helpers import *
+from src.utils.logger import logger
 
 fitness_routes = Blueprint('fitness_routes', __name__)
 
@@ -47,6 +48,8 @@ def update_data_from_collar():
     new_dog_distance = data['distance']
     battery_level = data['battery']
     today_date = date.today()
+
+    logger.debug("Values: {0}".format(data))
 
     add_fitness_query = """ INSERT INTO {0} (dog_id, fitness_date, {1}, {2})
                             VALUES (%s, %s, %s, %s); """.format(FITNESS_TABLE, DISTANCE_COLUMN, STEPS_COLUMN)
