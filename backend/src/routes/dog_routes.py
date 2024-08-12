@@ -113,3 +113,28 @@ def delete_dog():
         return jsonify({"error": str(error)}), 400
 
     return jsonify({"message": "Dog '{0}' was successfully deleted".format(dog_id)}), HTTP_200_OK
+
+
+@dog_routes.route('/api/dog/profile/home', methods=['PUT'])
+def update_dog_home_location():
+    data = request.json
+    dog_id = data.get("dog_id")
+    home_latitude = data.get("home_latitude")
+    home_longitude = data.get("home_longitude")
+    db = load_database_config()
+    update_home_loc_query = """
+                            UPDATE {0}
+                            SET home_latitude = %s, home_longitude = %s
+                            WHERE {1} = %s;
+                            """.format(DOGS_TABLE, DOG_ID_COLUMN)
+
+    try:
+        with psycopg2.connect(**db) as connection:
+            with connection.cursor() as cursor:
+                check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
+                cursor.execute(update_home_loc_query, (home_latitude, home_longitude, dog_id))
+                connection.commit()
+    except(Exception, ValueError, psycopg2.DatabaseError) as error:
+        return jsonify({"error": str(error)}), 400
+
+    return jsonify({"message": "Home location was updated!"}), HTTP_200_OK

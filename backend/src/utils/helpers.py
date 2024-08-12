@@ -40,12 +40,22 @@ def does_exist_by_date(cursor, table_to_check, column1_to_check, data1_to_check,
 def update_dog_fitness(dog_id, fitness_column, fitness_new_data):
     db = load_database_config()
     today_date = date.today()
-    add_fitness_query = """ INSERT INTO {0} (dog_id, fitness_date, {1})
-                            VALUES (%s, %s, %s); """.format(FITNESS_TABLE, fitness_column)
+
+    add_steps_query = """ INSERT INTO {0} (dog_id, fitness_date, {1})
+                            VALUES (%s, %s, %s); """.format(FITNESS_TABLE, STEPS_COLUMN)
 
     update_steps_query = """ UPDATE {0}
                              SET {1} = %s
-                             WHERE dog_id = %s AND fitness_date = %s; """.format(FITNESS_TABLE, fitness_column)
+                             WHERE dog_id = %s AND fitness_date = %s; """.format(FITNESS_TABLE, STEPS_COLUMN)
+
+    add_distance_and_calories_query = """ INSERT INTO {0} (dog_id, fitness_date, {1}, {2})
+                                      VALUES (%s, %s, %s, %s); 
+                                      """.format(FITNESS_TABLE, DISTANCE_COLUMN, CALORIES_COLUMN)
+
+    update_distance_and_calories_query = """ UPDATE {0}
+                             SET {1} = %s, {2} = %s
+                             WHERE dog_id = %s AND fitness_date = %s; 
+                             """.format(FITNESS_TABLE, DISTANCE_COLUMN, CALORIES_COLUMN)
 
     try:
         with psycopg2.connect(**db) as connection:
@@ -53,10 +63,20 @@ def update_dog_fitness(dog_id, fitness_column, fitness_new_data):
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
 
                 if does_exist_by_date(cursor, FITNESS_TABLE, DOG_ID_COLUMN, dog_id, FITNESS_DATE_COLUMN, today_date):
-                    cursor.execute(update_steps_query, (fitness_new_data, dog_id, today_date))
-                else:
-                    cursor.execute(add_fitness_query, (dog_id, today_date, fitness_new_data))
-                    connection.commit()
+                    if fitness_column == DISTANCE_COLUMN:
+                        new_calories_burned = calculate_calories(cursor, dog_id, fitness_new_data)
+                        cursor.execute(update_distance_and_calories_query, (fitness_new_data, new_calories_burned,
+                                                                            dog_id, today_date))
+                    else:
+                        cursor.execute(update_steps_query, (fitness_new_data, dog_id, today_date))
+                else: # new day
+                    if fitness_column == DISTANCE_COLUMN:
+                        new_calories_burned = calculate_calories(cursor, dog_id, fitness_new_data)
+                        cursor.execute(add_distance_and_calories_query, (dog_id, today_date,
+                                                                         fitness_new_data, new_calories_burned))
+                    else:
+                        cursor.execute(add_steps_query, (dog_id, today_date, fitness_new_data))
+                connection.commit()
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
@@ -85,3 +105,39 @@ def get_dict_for_response(cursor):
     data_from_query = cursor.fetchone()
     columns_names = [desc[0] for desc in cursor.description]
     return dict(zip(columns_names, data_from_query))
+
+
+def meters_to_kilometers(meters):
+    return meters / 1000.0
+
+
+def fix_fitness_data(current_fitness_data, new_fitness_data):
+    # Can happen if the dog stepped more than 65535 steps.
+    # The embedded needs to count from 0 again.
+    if current_fitness_data is not None and current_fitness_data >= new_fitness_data:
+        new_fitness_data = (BLE_DOG_STEPS_LIMIT - current_fitness_data) + new_fitness_data
+
+    return new_fitness_data
+
+
+def get_caloric_burn_rate(velocity):
+    if velocity < 3:
+        return 0.75  # Slow walk
+    elif 3 <= velocity <= 6:
+        return 1.0   # Moderate walk
+    else:
+        return 1.5   # Running
+
+
+def calculate_calories(cursor, dog_id, distance):
+    get_weight_query = """
+                       SELECT weight
+                       FROM {0}
+                       WHERE {1} = dog_id;    
+                       """.format(DOGS_TABLE, DOG_ID_COLUMN)
+
+    cursor.execute(get_weight_query, (dog_id, ))
+    weight = cursor.fetchone()[0]
+    # burn_rate = get_caloric_burn_rate(velocity)
+    burn_rate = 1.0 # Moderate walk (average)
+    return weight * distance * burn_rate
