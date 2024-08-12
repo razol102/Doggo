@@ -134,8 +134,37 @@ class HttpService {
 
   }
 
+  //--------------------------------------user info--------------------------------------
+  static Future<Map<String, dynamic>> getUserInfo(int userId) async {
+    final url = Uri.parse('$baseUrl/api/user/profile?user_id=$userId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  //--------------------------------------dog info--------------------------------------
+  static Future<Map<String, dynamic>> getDogInfo(int dogId) async {
+    final url = Uri.parse('$baseUrl/api/dog/profile?dog_id=$dogId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
   //--------------------------------------fitness--------------------------------------
   static Future<Map<String, dynamic>> fetchDogActivityStatus(DateTime date) async {
+    // query params: '%Y-%m-%d', dogId (int)
     // const url = '$baseUrl/';
     // final response = await http.get(Uri.parse(url));
     //
@@ -261,6 +290,21 @@ class HttpService {
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body)['collar_id'];
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<int> getBatteryLevel(String collarId) async {
+    final url = Uri.parse('$baseUrl/api/devices/battery?collar_id=$collarId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    print("status code: ${response.statusCode}");
+    if(response.statusCode == 200) {
+      return jsonDecode(response.body)['battery_level'];
     } else {
       throw Exception(jsonDecode(response.body)['error']);
     }
