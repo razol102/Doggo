@@ -1,4 +1,7 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
+import 'package:intl/intl.dart';
+import 'package:mobile/screens/all_about_us/dog_data_screen.dart';
+import 'package:mobile/screens/all_about_us/personal_data_screen.dart';
 import 'package:mobile/screens/devices/doggo_collar_screen.dart';
 import 'package:mobile/screens/welcome_screen.dart';
 import 'package:mobile/services/http_service.dart';
@@ -19,27 +22,31 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
-  bool positive = false;
+  bool NotificationsToggle = false;
+  String? _dogName;
+  String? _dogBreed;
+  String? _dogWeight;
+  String? _dogAge;
 
   List devicesArr = [
     {"image": "assets/icons/doggo_collar_icon.png", "name": "Doggo Collar", "tag": "1"},
   ];
 
   List dogCareArr = [
-    {"image": "assets/icons/nutrition_icon.png", "name": "Food & Nutrition", "tag": "3"},
-    {"image": "assets/icons/vaccination_icon.png", "name": "Medical Records", "tag": "4"},
-    {"image": "assets/icons/emergency_icon.png", "name": "Emergency Contacts", "tag": "5"},
+    {"image": "assets/icons/nutrition_icon.png", "name": "Food & Nutrition", "tag": "2"},
+    {"image": "assets/icons/vaccination_icon.png", "name": "Medical Records", "tag": "3"},
+    {"image": "assets/icons/emergency_icon.png", "name": "Emergency Contacts", "tag": "4"},
   ];
 
   List AllAboutUsArr = [
-    {"image": "assets/icons/personal_data_icon.png", "name": "Personal Data", "tag": "6"},
-    {"image": "assets/icons/dog_data_icon.png", "name": "Dog Data", "tag": "7"},
-    {"image": "assets/icons/safe_zone_icon.png", "name": "Safe Zone", "tag": "8"},
+    {"image": "assets/icons/personal_data_icon.png", "name": "Personal Data", "tag": "5"},
+    {"image": "assets/icons/dog_data_icon.png", "name": "Dog Data", "tag": "6"},
+    {"image": "assets/icons/safe_zone_icon.png", "name": "Safe Zone", "tag": "7"},
   ];
 
   List otherArr = [
-    {"image": "assets/icons/contact_us_icon.png", "name": "Contact Us", "tag": "9"},
-    {"image": "assets/icons/setting_icon.png", "name": "Settings", "tag": "10"},
+    {"image": "assets/icons/contact_us_icon.png", "name": "Contact Us", "tag": "8"},
+    {"image": "assets/icons/setting_icon.png", "name": "Settings", "tag": "9"},
   ];
 
   Future<void> _logout() async {
@@ -63,46 +70,90 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   void _handleSettingTap(String tag) {
+    print("tap: $tag");
+    print("tap: $tag");
     switch (tag) {
       case '1':
       // Navigate to Doggo Collar settings
         Navigator.pushNamed(context, DoggoCollarScreen.routeName);
         break;
-      case '3':
+      case '2':
       // Navigate to Food & Nutrition settings or related screen
         Navigator.pushNamed(context, '/food_nutrition');
         break;
-      case '4':
+      case '3':
       // Navigate to Medical Records settings or related screen
         Navigator.pushNamed(context, '/medical_records');
         break;
-      case '5':
+      case '4':
       // Navigate to Emergency Contacts settings or related screen
         Navigator.pushNamed(context, '/emergency_contacts');
         break;
-      case '6':
+      case '5':
       // Navigate to Personal Data settings or related screen
-        Navigator.pushNamed(context, '/personal_data');
+        Navigator.pushNamed(context, PersonalDataScreen.routeName);
+        break;
+      case '6':
+      // Navigate to Dog Data settings or related screen
+        Navigator.pushNamed(context, DogDataScreen.routeName);
         break;
       case '7':
-      // Navigate to Dog Data settings or related screen
-        Navigator.pushNamed(context, '/dog_data');
-        break;
-      case '8':
       // Navigate to Safe Zone settings or related screen
         Navigator.pushNamed(context, '/safe_zone');
         break;
-      case '9':
+      case '8':
       // Navigate to Contact Us screen
         Navigator.pushNamed(context, '/contact_us');
         break;
-      case '10':
+      case '9':
       // Navigate to Settings screen
         Navigator.pushNamed(context, '/settings');
         break;
       default:
         print('No action defined for tag: $tag');
     }
+  }
+
+  void _fetchDogInfo() async {
+    final dogId = await PreferencesService.getDogId();
+    if (dogId != null) {
+      final dogInfo = await HttpService.getDogInfo(dogId);
+      final dogName = dogInfo['name'];
+      final dogBreed = dogInfo['breed'];
+      final dogWeight = dogInfo['weight'].toString();
+      final dogDateOfBirth = dogInfo['date_of_birth'];
+      final dogAge = _calculateDogAge(dogDateOfBirth);
+      setState(() {
+        _dogName = dogName;
+        _dogBreed = dogBreed;
+        _dogWeight = dogWeight;
+        _dogAge = dogAge;
+      });
+    }
+  }
+
+  String? _calculateDogAge(String? dateOfBirth) {
+    if(dateOfBirth != null) {
+      final DateFormat formatter = DateFormat('EEE, dd MMM yyyy HH:mm:ss \'GMT\'');
+      final DateTime dogDateOfBirth = formatter.parse(dateOfBirth);
+      final DateTime today = DateTime.now();
+      int ageInYears = today.year - dogDateOfBirth.year;
+
+      // Adjust for cases where the birthday hasn't occurred yet this year
+      if (today.month < dogDateOfBirth.month ||
+          (today.month == dogDateOfBirth.month && today.day < dogDateOfBirth.day)) {
+        ageInYears--;
+      }
+
+      return ageInYears.toString();
+    }
+    return null;
+  }
+  
+  @override
+  void initState() {
+    super.initState();
+    _fetchDogInfo();
   }
 
   @override
@@ -159,13 +210,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   const SizedBox(
                     width: 15,
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Tommy",
-                          style: TextStyle(
+                          _dogName ?? 'Dog Name',
+                          style: const TextStyle(
                             color: AppColors.blackColor,
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -199,11 +250,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               const SizedBox(
                 height: 15,
               ),
-              const Row(
+              Row(
                 children: [
                   Expanded(
                     child: TitleSubtitleCell(
-                      title: "mixed",
+                      title: _dogBreed ?? '-',
                       subtitle: "Breed",
                       boxHeight: 70,
                       boxWidth: 0,
@@ -216,7 +267,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   ),
                   Expanded(
                     child: TitleSubtitleCell(
-                      title: "25kg",
+                      title: _dogWeight != null ? "${_dogWeight}kg": '-',
                       subtitle: "Weight",
                       boxHeight: 70,
                       boxWidth: 0,
@@ -229,7 +280,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   ),
                   Expanded(
                     child: TitleSubtitleCell(
-                      title: "13yo",
+                      title: _dogAge != null ? "${_dogAge}yo" : '-',
                       subtitle: "Age",
                       boxHeight: 70,
                       boxWidth: 0,
@@ -314,7 +365,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         return SettingRow(
                           icon: iObj["image"].toString(),
                           title: iObj["name"].toString(),
-                          onPressed: () {},
+                          onPressed: () => _handleSettingTap(iObj["tag"].toString()),
                         );
                       },
                     )
@@ -355,7 +406,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         return SettingRow(
                           icon: iObj["image"].toString(),
                           title: iObj["name"].toString(),
-                          onPressed: () {},
+                          onPressed: () => _handleSettingTap(iObj["tag"].toString()),
                         );
                       },
                     )
@@ -407,12 +458,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             ),
                           ),
                           CustomAnimatedToggleSwitch<bool>(
-                            current: positive,
+                            current: NotificationsToggle,
                             values: const [false, true],
                             indicatorSize: const Size.square(30.0),
                             animationDuration: const Duration(milliseconds: 200),
                             animationCurve: Curves.linear,
-                            onChanged: (b) => setState(() => positive = b),
+                            onChanged: (b) => setState(() => NotificationsToggle = b),
                             iconBuilder: (context, local, global) {
                               return const SizedBox();
                             },
@@ -499,7 +550,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         return SettingRow(
                           icon: iObj["image"].toString(),
                           title: iObj["name"].toString(),
-                          onPressed: () {},
+                          onPressed: () => _handleSettingTap(iObj["tag"].toString()),
                         );
                       },
                     )

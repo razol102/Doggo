@@ -1,7 +1,10 @@
+import 'package:mobile/screens/activity/activity_screen.dart';
 import 'package:mobile/screens/home/widgets/BCS_pie_chart.dart';
 import 'package:mobile/screens/home/widgets/dog_activity_status.dart';
 import 'package:mobile/screens/home/widgets/workout_progress_line_chart.dart';
 import 'package:mobile/services/ble_service.dart';
+import 'package:mobile/services/http_service.dart';
+import 'package:mobile/services/preferences_service.dart';
 import 'package:mobile/utils/app_colors.dart';
 import 'package:mobile/screens/home/widgets/workout_row.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -20,25 +23,36 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final BleService _bleService = BleService();
-  bool _isConnected = false;
+  bool _isConnectedToBle = false;
+  String? _dogName;
 
   @override
   void initState() {
     super.initState();
-    _checkConnectionStatus();
+    _initialize();
   }
 
-  void _checkConnectionStatus() async {
-    //final isConnected = false;
+  void _initialize() {
+    _checkBleConnectionStatus();
+    _fetchDogInfo();
+  }
+
+  void _checkBleConnectionStatus() async {
     final isConnected = await _bleService.isConnected;
     setState(() {
-      _isConnected = isConnected;
+      _isConnectedToBle = isConnected;
     });
   }
 
-  void _navigateToBleConnectionScreen(BuildContext context) async {
-    await Navigator.pushNamed(context, BleConnectionScreen.routeName);
-    setState(() {}); // Refresh home page to reflect updated connection status
+  void _fetchDogInfo() async {
+    final dogId = await PreferencesService.getDogId();
+    if (dogId != null) {
+      final dogInfo = await HttpService.getDogInfo(dogId);
+      final dogName = dogInfo['name'];
+      setState(() {
+        _dogName = dogName;
+      });
+    }
   }
 
   List<int> showingTooltipOnSpots = [21];
@@ -190,36 +204,35 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 IconButton(
                   icon: Icon(Icons.bluetooth,
-                  color: _isConnected ? Colors.green : Colors.red,),
+                  color: _isConnectedToBle ? Colors.green : Colors.red,),
                   color: AppColors.blackColor,
                   onPressed: () async {
-                    //Navigator.pushNamed(context, BleTestScreen.routeName);
                     await Navigator.pushNamed(context, BleConnectionScreen.routeName);
-                    _checkConnectionStatus();
+                    _checkBleConnectionStatus();
                   },
                 ),
               ],
             ),
           ),
-          title: const Row(
+          title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.home, // Replace with your desired icon
+              const Icon(
+                Icons.home, // TODO: show only if the collar connected to wifi
                 color: AppColors.blackColor,
                 size: 20,
               ),
-              SizedBox(width: 8), // Space between the icon and the title
+              SizedBox(width: 8),
               Text(
-                "Tommy",
-                style: TextStyle(
+                _dogName ?? 'Dog Name',
+                style: const TextStyle(
                   color: AppColors.blackColor,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              SizedBox(width: 8), // Space between the icon and the title
-              Icon(Icons.battery_3_bar),
+              const SizedBox(width: 8), // Space between the icon and the title
+              Icon(Icons.battery_3_bar), // TODO: change by battery level
             ],
           ),
           actions: [
@@ -270,7 +283,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontWeight: FontWeight.w700),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushNamed(context, ActivityScreen.routeName);
+                      },
                       child: const Text(
                         "See More",
                         style: TextStyle(

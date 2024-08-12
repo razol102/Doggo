@@ -5,6 +5,8 @@ import 'package:flutter/widgets.dart';
 import 'package:mobile/screens/add_new_dog/add_new_dog_screen.dart';
 import 'package:mobile/screens/add_new_dog/add_safe_zone.dart';
 import 'package:mobile/screens/add_new_dog/configure_collar_screen.dart';
+import 'package:mobile/screens/all_about_us/dog_data_screen.dart';
+import 'package:mobile/screens/all_about_us/personal_data_screen.dart';
 import 'package:mobile/screens/auth/forgot_password_screen.dart';
 import 'package:mobile/screens/auth/login_screen.dart';
 import 'package:mobile/screens/auth/signup_step1_screen.dart';
@@ -35,6 +37,10 @@ final Map<String, WidgetBuilder> routes = {
   UserProfileScreen.routeName: (context) => const UserProfileScreen(),
   //collar
   DoggoCollarScreen.routeName: (context) => const DoggoCollarScreen(),
+  //dog data
+  DogDataScreen.routeName: (context) => const DogDataScreen(),
+  //personal data
+  PersonalDataScreen.routeName: (context) => const PersonalDataScreen(),
   //home
   HomeScreen.routeName: (context) => const HomeScreen(),
   //activity

@@ -15,13 +15,17 @@ class DoggoCollarScreen extends StatefulWidget {
 
 class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
   String _collarId = 'loading...';
-  //late int _batteryLevel;
+  String _batteryLevel = 'loading...';
 
   @override
   void initState() {
     super.initState();
-    _initializeCollarId();
-    //_initializeBatteryLevel();
+    _initCollarInfo();
+  }
+
+  Future<void> _initCollarInfo() async {
+    await _initializeCollarId();
+    await _initializeBatteryLevel();
   }
 
   Future<void> _initializeCollarId() async {
@@ -45,13 +49,23 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
       });
     }
   }
-  //
-  // Future<void> _initializeBatteryLevel() async {
-  //   try {
-  //
-  //     int? batteryLevel = await HttpService.getBatteryLevel()
-  //   }
-  // }
+
+  Future<void> _initializeBatteryLevel() async {
+    try {
+      // Wait for collarId to be set before attempting to fetch the battery level
+      if (_collarId != 'loading...' && _collarId != 'Error retrieving collar ID') {
+        int? batteryLevel = await HttpService.getBatteryLevel(_collarId);
+        setState(() {
+          _batteryLevel = batteryLevel.toString();
+        });
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        _batteryLevel = 'Error retrieving collar battery level';
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +103,7 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
-                  hintText: '50%', // TODO: change to real value
+                  hintText: _batteryLevel == 'loading...' ?  "$_batteryLevel" : "$_batteryLevel%", // TODO: change to real value
                   icon: "assets/icons/battery_icon.png",
                   textInputType: TextInputType.text,
                 ),
