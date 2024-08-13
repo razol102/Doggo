@@ -65,11 +65,41 @@ class _BleConnectionScreenState extends State<BleConnectionScreen> with WidgetsB
             (int stepCount) {
           // Handle step count update if needed
         },
-        (double distance) {
+        (int distance) {
           // Handle distance update if needed
         },
+          () {
+            setState(() {
+              _statusMessage = 'Disconnected';
+              _deviceId = '';  // Reset device ID
+            });
+            _bleService.stopScan(); // Stop any ongoing scans
+            _bleService.disconnect(); // Ensure the device is properly disconnected
+            // Optionally, show a notification or alert dialog to the user
+            _showDisconnectedDialog();
+          }
       );
     }
+  }
+
+  void _showDisconnectedDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Device Disconnected'),
+          content: Text('The BLE device has been disconnected.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _disconnectFromDevice() {
@@ -85,7 +115,7 @@ class _BleConnectionScreenState extends State<BleConnectionScreen> with WidgetsB
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('BLE Test Screen'),
+        title: Text('BLE Screen'),
       ),
       body: Center(
         child: Column(

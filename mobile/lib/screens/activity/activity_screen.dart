@@ -60,37 +60,20 @@ class _ActivityScreenState extends State<ActivityScreen> {
       child: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
-            SliverAppBar(
+            const SliverAppBar(
               backgroundColor: Colors.transparent,
               centerTitle: true,
               elevation: 0,
               // pinned: true,
-              title: const Text(
-                "Workout Tracker",
+              title: Text(
+                "Dog Activities",
                 style: TextStyle(
                     color: AppColors.whiteColor,
                     fontSize: 16,
                     fontWeight: FontWeight.w700),
               ),
               actions: [
-                InkWell(
-                  onTap: () {},
-                  child: Container(
-                    margin: const EdgeInsets.all(8),
-                    height: 40,
-                    width: 40,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        color: AppColors.lightGrayColor,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Image.asset(
-                      "assets/icons/more_icon.png",
-                      width: 15,
-                      height: 15,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                )
+
               ],
             ),
             SliverAppBar(
@@ -114,14 +97,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
                         if (response == null || response.lineBarSpots == null) {
                           return;
                         }
-                        // if (event is FlTapUpEvent) {
-                        //   final spotIndex =
-                        //       response.lineBarSpots!.first.spotIndex;
-                        //   showingTooltipOnSpots.clear();
-                        //   setState(() {
-                        //     showingTooltipOnSpots.add(spotIndex);
-                        //   });
-                        // }
                       },
                       mouseCursorResolver:
                           (FlTouchEvent event, LineTouchResponse? response) {

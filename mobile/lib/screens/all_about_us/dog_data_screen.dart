@@ -101,56 +101,56 @@ class _DogDataScreenState extends State<DogDataScreen> {
                   hintText: _dogName.isEmpty ? "Loading..." : _dogName,
                   icon: "assets/icons/name_icon.png", // Update icon as needed
                   textInputType: TextInputType.text,
-                  // readOnly: true, // Set to true to make it non-editable
+                  readOnly: true,
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
                   hintText: _dogBreed.isEmpty ? "Loading..." : _dogBreed,
                   icon: "assets/icons/breed_icon.png", // Update icon as needed
                   textInputType: TextInputType.text,
-                  // readOnly: true, // Set to true to make it non-editable
+                  readOnly: true,
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
                   hintText: _dogGender.isEmpty ? "Loading..." : _dogGender,
                   icon: "assets/icons/gender_icon.png", // Update icon as needed
                   textInputType: TextInputType.text,
-                  // readOnly: true, // Set to true to make it non-editable
+                  readOnly: true,
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
                   hintText: _dogDateOfBirth.isEmpty ? "Loading..." : _dogDateOfBirth,
                   icon: "assets/icons/date_icon.png", // Update icon as needed
                   textInputType: TextInputType.text,
-                  // readOnly: true, // Set to true to make it non-editable
+                  readOnly: true,
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
                   hintText: _dogHeight.isEmpty ? "Loading..." : _dogHeight,
                   icon: "assets/icons/swap_icon.png", // Update icon as needed
                   textInputType: TextInputType.text,
-                  // readOnly: true, // Set to true to make it non-editable
+                  readOnly: true,
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
                   hintText: _dogWeight.isEmpty ? "Loading..." : _dogWeight,
                   icon: "assets/icons/weight_icon.png", // Update icon as needed
                   textInputType: TextInputType.text,
-                  // readOnly: true, // Set to true to make it non-editable
+                  readOnly: true,
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
                   hintText: _homeLatitude.isEmpty ? "Loading..." : _homeLatitude,
                   icon: "assets/icons/home_icon.png", // Update icon as needed
                   textInputType: TextInputType.text,
-                  // readOnly: true, // Set to true to make it non-editable
+                  readOnly: true,
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
                   hintText: _homeLongitude.isEmpty ? "Loading..." : _homeLongitude,
                   icon: "assets/icons/home_icon.png", // Update icon as needed
                   textInputType: TextInputType.text,
-                  // readOnly: true, // Set to true to make it non-editable
+                  readOnly: true,
                 ),
                 const SizedBox(height: 15),
 

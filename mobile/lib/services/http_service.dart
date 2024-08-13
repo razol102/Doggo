@@ -163,27 +163,31 @@ class HttpService {
   }
 
   //--------------------------------------fitness--------------------------------------
-  static Future<Map<String, dynamic>> fetchDogActivityStatus(DateTime date) async {
-    // query params: '%Y-%m-%d', dogId (int)
-    // const url = '$baseUrl/';
-    // final response = await http.get(Uri.parse(url));
-    //
-    // if (response.statusCode == 200) {
-    //   return jsonDecode(response.body);
-    // } else {
-    //   throw Exception('Failed to fetch dog activity status');
-    // }
-    print("Fetching data for $date");
-    // Fetch the current steps and total steps from your data source
-    int currentSteps = 900; // Replace with actual data fetching
-    int totalSteps = 1000; // Replace with actual data fetching
-    int calories = 1200;
-    double distance = 7;
-    return {'currentSteps': currentSteps, 'totalSteps': totalSteps, 'calories': calories, 'distance': distance};
+  static Future<Map<String, dynamic>> fetchDogActivityStatus(String formattedDate, int dogId) async {
+
+    final url = Uri.parse('$baseUrl/api/dog/fitness?dog_id=$dogId&date=$formattedDate');
+    
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to fetch dog activity status: ${response.statusCode}');
+    }
+    // print("Fetching data for $date");
+    // // Fetch the current steps and total steps from your data source
+    // int currentSteps = 900; // Replace with actual data fetching
+    // int totalSteps = 1000; // Replace with actual data fetching
+    // int calories = 1200;
+    // double distance = 7;
+    // return {'currentSteps': currentSteps, 'totalSteps': totalSteps, 'calories': calories, 'distance': distance};
   }
 
   //--------------------------------------dog friendly places--------------------------------------
   static Future<List<dynamic>> fetchMapMarkers(String category) async {
+    //TODO: send to backend by category
     final url = Uri.parse('$baseUrl/'); // TODO: change to the real url
     // final response = await http.get(Uri.parse(url));
     //
@@ -248,8 +252,8 @@ class HttpService {
     }
   }
 
-  static Future<void> sendDistanceToBackend(String dogId, double distance) async {
-    final url = Uri.parse('$baseUrl/api/dog/fitness/distance?dog_id=$dogId&distance=$distance');
+  static Future<void> sendDistanceToBackend(String dogId, int distance) async {
+    final url = Uri.parse('$baseUrl/api/dog/fitness/distance_calories?dog_id=$dogId&distance=$distance');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -267,7 +271,7 @@ class HttpService {
     final response = await http.put(
       url,
       body: jsonEncode({
-        'device_id': deviceId,
+        'collar_id': deviceId,
         'timestamp': DateTime.now().toUtc().toIso8601String(),
         'battery_level': '$batteryLevel%',
       }),

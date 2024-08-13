@@ -100,12 +100,14 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
                   hintText: _collarId.isEmpty ? "Loading..." : _collarId,
                   icon: "assets/icons/doggo_collar_icon.png",
                   textInputType: TextInputType.text,
+                  readOnly: true,
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
-                  hintText: _batteryLevel == 'loading...' ?  "$_batteryLevel" : "$_batteryLevel%", // TODO: change to real value
+                  hintText: _batteryLevel == 'loading...' ?  "$_batteryLevel" : "$_batteryLevel%",
                   icon: "assets/icons/battery_icon.png",
                   textInputType: TextInputType.text,
+                  readOnly: true,
                 ),
               ],
             ),

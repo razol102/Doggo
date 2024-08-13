@@ -13,15 +13,17 @@ class BleService {
   final FlutterReactiveBle flutterReactiveBle = FlutterReactiveBle();
   static const BATTERY_SERVICE_UUID = '0000180F-0000-1000-8000-00805f9b34fb';
   static const BATTERY_LEVEL_CHARACTERISTIC_UUID = '00002A19-0000-1000-8000-00805f9b34fb';
+
   static const STEP_SERVICE_UUID = '0000180D-0000-1000-8000-00805f9b34fb';
   static const STEP_COUNT_CHARACTERISTIC_UUID = '00002A37-0000-1000-8000-00805f9b34fb';
+
   static const DISTANCE_SERVICE_UUID = '0000181A-0000-1000-8000-00805f9b34fb';
   static const DISTANCE_CHARACTERISTIC_UUID = '00002A76-0000-1000-8000-00805f9b34fb';
 
   Timer? _timer;
   int _batteryLevel = 0;
   int _stepCount = 0;
-  double _distance = 0.0;
+  int _distance = 0;
   String _deviceId = '';
   bool isConnected = false;
 
@@ -48,34 +50,43 @@ class BleService {
     return _scanCompleter!.future;
   }
 
-  void connectToDevice(String deviceId, Function(int) onBatteryLevelRead, Function(int) onStepCountRead, Function(double) onDistanceRead) {
+  void connectToDevice(String deviceId, Function(int) onBatteryLevelRead, Function(int) onStepCountRead,
+      Function(int) onDistanceRead, Function() onDeviceDisconnected) {
     _deviceId = deviceId;
     flutterReactiveBle.connectToDevice(
       id: deviceId,
-      connectionTimeout: const Duration(seconds: 5),
+      connectionTimeout: const Duration(seconds: 30),
     ).listen((connectionState) {
       if (connectionState.connectionState == DeviceConnectionState.connected) {
         print('Connected, discovering services...');
         isConnected = true;
         flutterReactiveBle.discoverServices(deviceId).then((_) {
           print('Services discovered');
-          _onConnected(deviceId, onBatteryLevelRead, onStepCountRead, onDistanceRead);
+          _onConnected(deviceId, onBatteryLevelRead, onStepCountRead, onDistanceRead
+          );
           _startPeriodicUpdates();
         }).catchError((error) {
           print('Error discovering services: $error');
           isConnected = false;
+          onDeviceDisconnected(); // Notify disconnection
         });
       } else if (connectionState.connectionState == DeviceConnectionState.disconnected) {
         isConnected = false;
         _timer?.cancel();
+        onDeviceDisconnected(); // Notify disconnection
       }
     }, onError: (error) {
       print('Connection error: $error');
       isConnected = false;
+      onDeviceDisconnected(); // Notify disconnection
     });
   }
 
-  void _onConnected(String deviceId, Function(int) updateBatteryLevel, Function(int) updateStepCount, Function(double) updateDistance) {
+  void _onConnected(
+      String deviceId,
+      Function(int) updateBatteryLevel,
+      Function(int) updateStepCount,
+      Function(int) updateDistance) {
     print('Attempting to read characteristics...');
     final batteryCharacteristic = QualifiedCharacteristic(
       deviceId: deviceId,
@@ -96,8 +107,9 @@ class BleService {
     );
 
 
-    _readAndSendCharacteristics(batteryCharacteristic, stepCharacteristic, distanceCharacteristic
-        ,updateBatteryLevel, updateStepCount, updateDistance);
+    _readAndSendCharacteristics(
+        batteryCharacteristic, stepCharacteristic, distanceCharacteristic,
+        updateBatteryLevel, updateStepCount, updateDistance);
   }
 
   Future<void> _readAndSendCharacteristics(
@@ -106,8 +118,7 @@ class BleService {
       QualifiedCharacteristic distanceCharacteristic,
       Function(int) updateBatteryLevel,
       Function(int) updateStepCount,
-      Function(double) updateDistance,
-
+      Function(int) updateDistance,
       ) async {
 
     int? _dogId = await PreferencesService.getDogId();
@@ -116,7 +127,7 @@ class BleService {
       print('Battery value: $value');
       _batteryLevel = value[0];
       updateBatteryLevel(_batteryLevel);
-      //HttpService.sendBatteryLevelToBackend(_deviceId, _batteryLevel);
+      HttpService.sendBatteryLevelToBackend(_deviceId, _batteryLevel);
     }).catchError((error) {
       print('Error reading battery characteristic: $error');
     });
@@ -132,18 +143,18 @@ class BleService {
 
     flutterReactiveBle.readCharacteristic(distanceCharacteristic).then((value) {
       print('Distance value: $value');
-      _distance = _bytesToFloat(value);
+      _distance = _bytesToInt(value);
       updateDistance(_distance);
       print(_distance);
       HttpService.sendDistanceToBackend(_dogId!.toString(), _distance);
     }).catchError((error) {
       print('Error reading distance characteristic: $error');
     });
-  }
+      }
 
   void _startPeriodicUpdates() {
     _timer?.cancel();
-    _timer = Timer.periodic(Duration(seconds: 30), (timer) { // TODO: Change the duration if needed
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) { // TODO: Change the duration if needed
       if (_deviceId.isNotEmpty && isConnected) {
         final batteryCharacteristic = QualifiedCharacteristic(
           deviceId: _deviceId,
@@ -164,13 +175,12 @@ class BleService {
         );
 
         _readAndSendCharacteristics(batteryCharacteristic, stepCharacteristic, distanceCharacteristic,
-                (batteryLevel) { _batteryLevel = batteryLevel;},
-                (stepCount) { _stepCount = stepCount;},
-                (distance) {_distance = distance;});
-        }
-      });
+                (batteryLevel) { _batteryLevel = batteryLevel; },
+                (stepCount) { _stepCount = stepCount; },
+                (distance) { _distance = distance; });
+      }
+    });
     }
-
 
   void disconnectFromDevice() {
     if (_deviceId.isNotEmpty) {
@@ -179,6 +189,16 @@ class BleService {
       isConnected = false;
       _deviceId = '';
     }
+  }
+
+  void stopScan() {
+    flutterReactiveBle.deinitialize();
+  }
+
+  void disconnect() {
+    flutterReactiveBle.deinitialize();
+    _timer?.cancel();
+    isConnected = false;
   }
 
   void resetService() {
