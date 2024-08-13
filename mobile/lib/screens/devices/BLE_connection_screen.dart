@@ -68,6 +68,12 @@ class _BleConnectionScreenState extends State<BleConnectionScreen> with WidgetsB
         (double distance) {
           // Handle distance update if needed
         },
+        (bool wifiConnected) {
+          // Handle wifiConnection update if needed
+        },
+        (bool bleConnected) {
+          // Handle bleConnection update if needed
+        },
       );
     }
   }
@@ -85,7 +91,7 @@ class _BleConnectionScreenState extends State<BleConnectionScreen> with WidgetsB
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('BLE Test Screen'),
+        title: Text('BLE Screen'),
       ),
       body: Center(
         child: Column(

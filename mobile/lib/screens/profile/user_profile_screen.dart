@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 
 import '../../../common_widgets/round_button.dart';
 import '../../services/preferences_service.dart';
+import '../all_about_us/edit_safe_zone.dart';
 
 class UserProfileScreen extends StatefulWidget {
   static String routeName = "/UserProfileScreen";
@@ -34,11 +35,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   List dogCareArr = [
     {"image": "assets/icons/nutrition_icon.png", "name": "Food & Nutrition", "tag": "2"},
-    {"image": "assets/icons/vaccination_icon.png", "name": "Medical Records", "tag": "3"},
-    {"image": "assets/icons/emergency_icon.png", "name": "Emergency Contacts", "tag": "4"},
+    {"image": "assets/icons/vaccination_icon.png", "name": "Medical", "tag": "3"},
+    {"image": "assets/icons/pension_icon.png", "name": "Pension", "tag": "4"},
   ];
 
-  List AllAboutUsArr = [
+  List allAboutUsArr = [
     {"image": "assets/icons/personal_data_icon.png", "name": "Personal Data", "tag": "5"},
     {"image": "assets/icons/dog_data_icon.png", "name": "Dog Data", "tag": "6"},
     {"image": "assets/icons/safe_zone_icon.png", "name": "Safe Zone", "tag": "7"},
@@ -70,8 +71,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   void _handleSettingTap(String tag) {
-    print("tap: $tag");
-    print("tap: $tag");
     switch (tag) {
       case '1':
       // Navigate to Doggo Collar settings
@@ -99,7 +98,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         break;
       case '7':
       // Navigate to Safe Zone settings or related screen
-        Navigator.pushNamed(context, '/safe_zone');
+        Navigator.pushNamed(context, EditSafeZoneScreen.routeName);
         break;
       case '8':
       // Navigate to Contact Us screen
@@ -166,7 +165,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         elevation: 0,
         automaticallyImplyLeading: false,
         title: const Text(
-          "Dog Profile",
+          "Profile",
           style: TextStyle(
               color: AppColors.blackColor,
               fontSize: 16,
@@ -400,9 +399,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     ListView.builder(
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
-                      itemCount: AllAboutUsArr.length,
+                      itemCount: allAboutUsArr.length,
                       itemBuilder: (context, index) {
-                        var iObj = AllAboutUsArr[index] as Map? ?? {};
+                        var iObj = allAboutUsArr[index] as Map? ?? {};
                         return SettingRow(
                           icon: iObj["image"].toString(),
                           title: iObj["name"].toString(),

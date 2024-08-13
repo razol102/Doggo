@@ -13,8 +13,12 @@ class BleService {
   final FlutterReactiveBle flutterReactiveBle = FlutterReactiveBle();
   static const BATTERY_SERVICE_UUID = '0000180F-0000-1000-8000-00805f9b34fb';
   static const BATTERY_LEVEL_CHARACTERISTIC_UUID = '00002A19-0000-1000-8000-00805f9b34fb';
-  static const STEP_SERVICE_UUID = '0000180D-0000-1000-8000-00805f9b34fb';
+
+  static const STEP_WIFI_BLE_SERVICE_UUID = '0000180D-0000-1000-8000-00805f9b34fb';
   static const STEP_COUNT_CHARACTERISTIC_UUID = '00002A37-0000-1000-8000-00805f9b34fb';
+  static const WIFI_CONNECTION_CHARACTERISTIC_UUID = '00002A77-0000-1000-8000-00805f9b34fb';
+  static const BLE_CONNECTION_CHARACTERISTIC_UUID = '00002A78-0000-1000-8000-00805f9b34fb';
+
   static const DISTANCE_SERVICE_UUID = '0000181A-0000-1000-8000-00805f9b34fb';
   static const DISTANCE_CHARACTERISTIC_UUID = '00002A76-0000-1000-8000-00805f9b34fb';
 
@@ -24,6 +28,8 @@ class BleService {
   double _distance = 0.0;
   String _deviceId = '';
   bool isConnected = false;
+  bool isWifiConnected = false;
+  bool isBleConnected = false;
 
   Completer<void>? _scanCompleter;
 
@@ -48,7 +54,8 @@ class BleService {
     return _scanCompleter!.future;
   }
 
-  void connectToDevice(String deviceId, Function(int) onBatteryLevelRead, Function(int) onStepCountRead, Function(double) onDistanceRead) {
+  void connectToDevice(String deviceId, Function(int) onBatteryLevelRead, Function(int) onStepCountRead,
+      Function(double) onDistanceRead, Function(bool) onWifiConnectionStatusRead, Function(bool) onBleConnectionStatusRead) {
     _deviceId = deviceId;
     flutterReactiveBle.connectToDevice(
       id: deviceId,
@@ -59,7 +66,9 @@ class BleService {
         isConnected = true;
         flutterReactiveBle.discoverServices(deviceId).then((_) {
           print('Services discovered');
-          _onConnected(deviceId, onBatteryLevelRead, onStepCountRead, onDistanceRead);
+          _onConnected(deviceId, onBatteryLevelRead, onStepCountRead, onDistanceRead,
+            onWifiConnectionStatusRead, onBleConnectionStatusRead
+          );
           _startPeriodicUpdates();
         }).catchError((error) {
           print('Error discovering services: $error');
@@ -75,7 +84,8 @@ class BleService {
     });
   }
 
-  void _onConnected(String deviceId, Function(int) updateBatteryLevel, Function(int) updateStepCount, Function(double) updateDistance) {
+  void _onConnected(String deviceId, Function(int) updateBatteryLevel, Function(int) updateStepCount, Function(double) updateDistance,
+      Function(bool) updateWifiConnectionStatus, Function(bool) updateBleConnectionStatus) {
     print('Attempting to read characteristics...');
     final batteryCharacteristic = QualifiedCharacteristic(
       deviceId: deviceId,
@@ -85,7 +95,7 @@ class BleService {
 
     final stepCharacteristic = QualifiedCharacteristic(
       deviceId: deviceId,
-      serviceId: Uuid.parse(STEP_SERVICE_UUID),
+      serviceId: Uuid.parse(STEP_WIFI_BLE_SERVICE_UUID),
       characteristicId: Uuid.parse(STEP_COUNT_CHARACTERISTIC_UUID),
     );
 
@@ -95,19 +105,34 @@ class BleService {
       characteristicId: Uuid.parse(DISTANCE_CHARACTERISTIC_UUID),
     );
 
+    final wifiCharacteristic = QualifiedCharacteristic(
+      deviceId: deviceId,
+      serviceId: Uuid.parse(STEP_WIFI_BLE_SERVICE_UUID),
+      characteristicId: Uuid.parse(WIFI_CONNECTION_CHARACTERISTIC_UUID),
+    );
 
-    _readAndSendCharacteristics(batteryCharacteristic, stepCharacteristic, distanceCharacteristic
-        ,updateBatteryLevel, updateStepCount, updateDistance);
+    final bleCharacteristic = QualifiedCharacteristic(
+      deviceId: deviceId,
+      serviceId: Uuid.parse(STEP_WIFI_BLE_SERVICE_UUID),
+      characteristicId: Uuid.parse(BLE_CONNECTION_CHARACTERISTIC_UUID),
+    );
+
+    _readAndSendCharacteristics(
+        batteryCharacteristic, stepCharacteristic, distanceCharacteristic, wifiCharacteristic, bleCharacteristic,
+        updateBatteryLevel, updateStepCount, updateDistance, updateWifiConnectionStatus, updateBleConnectionStatus);
   }
 
   Future<void> _readAndSendCharacteristics(
       QualifiedCharacteristic batteryCharacteristic,
       QualifiedCharacteristic stepCharacteristic,
       QualifiedCharacteristic distanceCharacteristic,
+      QualifiedCharacteristic wifiCharacteristic,
+      QualifiedCharacteristic bleCharacteristic,
       Function(int) updateBatteryLevel,
       Function(int) updateStepCount,
       Function(double) updateDistance,
-
+      Function(bool) updateWifiConnectionStatus,
+      Function(bool) updateBleConnectionStatus,
       ) async {
 
     int? _dogId = await PreferencesService.getDogId();
@@ -116,7 +141,7 @@ class BleService {
       print('Battery value: $value');
       _batteryLevel = value[0];
       updateBatteryLevel(_batteryLevel);
-      //HttpService.sendBatteryLevelToBackend(_deviceId, _batteryLevel);
+      HttpService.sendBatteryLevelToBackend(_deviceId, _batteryLevel);
     }).catchError((error) {
       print('Error reading battery characteristic: $error');
     });
@@ -139,6 +164,24 @@ class BleService {
     }).catchError((error) {
       print('Error reading distance characteristic: $error');
     });
+
+    flutterReactiveBle.readCharacteristic(wifiCharacteristic).then((value) {
+      print('WiFi status value: $value');
+      isWifiConnected = value[0] == 1;
+      updateWifiConnectionStatus(isWifiConnected);
+      HttpService.sendWifiConnectionStatusToBackend(_deviceId, isWifiConnected);
+    }).catchError((error) {
+      print('Error reading WiFi characteristic: $error');
+    });
+
+    flutterReactiveBle.readCharacteristic(bleCharacteristic).then((value) {
+      print('BLE status value: $value');
+      isBleConnected = value[0] == 1;
+      updateBleConnectionStatus(isBleConnected);
+      HttpService.sendWifiConnectionStatusToBackend(_deviceId, isBleConnected);
+    }).catchError((error) {
+      print('Error reading BLE characteristic: $error');
+    });
   }
 
   void _startPeriodicUpdates() {
@@ -153,7 +196,7 @@ class BleService {
 
         final stepCharacteristic = QualifiedCharacteristic(
           deviceId: _deviceId,
-          serviceId: Uuid.parse(STEP_SERVICE_UUID),
+          serviceId: Uuid.parse(STEP_WIFI_BLE_SERVICE_UUID),
           characteristicId: Uuid.parse(STEP_COUNT_CHARACTERISTIC_UUID),
         );
 
@@ -163,14 +206,27 @@ class BleService {
           characteristicId: Uuid.parse(DISTANCE_CHARACTERISTIC_UUID),
         );
 
-        _readAndSendCharacteristics(batteryCharacteristic, stepCharacteristic, distanceCharacteristic,
-                (batteryLevel) { _batteryLevel = batteryLevel;},
-                (stepCount) { _stepCount = stepCount;},
-                (distance) {_distance = distance;});
-        }
-      });
-    }
+        final wifiCharacteristic = QualifiedCharacteristic(
+          deviceId: _deviceId,
+          serviceId: Uuid.parse(DISTANCE_SERVICE_UUID),
+          characteristicId: Uuid.parse(WIFI_CONNECTION_CHARACTERISTIC_UUID),
+        );
 
+        final bleCharacteristic = QualifiedCharacteristic(
+          deviceId: _deviceId,
+          serviceId: Uuid.parse(DISTANCE_SERVICE_UUID),
+          characteristicId: Uuid.parse(BLE_CONNECTION_CHARACTERISTIC_UUID),
+        );
+
+        _readAndSendCharacteristics(batteryCharacteristic, stepCharacteristic, distanceCharacteristic, wifiCharacteristic, bleCharacteristic,
+                (batteryLevel) { _batteryLevel = batteryLevel; },
+                (stepCount) { _stepCount = stepCount; },
+                (distance) { _distance = distance; },
+                (wifiStatus) { isWifiConnected = wifiStatus; },
+                (bleStatus) { isBleConnected = bleStatus; });
+      }
+    });
+    }
 
   void disconnectFromDevice() {
     if (_deviceId.isNotEmpty) {

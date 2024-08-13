@@ -11,6 +11,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../../common_widgets/round_button.dart';
+import '../bottom_menu.dart';
 import '../devices/BLE_connection_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -272,28 +273,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(
                   height: media.width * 0.05,
                 ),
-                Row(
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       "Latest Outdoor Activities",
                       style: TextStyle(
                           color: AppColors.blackColor,
                           fontSize: 16,
                           fontWeight: FontWeight.w700),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, ActivityScreen.routeName);
-                      },
-                      child: const Text(
-                        "See More",
-                        style: TextStyle(
-                            color: AppColors.grayColor,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400),
-                      ),
-                    )
                   ],
                 ),
                 ListView.builder(

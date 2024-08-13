@@ -281,6 +281,42 @@ class HttpService {
     }
   }
 
+  static Future<void> sendWifiConnectionStatusToBackend(String deviceId, bool wifiConnectionStatus) async {
+    final url = Uri.parse('$baseUrl/api/devices/wifi_connection_status');
+    final response = await http.put(
+      url,
+      body: jsonEncode({
+        'device_id': deviceId,
+        'wifi_connection_status': wifiConnectionStatus,
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      print('Wifi connection status updated successfully');
+    } else {
+      print('Failed to update wifi connection status: ${response.statusCode}');
+    }
+  }
+
+  static Future<void> sendBleConnectionStatusToBackend(String deviceId, bool bleConnectionStatus) async {
+    final url = Uri.parse('$baseUrl/api/devices/ble_connection_status');
+    final response = await http.put(
+      url,
+      body: jsonEncode({
+        'device_id': deviceId,
+        'ble_connection_status': bleConnectionStatus,
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      print('Ble connection status updated successfully');
+    } else {
+      print('Failed to update ble connection status: ${response.statusCode}');
+    }
+  }
+
   static Future<String> getCollarId(String dogId) async {
     final url = Uri.parse('$baseUrl/api/collar/get?dog_id=$dogId');
     final response = await http.get(
