@@ -61,6 +61,8 @@ def update_dog_fitness(dog_id, fitness_column, fitness_new_data):
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
+                collar_id = get_collar_id_by_dog_id(cursor, dog_id)
+                update_collar_connection(cursor, collar_id, CONNECTED_TO_MOBILE)
 
                 if does_exist_by_date(cursor, FITNESS_TABLE, DOG_ID_COLUMN, dog_id, FITNESS_DATE_COLUMN, today_date):
                     if fitness_column == DISTANCE_COLUMN:
@@ -76,6 +78,7 @@ def update_dog_fitness(dog_id, fitness_column, fitness_new_data):
                                                                          fitness_new_data, new_calories_burned))
                     else:
                         cursor.execute(add_steps_query, (dog_id, today_date, fitness_new_data))
+
                 connection.commit()
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
@@ -99,6 +102,17 @@ def get_dog_id_by_collar_id(cursor, collar_id):
         raise ValueError("There is no collar attached to this dog.")
     else:
         return dog_id[0]
+
+
+def get_collar_id_by_dog_id(cursor, dog_id):
+    get_collar_id_query = "SELECT {0} FROM {1} WHERE {2} = %s;".format(COLLAR_ID_COLUMN, COLLARS_TABLE, DOG_ID_COLUMN)
+    cursor.execute(get_collar_id_query, (dog_id,))
+    collar_id = cursor.fetchone()
+
+    if not collar_id:
+        raise ValueError("There is no collar attached to this dog.")
+    else:
+        return collar_id[0]
 
 
 def get_dict_for_response(cursor):
@@ -141,3 +155,15 @@ def calculate_calories(cursor, dog_id, distance):
     # burn_rate = get_caloric_burn_rate(velocity)
     burn_rate = 1.0 # Moderate walk (average)
     return weight * distance * burn_rate
+
+
+def update_collar_connection(cursor, collar_id, is_connected_to_mobile):
+    # If connected to mobile --> ble = True
+    # else (connected to collar) --> wifi = True
+
+    update_connection_query = """ UPDATE {0}
+                                  SET wifi_connected = %s, ble_connected = %s
+                                  WHERE collar_id = %s; """.format(COLLARS_TABLE)
+
+    check_if_exists(cursor, COLLARS_TABLE, COLLAR_ID_COLUMN, collar_id)
+    cursor.execute(update_connection_query, (not is_connected_to_mobile, is_connected_to_mobile, collar_id))
