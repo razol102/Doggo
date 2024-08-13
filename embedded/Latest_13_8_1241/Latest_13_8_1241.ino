@@ -194,7 +194,7 @@ void sendDataViaHTTP(int battery, int steps, int distance, uint32_t collarID) {
       String putData = "battery=" + String(battery) + "&steps=" + String(steps) + "&distance=" + String(distance) + "&collarID=" + String(collarID, HEX);
       
       // Send HTTP request
-      client.println("PUT /api/dogs/collar_data HTTP/1.1");
+      client.println("PUT /api/dog/collar_data HTTP/1.1");
       client.println("Host: " + String(server));
       client.println("Content-Type: application/x-www-form-urlencoded");
       client.println("Content-Length: " + String(putData.length()));

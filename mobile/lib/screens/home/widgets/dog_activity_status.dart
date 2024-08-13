@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile/common_widgets/round_button.dart';
 import 'package:mobile/utils/app_colors.dart';
 import 'package:mobile/common_widgets/title_subtitle_cell.dart';
@@ -35,17 +36,18 @@ class _DogActivityStatusState extends State<DogActivityStatus>
     _fetchActivityStatus(selectedDate);
 
     // Set up the periodic timer
-    _timer = Timer.periodic(Duration(seconds: 5), (Timer timer) {
+    _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
       _fetchActivityStatus(selectedDate);
     });
   }
 
   Future<void> _fetchActivityStatus(DateTime date) async {
-    final status = await HttpService.fetchDogActivityStatus(date);
+    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
+    final status = await HttpService.fetchDogActivityStatus(formattedDate, 15); //TODO: change to dogId by preferencesClass
     setState(() {
-      currentSteps = status['currentSteps']!;
-      totalSteps = status['totalSteps']!;
-      calories = status['calories']!;
+      currentSteps = status['steps']!;
+      totalSteps = 1000; // TODO: ask for the daily steps goal
+      calories = status['calories_burned']!;
       distance = status['distance']!;
       double newProgress = currentSteps / totalSteps;
       _animation = Tween<double>(begin: _currentProgress, end: newProgress).animate(_controller);
