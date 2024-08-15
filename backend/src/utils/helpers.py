@@ -23,7 +23,6 @@ def check_if_exists(cursor, table_to_check, column_to_check, data_to_check):
     if not does_exist(cursor, table_to_check, column_to_check, data_to_check):
         raise DataNotFoundError(table_to_check, column_to_check, data_to_check)
 
-
 def does_exist(cursor, table_to_check, column_to_check, data_to_check):
     cursor.execute("SELECT COUNT(*) FROM {0} WHERE {1} = %s".format(table_to_check, column_to_check), (data_to_check,))
     exists = cursor.fetchone()[0]

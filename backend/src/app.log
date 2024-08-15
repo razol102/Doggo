@@ -45,3 +45,87 @@
  * Running on http://192.162.3.176:5000
 2024-08-15 16:12:14,244 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
 2024-08-15 16:12:24,265 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:12:24] "GET /api/faq/answer?faq_id=12 HTTP/1.1" 200 -
+2024-08-15 16:22:41,351 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 16:22:41,352 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 16:22:47,119 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:22:47] "GET /api/faq/answer?faq_id=12 HTTP/1.1" 200 -
+2024-08-15 16:22:52,203 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:22:52] "GET /api/faq/answer?faq_id=13 HTTP/1.1" 200 -
+2024-08-15 16:41:25,983 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 16:41:25,983 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 16:42:30,816 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:42:30] "[33mGET /api/dog/nutrition?faq_id=16 HTTP/1.1[0m" 404 -
+2024-08-15 16:43:29,511 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 16:43:29,512 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 16:43:30,338 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:43:30] "[33mGET /api/dog/nutrition?dog_id=16 HTTP/1.1[0m" 404 -
+2024-08-15 16:45:00,912 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:45:00] "[33mGET /api/dog/nutrition?dog_id=16 HTTP/1.1[0m" 404 -
+2024-08-15 16:45:53,457 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 16:45:53,457 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 16:45:57,911 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:45:57] "[33mGET /api/dog/nutrition?dog_id=16 HTTP/1.1[0m" 404 -
+2024-08-15 16:46:49,561 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 16:46:49,562 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 16:46:52,241 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:46:52] "[33mGET /api/dog/nutrition?dog_id=16 HTTP/1.1[0m" 404 -
+2024-08-15 16:47:14,193 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 16:47:14,193 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 16:47:16,505 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:47:16] "[33mGET /api/dog/nutrition?dog_id=16 HTTP/1.1[0m" 404 -
+2024-08-15 16:47:50,239 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 16:47:50,239 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 16:47:54,209 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:47:54] "GET /api/dog/nutrition?dog_id=16 HTTP/1.1" 200 -
+2024-08-15 16:49:36,288 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 16:49:36,288 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 16:49:40,422 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:49:40] "[31m[1mGET /api/dog/nutrition?dog_id=16 HTTP/1.1[0m" 400 -
+2024-08-15 16:50:08,028 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 16:50:08,028 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 16:50:11,348 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:50:11] "GET /api/dog/nutrition?dog_id=16 HTTP/1.1" 200 -
+2024-08-15 17:08:29,553 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 17:08:29,553 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 17:08:35,009 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:08:35] "GET /api/dog/nutrition?dog_id=16 HTTP/1.1" 200 -
+2024-08-15 17:10:09,934 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:10:09] "POST /api/dog/nutrition?dog_id=16 HTTP/1.1" 200 -
+2024-08-15 17:10:42,054 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:10:42] "POST /api/dog/nutrition?dog_id=16 HTTP/1.1" 200 -
+2024-08-15 17:11:01,101 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:11:01] "[31m[1mPOST /api/dog/nutrition?dog_id=16 HTTP/1.1[0m" 400 -
+2024-08-15 17:11:19,158 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:11:19] "[31m[1mPOST /api/dog/nutrition?dog_id=16 HTTP/1.1[0m" 400 -
+2024-08-15 17:12:14,720 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 17:12:14,721 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 17:12:21,108 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:12:21] "POST /api/dog/nutrition?dog_id=16 HTTP/1.1" 200 -
+2024-08-15 17:12:34,624 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:12:34] "POST /api/dog/nutrition?dog_id=16 HTTP/1.1" 200 -
+2024-08-15 17:20:39,362 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 17:20:39,362 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 17:21:07,237 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:21:07] "DELETE /api/dog/nutrition?dog_id=101 HTTP/1.1" 200 -
+2024-08-15 17:21:15,320 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:21:15] "[31m[1mDELETE /api/dog/nutrition?dog_id=1015 HTTP/1.1[0m" 400 -
+2024-08-15 17:21:57,354 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:21:57] "DELETE /api/dog/nutrition?dog_id=16 HTTP/1.1" 200 -
+2024-08-15 17:23:37,867 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:23:37] "GET /api/faq/questions?faq_id=13 HTTP/1.1" 200 -
+2024-08-15 17:23:59,678 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:23:59] "GET /api/faq/answer?faq_id=13 HTTP/1.1" 200 -
+2024-08-15 17:24:08,340 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:24:08] "GET /api/faq/questions HTTP/1.1" 200 -

@@ -4,7 +4,7 @@ from src.utils.helpers import *
 dog_care_info_routes = Blueprint('dog_care_info_routes', __name__)
 
 
-@dog_care_info_routes.route('/api/dog/dog_care_info', methods=['PUT'])
+@dog_care_info_routes.route('/api/dog/care_info', methods=['PUT'])
 def add_dog_care_info():
     data = request.json
     db = load_database_config()
