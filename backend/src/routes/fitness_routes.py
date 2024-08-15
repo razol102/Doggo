@@ -8,10 +8,10 @@ fitness_routes = Blueprint('fitness_routes', __name__)
 
 
 @fitness_routes.route('/api/dog/fitness/steps', methods=['PUT'])
-def update_dog_steps():
+def add_dog_steps():
     dog_id = request.args.get('dog_id')
     new_dog_steps = request.args.get('steps')
-    json_error_res = update_dog_fitness(dog_id, STEPS_COLUMN, new_dog_steps)
+    json_error_res = add_dog_fitness(dog_id, STEPS_COLUMN, new_dog_steps)
 
     if json_error_res is not None:
         return json_error_res
@@ -20,7 +20,7 @@ def update_dog_steps():
 
 
 @fitness_routes.route('/api/dog/fitness/distance_calories', methods=['PUT'])
-def update_dog_distance_calories():
+def add_dog_distance_calories():
     dog_id = request.args.get('dog_id')
     new_dog_distance = request.args.get('distance')
 
@@ -33,7 +33,7 @@ def update_dog_distance_calories():
     # need to check if it's float
     distance_in_meters = float(new_dog_distance)
     new_dog_distance = meters_to_kilometers(distance_in_meters)
-    json_error_res = update_dog_fitness(dog_id, DISTANCE_COLUMN, new_dog_distance)
+    json_error_res = add_dog_fitness(dog_id, DISTANCE_COLUMN, new_dog_distance)
 
     if json_error_res is not None:
         return json_error_res
@@ -43,7 +43,7 @@ def update_dog_distance_calories():
 
 # Endpoint from collar
 @fitness_routes.route('/api/dog/collar_data', methods=['PUT'])
-def update_data_from_collar():
+def add_data_from_collar():
     data = request.form.to_dict()
     required_data = {"collarID", "battery", "steps", "distance"}
 
@@ -93,6 +93,8 @@ def update_data_from_collar():
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
     return jsonify({"message": "Data was updated"}), HTTP_200_OK
+
+
 
 
 @fitness_routes.route('/api/dog/fitness', methods=['GET'])

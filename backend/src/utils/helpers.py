@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 import psycopg2
 from flask import jsonify
 
@@ -37,25 +37,9 @@ def does_exist_by_date(cursor, table_to_check, column1_to_check, data1_to_check,
     return exists
 
 
-def update_dog_fitness(dog_id, fitness_column, fitness_new_data):
+def add_dog_fitness(dog_id, fitness_column, fitness_new_data):
     db = load_database_config()
     today_date = date.today()
-
-    add_steps_query = """ INSERT INTO {0} (dog_id, fitness_date, {1})
-                            VALUES (%s, %s, %s); """.format(FITNESS_TABLE, STEPS_COLUMN)
-
-    update_steps_query = """ UPDATE {0}
-                             SET {1} = %s
-                             WHERE dog_id = %s AND fitness_date = %s; """.format(FITNESS_TABLE, STEPS_COLUMN)
-
-    add_distance_and_calories_query = """ INSERT INTO {0} (dog_id, fitness_date, {1}, {2})
-                                      VALUES (%s, %s, %s, %s); 
-                                      """.format(FITNESS_TABLE, DISTANCE_COLUMN, CALORIES_COLUMN)
-
-    update_distance_and_calories_query = """ UPDATE {0}
-                             SET {1} = %s, {2} = %s
-                             WHERE dog_id = %s AND fitness_date = %s; 
-                             """.format(FITNESS_TABLE, DISTANCE_COLUMN, CALORIES_COLUMN)
 
     try:
         with psycopg2.connect(**db) as connection:
@@ -65,23 +49,75 @@ def update_dog_fitness(dog_id, fitness_column, fitness_new_data):
                 update_collar_connection(cursor, collar_id, CONNECTED_TO_MOBILE)
 
                 if does_exist_by_date(cursor, FITNESS_TABLE, DOG_ID_COLUMN, dog_id, FITNESS_DATE_COLUMN, today_date):
-                    if fitness_column == DISTANCE_COLUMN:
-                        new_calories_burned = calculate_calories(cursor, dog_id, fitness_new_data)
-                        cursor.execute(update_distance_and_calories_query, (fitness_new_data, new_calories_burned,
-                                                                            dog_id, today_date))
-                    else:
-                        cursor.execute(update_steps_query, (fitness_new_data, dog_id, today_date))
+                    update_dog_fitness(cursor, dog_id, fitness_column, fitness_new_data, today_date)
                 else: # new day
-                    if fitness_column == DISTANCE_COLUMN:
-                        new_calories_burned = calculate_calories(cursor, dog_id, fitness_new_data)
-                        cursor.execute(add_distance_and_calories_query, (dog_id, today_date,
-                                                                         fitness_new_data, new_calories_burned))
-                    else:
-                        cursor.execute(add_steps_query, (dog_id, today_date, fitness_new_data))
+                    create_dog_fitness(cursor, dog_id, fitness_column, fitness_new_data, today_date)
 
                 connection.commit()
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
+
+
+def create_dog_fitness(cursor, dog_id, fitness_column, fitness_new_data, today_date):
+    add_steps_query = f""" INSERT INTO {FITNESS_TABLE} 
+                           ({DOG_ID_COLUMN}, {FITNESS_DATE_COLUMN}, {STEPS_COLUMN})
+                           VALUES (%s, %s, %s); """
+
+    add_distance_and_calories_query = f""" INSERT INTO {FITNESS_TABLE} ({DOG_ID_COLUMN}, {FITNESS_DATE_COLUMN}, 
+                                           {DISTANCE_COLUMN}, {CALORIES_COLUMN})
+                                           VALUES (%s, %s, %s, %s); """
+    fitness_new_data = fix_data_before_create(cursor, dog_id, fitness_column, fitness_new_data)
+
+    if fitness_column == DISTANCE_COLUMN:
+        new_calories_burned = calculate_calories(cursor, dog_id, fitness_new_data)
+        cursor.execute(add_distance_and_calories_query, (dog_id, today_date,
+                                                         fitness_new_data, new_calories_burned))
+    else:
+        cursor.execute(add_steps_query, (dog_id, today_date, fitness_new_data))
+
+
+def update_dog_fitness(cursor, dog_id, fitness_column, fitness_new_data, today_date):
+    update_steps_query = f""" UPDATE {FITNESS_TABLE}
+                              SET {STEPS_COLUMN} = %s
+                              WHERE {DOG_ID_COLUMN} = %s AND {FITNESS_DATE_COLUMN} = %s; """
+
+    update_distance_and_calories_query = f""" UPDATE {FITNESS_TABLE}
+                                              SET {DISTANCE_COLUMN} = %s, {CALORIES_COLUMN} = %s
+                                              WHERE {DOG_ID_COLUMN} = %s AND {FITNESS_DATE_COLUMN} = %s; """
+
+    if fitness_column == DISTANCE_COLUMN:
+        new_calories_burned = calculate_calories(cursor, dog_id, fitness_new_data)
+        cursor.execute(update_distance_and_calories_query, (fitness_new_data, new_calories_burned,
+                                                            dog_id, today_date))
+    else:
+        cursor.execute(update_steps_query, (fitness_new_data, dog_id, today_date))
+
+
+def fix_data_before_create(cursor, dog_id, fitness_column, fitness_new_data):
+    # Get last updated fitness data (yesterday)
+    get_yesterday_fitness_query = f"""
+                            SELECT {fitness_column}
+                            FROM {FITNESS_TABLE} 
+                            WHERE {DOG_ID_COLUMN} = %s AND {FITNESS_DATE_COLUMN} = %s;
+                            """
+
+    yesterday_date = date.today() - timedelta(days=1)
+    cursor.execute(get_yesterday_fitness_query, (dog_id, yesterday_date))
+    yesterday_fitness = cursor.fetchone()[0]
+
+    if yesterday_fitness is None or yesterday_fitness <= fitness_new_data:
+        fitness_new_data -= yesterday_fitness
+
+    return fitness_new_data
+
+
+def fix_data_before_update(cursor, dog_id, fitness_column, fitness_new_data):
+    today_date = date.today()
+
+    get_last_fitness_query = f""" SELECT {fitness_column}
+                                  FROM {FITNESS_TABLE}
+                                  WHERE {DOG_ID_COLUMN} = %s AND {FITNESS_DATE_COLUMN} = %s; """
+    cursor.execute(get_last_fitness_query, (dog_id, today_date))
 
 
 def update_battery_level(cursor, collar_id, new_level):
@@ -125,15 +161,6 @@ def meters_to_kilometers(meters):
     return meters / 1000.0
 
 
-def fix_fitness_data(current_fitness_data, new_fitness_data):
-    # Can happen if the dog stepped more than 65535 steps.
-    # The embedded needs to count from 0 again.
-    if current_fitness_data is not None and current_fitness_data >= new_fitness_data:
-        new_fitness_data = (BLE_DOG_STEPS_LIMIT - current_fitness_data) + new_fitness_data
-
-    return new_fitness_data
-
-
 def get_caloric_burn_rate(velocity):
     if velocity < 3:
         return 0.75  # Slow walk
@@ -167,3 +194,13 @@ def update_collar_connection(cursor, collar_id, is_connected_to_mobile):
 
     check_if_exists(cursor, COLLARS_TABLE, COLLAR_ID_COLUMN, collar_id)
     cursor.execute(update_connection_query, (not is_connected_to_mobile, is_connected_to_mobile, collar_id))
+
+
+def check_collar_attachment(cursor, collar_id):
+    get_attachment_status_query = f"SELECT {DOG_ID_COLUMN} FROM {COLLARS_TABLE} WHERE {COLLAR_ID_COLUMN} = %s;"
+    cursor.execute(get_attachment_status_query, (collar_id,))
+    dog_id = cursor.fetchone()[0]
+    is_attached = dog_id is not None
+
+    if is_attached:
+        raise ValueError("Collar is attached to a dog already.")
