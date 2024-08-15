@@ -8,12 +8,12 @@ vaccination_routes = Blueprint('vaccination_routes', __name__)
 def get_dog_vaccination():
     dog_id = request.args.get('dog_id')
     db = load_database_config()
-    get_dog_nutrition_query = f"SELECT * FROM {VACCINATIONS_TABLE} WHERE dog_id = %s;"
+    get_dog_vaccination_query = f"SELECT * FROM {VACCINATIONS_TABLE} WHERE dog_id = %s;"
 
     try:
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
-                cursor.execute(get_dog_nutrition_query, (dog_id,))
+                cursor.execute(get_dog_vaccination_query, (dog_id,))
                 dict_response = get_dict_for_response(cursor)
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
