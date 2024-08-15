@@ -1,0 +1,47 @@
+2024-08-15 15:56:36,977 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 15:56:36,978 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 15:58:51,596 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 15:58:51] "[35m[1mGET /api/faq/questions HTTP/1.1[0m" 500 -
+2024-08-15 15:59:40,229 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 15:59:40,229 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 15:59:45,645 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 15:59:45] "GET /api/faq/questions HTTP/1.1" 200 -
+2024-08-15 16:00:17,306 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 16:00:17,307 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 16:00:21,280 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:00:21] "GET /api/faq/questions HTTP/1.1" 200 -
+2024-08-15 16:04:48,022 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 16:04:48,022 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 16:04:57,794 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:04:57] "GET /api/faq/questions HTTP/1.1" 200 -
+2024-08-15 16:08:11,995 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 16:08:11,995 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 16:10:38,328 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 16:10:38,328 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 16:10:51,819 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 16:10:51,820 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 16:11:04,778 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:11:04] "GET /api/faq/answer?faq_id=5 HTTP/1.1" 200 -
+2024-08-15 16:11:35,480 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:11:35] "GET /api/faq/answer?faq_id=12 HTTP/1.1" 200 -
+2024-08-15 16:12:14,244 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-15 16:12:14,244 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-15 16:12:24,265 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 16:12:24] "GET /api/faq/answer?faq_id=12 HTTP/1.1" 200 -

@@ -6,6 +6,7 @@ USERS_DOGS_TABLE = "users_dogs"
 COLLARS_TABLE = "collars"
 FITNESS_TABLE = "fitness"
 DOG_CARE_INFO_TABLE = "dog_care_info"
+FAQ_TABLE = "faq"
 
 # Columns
 USER_ID_COLUMN = "user_id"
