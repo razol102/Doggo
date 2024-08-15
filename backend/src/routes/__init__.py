@@ -6,6 +6,7 @@ from src.routes.dog_routes import dog_routes
 from src.routes.collar_routes import collar_routes
 from src.routes.faq_routes import faq_routes
 from src.routes.nutrition_routes import nutrition_routes
+from src.routes.vaccinations_routes import vaccinations_routes
 
 
 def init_routes(app):
@@ -17,3 +18,4 @@ def init_routes(app):
     app.register_blueprint(dog_care_info_routes)
     app.register_blueprint(faq_routes)
     app.register_blueprint(nutrition_routes)
+    app.register_blueprint(vaccinations_routes)

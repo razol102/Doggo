@@ -1,14 +1,14 @@
 from flask import Blueprint, request
 from src.utils.helpers import *
 
-nutrition_routes = Blueprint('nutrition_routes', __name__)
+vaccination_routes = Blueprint('vaccination_routes', __name__)
 
 
-@nutrition_routes.route("/api/dog/nutrition", methods=['GET'])
-def get_dog_nutrition():
+@vaccination_routes.route("/api/dog/vaccinations", methods=['GET'])
+def get_dog_vaccination():
     dog_id = request.args.get('dog_id')
     db = load_database_config()
-    get_dog_nutrition_query = f"SELECT * FROM {NUTRITION_TABLE} WHERE dog_id = %s;"
+    get_dog_nutrition_query = f"SELECT * FROM {VACCINATIONS_TABLE} WHERE dog_id = %s;"
 
     try:
         with psycopg2.connect(**db) as connection:
@@ -21,8 +21,8 @@ def get_dog_nutrition():
     return jsonify(dict_response), HTTP_200_OK
 
 
-@nutrition_routes.route("/api/dog/nutrition", methods=['POST'])
-def add_dog_nutrition():
+@vaccination_routes.route("/api/dog/vaccinations", methods=['POST'])
+def add_dog_vaccination():
     data = request.json
     db = load_database_config()
     dog_id = data.get('dog_id')
@@ -60,7 +60,7 @@ def add_dog_nutrition():
     return jsonify({"message": msg}), HTTP_201_CREATED
 
 
-@nutrition_routes.route("/api/dog/nutrition", methods=['DELETE'])
+@vaccination_routes.route("/api/dog/vaccinations", methods=['DELETE'])
 def delete_dog_nutrition():
     dog_id = request.args.get('dog_id')
     db = load_database_config()

@@ -8,6 +8,7 @@ FITNESS_TABLE = "fitness"
 DOG_CARE_INFO_TABLE = "dog_care_info"
 FAQ_TABLE = "faq"
 NUTRITION_TABLE = "nutrition"
+VACCINATIONS_TABLE = "vaccinations"
 
 # Columns
 USER_ID_COLUMN = "user_id"
