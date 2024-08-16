@@ -148,6 +148,30 @@ class HttpService {
     }
   }
 
+  static Future<void> updateUserProfile(int userId, String email, String password, String name, DateTime dateOfBirth, String phoneNumber) async {
+    final url = Uri.parse('$baseUrl/api/user/profile');
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'user_id': userId.toString(),
+        'email': email,
+        'password': password,
+        'name': name,
+        'date_of_birth': "${dateOfBirth.day.toString().padLeft(2, '0')}.${dateOfBirth.month.toString().padLeft(2, '0')}.${dateOfBirth.year}",
+        'phone_number': phoneNumber,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('User profile updated successfully');
+    } else {
+      print('Failed to update user profile: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+
+  }
+
   //--------------------------------------dog info--------------------------------------
   static Future<Map<String, dynamic>> getDogInfo(int dogId) async {
     final url = Uri.parse('$baseUrl/api/dog/profile?dog_id=$dogId');
@@ -162,11 +186,39 @@ class HttpService {
     }
   }
 
+  static Future<void> updateDogProfile(int dogId, String name, String breed, String gender, String dateOfBirth, double weight, int height, double homeLatitude, double homeLongitude) async {
+    final url = Uri.parse('$baseUrl/api/dog/profile');
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'dog_id': dogId.toString(),
+        'name': name,
+        'breed': breed,
+        'gender': gender,
+        'date_of_birth': dateOfBirth,
+        'weight': weight,
+        'height': height,
+        'image': "",
+        "home_latitude": homeLatitude,
+        "home_longitude": homeLongitude
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('Dog profile updated successfully');
+    } else {
+      print('Failed to update dog profile: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+
+  }
+
   //--------------------------------------fitness--------------------------------------
   static Future<Map<String, dynamic>> fetchDogActivityStatus(String formattedDate, int dogId) async {
 
     final url = Uri.parse('$baseUrl/api/dog/fitness?dog_id=$dogId&date=$formattedDate');
-    
+
     final response = await http.get(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -176,13 +228,6 @@ class HttpService {
     } else {
       throw Exception('Failed to fetch dog activity status: ${response.statusCode}');
     }
-    // print("Fetching data for $date");
-    // // Fetch the current steps and total steps from your data source
-    // int currentSteps = 900; // Replace with actual data fetching
-    // int totalSteps = 1000; // Replace with actual data fetching
-    // int calories = 1200;
-    // double distance = 7;
-    // return {'currentSteps': currentSteps, 'totalSteps': totalSteps, 'calories': calories, 'distance': distance};
   }
 
   //--------------------------------------dog friendly places--------------------------------------
@@ -300,7 +345,7 @@ class HttpService {
   }
 
   static Future<int> getBatteryLevel(String collarId) async {
-    final url = Uri.parse('$baseUrl/api/devices/battery?collar_id=$collarId');
+    final url = Uri.parse('$baseUrl/api/collar/battery?collar_id=$collarId');
     final response = await http.get(
       url,
       headers: {'Content-Type': 'application/json'},

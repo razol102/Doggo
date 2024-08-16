@@ -16,6 +16,7 @@ class DoggoCollarScreen extends StatefulWidget {
 class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
   String _collarId = 'loading...';
   String _batteryLevel = 'loading...';
+  // String _connectionStatus = 'loading...';
 
   @override
   void initState() {
@@ -109,6 +110,13 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
                   textInputType: TextInputType.text,
                   readOnly: true,
                 ),
+                // const SizedBox(height: 15),
+                // RoundTextField(
+                //   hintText: _connectionStatus == 'loading...' ?  "$_batteryLevel" : "$_batteryLevel%",
+                //   icon: "assets/icons/battery_icon.png",
+                //   textInputType: TextInputType.text,
+                //   readOnly: true,
+                // ),
               ],
             ),
           ),

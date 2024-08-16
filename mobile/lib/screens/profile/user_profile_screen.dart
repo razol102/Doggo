@@ -1,5 +1,6 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile/main.dart';
 import 'package:mobile/screens/all_about_us/dog_data_screen.dart';
 import 'package:mobile/screens/all_about_us/personal_data_screen.dart';
 import 'package:mobile/screens/devices/doggo_collar_screen.dart';
@@ -12,7 +13,6 @@ import 'package:flutter/material.dart';
 
 import '../../../common_widgets/round_button.dart';
 import '../../services/preferences_service.dart';
-import '../all_about_us/edit_safe_zone.dart';
 
 class UserProfileScreen extends StatefulWidget {
   static String routeName = "/UserProfileScreen";
@@ -22,7 +22,7 @@ class UserProfileScreen extends StatefulWidget {
   State<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
-class _UserProfileScreenState extends State<UserProfileScreen> {
+class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
   bool NotificationsToggle = false;
   String? _dogName;
   String? _dogBreed;
@@ -42,12 +42,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   List allAboutUsArr = [
     {"image": "assets/icons/personal_data_icon.png", "name": "Personal Data", "tag": "5"},
     {"image": "assets/icons/dog_data_icon.png", "name": "Dog Data", "tag": "6"},
-    {"image": "assets/icons/safe_zone_icon.png", "name": "Safe Zone", "tag": "7"},
   ];
 
   List otherArr = [
-    {"image": "assets/icons/contact_us_icon.png", "name": "Contact Us", "tag": "8"},
-    {"image": "assets/icons/setting_icon.png", "name": "Settings", "tag": "9"},
+    {"image": "assets/icons/contact_us_icon.png", "name": "Contact Us", "tag": "7"},
+    {"image": "assets/icons/setting_icon.png", "name": "Settings", "tag": "8"},
   ];
 
   Future<void> _logout() async {
@@ -97,14 +96,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         Navigator.pushNamed(context, DogDataScreen.routeName);
         break;
       case '7':
-      // Navigate to Safe Zone settings or related screen
-        Navigator.pushNamed(context, EditSafeZoneScreen.routeName);
-        break;
-      case '8':
       // Navigate to Contact Us screen
         Navigator.pushNamed(context, '/contact_us');
         break;
-      case '9':
+      case '8':
       // Navigate to Settings screen
         Navigator.pushNamed(context, '/settings');
         break;
@@ -148,7 +143,26 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
     return null;
   }
-  
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute);
+  }
+
+  @override
+  void didPopNext() {
+    // Called when returning to this screen
+    _fetchDogInfo();
+  }
+
+  @override
+  void dispose() {
+    // Unregister this route from the route observer
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();

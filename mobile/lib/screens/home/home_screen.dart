@@ -9,7 +9,7 @@ import 'package:mobile/utils/app_colors.dart';
 import 'package:mobile/screens/home/widgets/workout_row.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-
+import 'package:mobile/main.dart';
 import '../../common_widgets/round_button.dart';
 import '../bottom_menu.dart';
 import '../devices/BLE_connection_screen.dart';
@@ -22,7 +22,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with RouteAware {
   final BleService _bleService = BleService();
   bool _isConnectedToBle = false;
   String? _dogName;
@@ -31,6 +31,24 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _initialize();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute);
+  }
+
+  @override
+  void didPopNext() {
+    // This method is called when the user navigates back to this screen in case to take care of updating dog name
+    _fetchDogInfo();
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
   }
 
   void _initialize() {
