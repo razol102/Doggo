@@ -50,21 +50,3 @@ def get_all_dogs():
 
     return jsonify(result), HTTP_200_OK
 
-
-@other_routes.route("/api/devices/battery", methods=['GET'])
-def get_battery_level():
-    collar_id = request.args.get('collar_id')
-    db = load_database_config()
-    get_battery_level_query = "SELECT battery_level FROM {0} WHERE collar_id = %s;".format(COLLARS_TABLE)
-
-    try:
-        with psycopg2.connect(**db) as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(get_battery_level_query, (collar_id,))
-                battery_level = cursor.fetchone()
-                if not battery_level:
-                    raise ValueError("There is no collar with id '{0}'.".format(collar_id))
-    except(Exception, ValueError, psycopg2.DatabaseError) as error:
-        return jsonify({"error": str(error)}), 400
-
-    return jsonify({"battery_level": battery_level[0]}), HTTP_200_OK

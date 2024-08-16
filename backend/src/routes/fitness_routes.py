@@ -95,8 +95,6 @@ def add_data_from_collar():
     return jsonify({"message": "Data was updated"}), HTTP_200_OK
 
 
-
-
 @fitness_routes.route('/api/dog/fitness', methods=['GET'])
 def get_dog_fitness():
     dog_id = request.args.get('dog_id')

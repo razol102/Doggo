@@ -18,6 +18,9 @@ def get_dog_nutrition():
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
+    if dict_response is None:
+        return jsonify("There is no nutrition record for the chosen dog."), HTTP_200_OK
+
     return jsonify(dict_response), HTTP_200_OK
 
 

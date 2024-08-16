@@ -1,4 +1,4 @@
-from src.routes.dog_care_info_routes import dog_care_info_routes
+from src.routes.care_info_routes import dog_care_info_routes
 from src.routes.fitness_routes import fitness_routes
 from src.routes.other_routes import other_routes
 from src.routes.user_routes import user_routes

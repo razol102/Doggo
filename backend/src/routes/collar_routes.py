@@ -171,3 +171,4 @@ def disconnect_collar():
         return jsonify({"error": str(error)}), 400
 
     return jsonify({"message": f"collar {collar_id} is disconnected from dogs"}), HTTP_200_OK
+
