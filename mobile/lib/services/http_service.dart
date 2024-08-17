@@ -312,14 +312,9 @@ class HttpService {
   }
 
   static Future<void> sendBatteryLevelToBackend(String deviceId, int batteryLevel) async {
-    final url = Uri.parse('$baseUrl/api/devices/battery');
+    final url = Uri.parse('$baseUrl/api/collar/battery?collar_id=$deviceId&battery_level=$batteryLevel');
     final response = await http.put(
       url,
-      body: jsonEncode({
-        'collar_id': deviceId,
-        'timestamp': DateTime.now().toUtc().toIso8601String(),
-        'battery_level': '$batteryLevel%',
-      }),
       headers: {'Content-Type': 'application/json'},
     );
 
@@ -351,9 +346,51 @@ class HttpService {
       headers: {'Content-Type': 'application/json'},
     );
 
-    print("status code: ${response.statusCode}");
     if(response.statusCode == 200) {
       return jsonDecode(response.body)['battery_level'];
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<Map<String, dynamic>> getConnectionStatus(String collarId) async {
+    final url = Uri.parse('$baseUrl/api/collar/connectionStatus?collar_id=$collarId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if(response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  //--------------------------------------faq--------------------------------------
+  static Future<Map<String, dynamic>> getFrequentlyQuestions() async {
+    final url = Uri.parse('$baseUrl/api/faq/questions');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<String> getAnswer(String questionId) async {
+    final url = Uri.parse('$baseUrl/api/faq/answer?faq_id=$questionId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return response.body;
     } else {
       throw Exception(jsonDecode(response.body)['error']);
     }

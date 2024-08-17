@@ -16,17 +16,22 @@ class DoggoCollarScreen extends StatefulWidget {
 class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
   String _collarId = 'loading...';
   String _batteryLevel = 'loading...';
-  // String _connectionStatus = 'loading...';
+  String _connectionStatus = 'loading...';
 
   @override
   void initState() {
     super.initState();
-    _initCollarInfo();
+    _initializeCollarInfo();
   }
 
-  Future<void> _initCollarInfo() async {
+  Future<void> _initializeCollarInfo() async {
     await _initializeCollarId();
-    await _initializeBatteryLevel();
+    await _initializeCollarInfoByCollarId();
+  }
+
+  Future<void> _initializeCollarInfoByCollarId() async {
+    _initializeBatteryLevel();
+    _initializeConnectionStatus();
   }
 
   Future<void> _initializeCollarId() async {
@@ -68,6 +73,33 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
     }
   }
 
+  Future<void> _initializeConnectionStatus() async {
+    try {
+      // Wait for collarId to be set before attempting to fetch the connection status
+      if (_collarId != 'loading...' && _collarId != 'Error retrieving collar ID') {
+        final connectionStatus = await HttpService.getConnectionStatus(_collarId);
+
+        String connectionMessage;
+        if(connectionStatus['ble_connected']! as bool) {
+          connectionMessage = "connected by bluetooth";
+        } else if (connectionStatus['wifi_connected']! as bool) {
+          connectionMessage = "connected by wifi";
+        } else {
+          connectionMessage = "not connected";
+        }
+
+        setState(() {
+          _connectionStatus = connectionMessage;
+        });
+      }
+    } catch (e) {
+      print(e);
+      setState(() {
+        _connectionStatus = 'Error retrieving collar connection status';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -105,18 +137,18 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
-                  hintText: _batteryLevel == 'loading...' ?  "$_batteryLevel" : "$_batteryLevel%",
+                  hintText: _batteryLevel == 'loading...' ?  _batteryLevel : "$_batteryLevel%",
                   icon: "assets/icons/battery_icon.png",
                   textInputType: TextInputType.text,
                   readOnly: true,
                 ),
-                // const SizedBox(height: 15),
-                // RoundTextField(
-                //   hintText: _connectionStatus == 'loading...' ?  "$_batteryLevel" : "$_batteryLevel%",
-                //   icon: "assets/icons/battery_icon.png",
-                //   textInputType: TextInputType.text,
-                //   readOnly: true,
-                // ),
+                const SizedBox(height: 15),
+                RoundTextField(
+                  hintText: _connectionStatus,
+                  icon: "assets/icons/connection_status_icon.png",
+                  textInputType: TextInputType.text,
+                  readOnly: true,
+                ),
               ],
             ),
           ),

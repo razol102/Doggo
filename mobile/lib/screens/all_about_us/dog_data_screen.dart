@@ -11,16 +11,18 @@ import '../../common_widgets/round_textfield.dart';
 import '../../utils/app_colors.dart';
 
 class DogDataScreen extends StatefulWidget {
-  static String routeName = "/DogDataScreen";
+  static const String routeName = "/DogDataScreen";
 
-  const DogDataScreen({super.key});
+  final bool editMode; // Add this parameter to control the edit mode
+
+  const DogDataScreen({super.key, this.editMode = false});
 
   @override
   _DogDataScreenState createState() => _DogDataScreenState();
 }
 
 class _DogDataScreenState extends State<DogDataScreen> {
-  bool _isEditing = false;
+  late bool _isEditing;
   String _dogName = 'Loading...';
   String _dogBreed = 'Loading...';
   String _dogGender = 'Loading...';
@@ -50,12 +52,13 @@ class _DogDataScreenState extends State<DogDataScreen> {
   @override
   void initState() {
     super.initState();
+    _isEditing = widget.editMode; // Initialize _isEditing based on the editMode parameter
     _fetchDogData();
   }
 
   Future<void> _fetchDogData() async {
     try {
-      int? dogId = await PreferencesService.getDogId();
+      final int? dogId = await PreferencesService.getDogId();
       if (dogId != null) {
         final dogInfo = await HttpService.getDogInfo(dogId);
 
@@ -82,7 +85,7 @@ class _DogDataScreenState extends State<DogDataScreen> {
         });
       }
     } catch (e) {
-      print(e);
+      print('Error fetching dog data: $e');
       setState(() {
         _dogName = 'Error loading data';
         _dogBreed = 'Error loading data';
@@ -112,23 +115,28 @@ class _DogDataScreenState extends State<DogDataScreen> {
     }
 
     try {
-      int? dogId = await PreferencesService.getDogId();
+      final int? dogId = await PreferencesService.getDogId();
       if (dogId != null) {
         await HttpService.updateDogProfile(
-            dogId,
-            _nameController.text,
-            _selectedBreed!,
-            _selectedGender!,
-            DateFormat('yyyy-MM-dd').parse(_dateOfBirthController.text).toString(),
-            double.parse(_weightController.text),
-            int.parse(_heightController.text),
-            double.parse(_homeLatitude),
-            double.parse(_homeLongitude)
+          dogId,
+          _nameController.text,
+          _selectedBreed!,
+          _selectedGender!,
+          DateFormat('yyyy-MM-dd').parse(_dateOfBirthController.text).toString(),
+          double.parse(_weightController.text),
+          int.parse(_heightController.text),
+          double.parse(_homeLatitude),
+          double.parse(_homeLongitude),
         );
         await _fetchDogData();
         setState(() {
           _isEditing = false;
-          _nameError = _breedError = _genderError = _dateOfBirthError = _heightError = _weightError = null;
+          _nameError = null;
+          _breedError = null;
+          _genderError = null;
+          _dateOfBirthError = null;
+          _heightError = null;
+          _weightError = null;
         });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Dog profile updated successfully")),
@@ -158,7 +166,7 @@ class _DogDataScreenState extends State<DogDataScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var media = MediaQuery.of(context).size;
+    final media = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
@@ -211,14 +219,16 @@ class _DogDataScreenState extends State<DogDataScreen> {
                   errorText: _nameError,
                 ),
                 const SizedBox(height: 15),
-                _isEditing?
-                  BreedSelector(selectedBreed: _selectedBreed,
-                      onBreedChanged: (breed) {
+                _isEditing
+                    ? BreedSelector(
+                  selectedBreed: _selectedBreed,
+                  onBreedChanged: (breed) {
                     setState(() {
                       _selectedBreed = breed;
                     });
-                      })
-                : RoundTextField(
+                  },
+                )
+                    : RoundTextField(
                   textEditingController: _breedController,
                   hintText: _dogBreed.isEmpty ? "Loading..." : _dogBreed,
                   icon: "assets/icons/breed_icon.png",
@@ -227,14 +237,16 @@ class _DogDataScreenState extends State<DogDataScreen> {
                   errorText: _breedError,
                 ),
                 const SizedBox(height: 15),
-                _isEditing?
-                    GenderSelector(selectedGender: _selectedGender,
-                        onGenderChanged: (gender) {
-                      setState(() {
-                        _selectedGender = gender;
-                      });
-                        }) :
-                RoundTextField(
+                _isEditing
+                    ? GenderSelector(
+                  selectedGender: _selectedGender,
+                  onGenderChanged: (gender) {
+                    setState(() {
+                      _selectedGender = gender;
+                    });
+                  },
+                )
+                    : RoundTextField(
                   textEditingController: _genderController,
                   hintText: _dogGender.isEmpty ? "Loading..." : _dogGender,
                   icon: "assets/icons/gender_icon.png",
@@ -243,24 +255,15 @@ class _DogDataScreenState extends State<DogDataScreen> {
                   errorText: _genderError,
                 ),
                 const SizedBox(height: 15),
-                _isEditing ?
-                DateSelector(birthdateController: _dateOfBirthController) :
                 RoundTextField(
                   textEditingController: _dateOfBirthController,
-                  hintText: _dogDateOfBirth == null ? "Error retrieving date of birth" : DateFormat('yyyy-MM-dd').format(_dogDateOfBirth!),
-                  icon: "assets/icons/date_icon.png",
-                  textInputType: TextInputType.text,
+                  hintText: _dogDateOfBirth == null
+                      ? "Loading..."
+                      : DateFormat('yyyy-MM-dd').format(_dogDateOfBirth!),
+                  icon: "assets/icons/calendar_icon.png",
+                  textInputType: TextInputType.datetime,
                   readOnly: true,
                   errorText: _dateOfBirthError,
-                ),
-                const SizedBox(height: 15),
-                RoundTextField(
-                  textEditingController: _heightController,
-                  hintText: _dogHeight.isEmpty ? "Loading..." : _dogHeight,
-                  icon: "assets/icons/swap_icon.png",
-                  textInputType: TextInputType.number,
-                  readOnly: !_isEditing,
-                  errorText: _heightError,
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
@@ -272,22 +275,21 @@ class _DogDataScreenState extends State<DogDataScreen> {
                   errorText: _weightError,
                 ),
                 const SizedBox(height: 15),
+                RoundTextField(
+                  textEditingController: _heightController,
+                  hintText: _dogHeight.isEmpty ? "Loading..." : _dogHeight,
+                  icon: "assets/icons/swap_icon.png",
+                  textInputType: TextInputType.number,
+                  readOnly: !_isEditing,
+                  errorText: _heightError,
+                ),
+                const SizedBox(height: 15),
+
               ],
             ),
           ),
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _breedController.dispose();
-    _genderController.dispose();
-    _dateOfBirthController.dispose();
-    _weightController.dispose();
-    _heightController.dispose();
-    super.dispose();
   }
 }
