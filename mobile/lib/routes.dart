@@ -18,6 +18,7 @@ import 'package:mobile/screens/devices/BLE_connection_screen.dart';
 import 'package:mobile/screens/devices/doggo_collar_screen.dart';
 import 'package:mobile/screens/home/home_screen.dart';
 import 'package:mobile/screens/map/map_screen.dart';
+import 'package:mobile/screens/other/contact_us_screen.dart';
 import 'package:mobile/screens/other/faq_screen.dart';
 import 'package:mobile/screens/profile/profile_screen.dart';
 import 'package:mobile/screens/welcome_screen.dart';
@@ -44,6 +45,8 @@ final Map<String, WidgetBuilder> routes = {
   PersonalDataScreen.routeName: (context) => const PersonalDataScreen(),
   //faq
   FaqScreen.routeName : (context) => FaqScreen(),
+  //contact us
+  ContactUsScreen.routeName : (context) => const ContactUsScreen(),
   //home
   HomeScreen.routeName: (context) => const HomeScreen(),
   //activity

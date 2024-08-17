@@ -396,6 +396,24 @@ class HttpService {
     }
   }
 
+  //--------------------------------------dog care info--------------------------------------
+  static Future<Map<String, dynamic>?> getDogCareInfo(int dogId) async {
+    final url = Uri.parse('$baseUrl/api/dog/care_info?dog_id=$dogId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return  jsonDecode(response.body);
+    } else if (response.statusCode == 204) {
+      return null;
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+
   //--------------------------------------test--------------------------------------
   static Future<Map<String, dynamic>> getRoot() async {
     final url = Uri.parse('$baseUrl/');
