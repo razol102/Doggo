@@ -6,7 +6,6 @@ import 'package:mobile/screens/add_new_dog/add_new_dog_screen.dart';
 import 'package:mobile/screens/add_new_dog/add_safe_zone.dart';
 import 'package:mobile/screens/add_new_dog/configure_collar_screen.dart';
 import 'package:mobile/screens/all_about_us/dog_data_screen.dart';
-import 'package:mobile/screens/all_about_us/edit_safe_zone.dart';
 import 'package:mobile/screens/all_about_us/personal_data_screen.dart';
 import 'package:mobile/screens/auth/forgot_password_screen.dart';
 import 'package:mobile/screens/auth/login_screen.dart';
@@ -19,7 +18,8 @@ import 'package:mobile/screens/devices/BLE_connection_screen.dart';
 import 'package:mobile/screens/devices/doggo_collar_screen.dart';
 import 'package:mobile/screens/home/home_screen.dart';
 import 'package:mobile/screens/map/map_screen.dart';
-import 'package:mobile/screens/profile/user_profile_screen.dart';
+import 'package:mobile/screens/other/faq_screen.dart';
+import 'package:mobile/screens/profile/profile_screen.dart';
 import 'package:mobile/screens/welcome_screen.dart';
 
 final Map<String, WidgetBuilder> routes = {
@@ -42,8 +42,8 @@ final Map<String, WidgetBuilder> routes = {
   DogDataScreen.routeName: (context) => const DogDataScreen(),
   //personal data
   PersonalDataScreen.routeName: (context) => const PersonalDataScreen(),
-  //edit safe zone
-  EditSafeZoneScreen.routeName: (context) => const EditSafeZoneScreen(),
+  //faq
+  FaqScreen.routeName : (context) => FaqScreen(),
   //home
   HomeScreen.routeName: (context) => const HomeScreen(),
   //activity

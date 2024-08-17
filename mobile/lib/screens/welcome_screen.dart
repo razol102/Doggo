@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/screens/add_new_dog/add_new_dog_screen.dart';
+import 'package:mobile/screens/all_about_us/dog_data_screen.dart';
+import 'package:mobile/screens/all_about_us/personal_data_screen.dart';
 import 'package:mobile/screens/bottom_menu.dart';
 import 'package:mobile/screens/activity/activity_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -151,7 +153,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     RoundGradientButton(
                       title: "Login",
                       onPressed: () {
-                        Navigator.pushNamed(context, LoginScreen.routeName);
+//                        Navigator.pushNamed(context, LoginScreen.routeName);
+                        Navigator.pushNamed(context, PersonalDataScreen.routeName);
                       },
                     ),
                   ],

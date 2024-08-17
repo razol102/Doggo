@@ -13,6 +13,8 @@ class AppColors{
   static const lightGrayColor = Color(0xFFF7F8F8);
   static const midGrayColor = Color(0xFFADA4A5);
 
+  static const lightPrimaryColor1 =  Color(0xFFFFF4D0);
+
   static List<Color> get primaryG => [primaryColor1,primaryColor2];
   static List<Color> get secondaryG => [secondaryColor1,secondaryColor2];
   static List<Color> get darkG => [secondaryColor1, const Color(0xFFB73A00)];

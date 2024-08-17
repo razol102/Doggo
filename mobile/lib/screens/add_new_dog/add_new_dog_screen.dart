@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/common_widgets/breed_selector.dart';
+import 'package:mobile/common_widgets/gender_selector.dart';
 import 'package:mobile/screens/add_new_dog/add_safe_zone.dart';
 import '../../common_widgets/round_gradient_button.dart';
 import '../../common_widgets/round_textfield.dart';
@@ -15,26 +17,6 @@ class AddNewDogScreen extends StatefulWidget {
 }
 
 class _AddNewDogScreenState extends State<AddNewDogScreen> {
-  final List<String> dogBreeds = [
-    "Labrador Retriever",
-    "German Shepherd",
-    "Golden Retriever",
-    "Bulldog",
-    "Beagle",
-    "Poodle",
-    "Rottweiler",
-    "Yorkshire Terrier",
-    "Dachshund",
-    "Boxer",
-    "Shih Tzu",
-    "Doberman Pinscher",
-    "Siberian Husky",
-    "Great Dane",
-    "Chihuahua",
-    "Collie",
-    "Border Collie",
-    "Husky"
-  ];
 
   String? selectedBreed;
   String? selectedGender;
@@ -82,109 +64,21 @@ class _AddNewDogScreenState extends State<AddNewDogScreen> {
                   textInputType: TextInputType.text,
                 ),
                 const SizedBox(height: 15),
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.lightGrayColor,
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        alignment: Alignment.center,
-                        width: 50,
-                        height: 50,
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: Image.asset(
-                          "assets/icons/breed_icon.png",
-                          width: 20,
-                          height: 20,
-                          fit: BoxFit.contain,
-                          color: AppColors.grayColor,
-                        ),
-                      ),
-                      Expanded(
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: selectedBreed,
-                            items: dogBreeds
-                                .map((breed) => DropdownMenuItem(
-                                value: breed,
-                                child: Text(
-                                  breed,
-                                  style: const TextStyle(
-                                      color: AppColors.grayColor,
-                                      fontSize: 14),
-                                )))
-                                .toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                selectedBreed = value;
-                              });
-                            },
-                            isExpanded: true,
-                            hint: Text(
-                              selectedBreed ?? "Choose Breed",
-                              style: const TextStyle(
-                                  color: AppColors.grayColor, fontSize: 12),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                BreedSelector(
+                    selectedBreed: selectedBreed,
+                    onBreedChanged: (value) {
+                      setState(() {
+                        selectedBreed = value;
+                      });
+                    }),
                 const SizedBox(height: 15),
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.lightGrayColor,
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        alignment: Alignment.center,
-                        width: 50,
-                        height: 50,
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: Image.asset(
-                          "assets/icons/gender_icon.png",
-                          width: 20,
-                          height: 20,
-                          fit: BoxFit.contain,
-                          color: AppColors.grayColor,
-                        ),
-                      ),
-                      Expanded(
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            value: selectedGender,
-                            items: ["Male", "Female"]
-                                .map((gender) => DropdownMenuItem(
-                                value: gender,
-                                child: Text(
-                                  gender,
-                                  style: const TextStyle(
-                                      color: AppColors.grayColor,
-                                      fontSize: 14),
-                                )))
-                                .toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                selectedGender = value;
-                              });
-                            },
-                            isExpanded: true,
-                            hint: Text(
-                              selectedGender ?? "Choose Gender",
-                              style: const TextStyle(
-                                  color: AppColors.grayColor, fontSize: 12),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                    ],
-                  ),
+                GenderSelector(
+                    selectedGender: selectedGender,
+                  onGenderChanged: (value) {
+                    setState(() {
+                      selectedGender = value;
+                    });
+                  },
                 ),
                 const SizedBox(height: 15),
                 DateSelector(birthdateController: _birthdateController),
