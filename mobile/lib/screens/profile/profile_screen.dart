@@ -4,6 +4,7 @@ import 'package:mobile/main.dart';
 import 'package:mobile/screens/all_about_us/dog_data_screen.dart';
 import 'package:mobile/screens/all_about_us/personal_data_screen.dart';
 import 'package:mobile/screens/devices/doggo_collar_screen.dart';
+import 'package:mobile/screens/other/contact_us_screen.dart';
 import 'package:mobile/screens/other/faq_screen.dart';
 import 'package:mobile/screens/welcome_screen.dart';
 import 'package:mobile/services/http_service.dart';
@@ -46,8 +47,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
   ];
 
   List otherArr = [
-    {"image": "assets/icons/contact_us_icon.png", "name": "Contact Us", "tag": "7"},
-    {"image": "assets/icons/faq_icon.png", "name": "FAQ", "tag": "8"},
+    {"image": "assets/icons/faq_icon.png", "name": "FAQ", "tag": "7"},
+    {"image": "assets/icons/contact_us_icon.png", "name": "Contact Us", "tag": "8"},
+
   ];
 
   Future<void> _logout() async {
@@ -97,12 +99,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
         Navigator.pushNamed(context, DogDataScreen.routeName);
         break;
       case '7':
-      // Navigate to Contact Us screen
-        Navigator.pushNamed(context, '/contact_us');
-        break;
-      case '8':
       // Navigate to FAQ screen
         Navigator.pushNamed(context, FaqScreen.routeName);
+        break;
+      case '8':
+      // Navigate to Contact Us screen
+        Navigator.pushNamed(context, ContactUsScreen.routeName);
         break;
       default:
         print('No action defined for tag: $tag');
