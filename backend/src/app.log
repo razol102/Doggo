@@ -306,3 +306,100 @@ ValueError: invalid literal for int() with base 10: '5-'
 2024-08-17 16:16:58,052 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:16:58] "PUT /api/dog/collar_data HTTP/1.1" 200 -
 2024-08-17 16:18:57,510 - src.utils.logger - DEBUG - Values from collar: {'collarID': 'testCollar', 'battery': '22', 'steps': '6000', 'distance': '30000'}
 2024-08-17 16:19:00,274 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:19:00] "PUT /api/dog/collar_data HTTP/1.1" 200 -
+2024-08-18 00:32:08,382 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 00:32:08,382 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 00:32:13,526 - main - ERROR - Exception on /api/dog/care_info [GET]
+Traceback (most recent call last):
+  File "C:\Users\nizan\Desktop\Doggo\backend\src\utils\config.py", line 11, in load_database_config
+    'host': parser.get('postgresql', 'db_host').strip(),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\configparser.py", line 797, in get
+    d = self._unify_values(section, vars)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\configparser.py", line 1168, in _unify_values
+    raise NoSectionError(section) from None
+configparser.NoSectionError: No section: 'postgresql'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\Desktop\Doggo\backend\src\routes\care_info_routes.py", line 151, in get_dog_care_info
+    db = load_database_config()
+         ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\Desktop\Doggo\backend\src\utils\config.py", line 20, in load_database_config
+    raise RuntimeError(f"Error reading configuration file: {e}")
+RuntimeError: Error reading configuration file: No section: 'postgresql'
+2024-08-18 00:32:13,555 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 00:32:13] "[35m[1mGET /api/dog/care_info?dog_id=16 HTTP/1.1[0m" 500 -
+2024-08-18 00:32:23,225 - main - ERROR - Exception on /api/dog/vet [GET]
+Traceback (most recent call last):
+  File "C:\Users\nizan\Desktop\Doggo\backend\src\utils\config.py", line 11, in load_database_config
+    'host': parser.get('postgresql', 'db_host').strip(),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\configparser.py", line 797, in get
+    d = self._unify_values(section, vars)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\configparser.py", line 1168, in _unify_values
+    raise NoSectionError(section) from None
+configparser.NoSectionError: No section: 'postgresql'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\Desktop\Doggo\backend\src\routes\care_info_routes.py", line 76, in get_dog_vet
+    db = load_database_config()
+         ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\Desktop\Doggo\backend\src\utils\config.py", line 20, in load_database_config
+    raise RuntimeError(f"Error reading configuration file: {e}")
+RuntimeError: Error reading configuration file: No section: 'postgresql'
+2024-08-18 00:32:23,227 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 00:32:23] "[35m[1mGET /api/dog/vet?dog_id=16 HTTP/1.1[0m" 500 -
+2024-08-18 00:37:16,978 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 00:37:16,979 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 00:37:33,009 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 00:37:33] "GET /api/dog/vet?dog_id=16 HTTP/1.1" 200 -
+2024-08-18 00:38:00,146 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 00:38:00] "PUT /api/dog/vet HTTP/1.1" 200 -
+2024-08-18 00:40:13,678 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 00:40:13] "PUT /api/dog/pension HTTP/1.1" 200 -
+2024-08-18 00:40:30,548 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 00:40:30] "GET /api/dog/pension?dog_id=16 HTTP/1.1" 200 -
+2024-08-18 00:45:35,343 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 00:45:35,343 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 00:45:38,957 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 00:45:38] "[35m[1mGET /api/dog/pension?dog_id=101 HTTP/1.1[0m" 204 -
+2024-08-18 00:46:01,223 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 00:46:01] "[31m[1mPUT /api/dog/vet HTTP/1.1[0m" 400 -
+2024-08-18 00:47:42,128 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 00:47:42,128 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 00:47:48,855 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 00:47:48] "PUT /api/dog/vet HTTP/1.1" 200 -
+2024-08-18 00:48:18,137 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 00:48:18] "PUT /api/dog/pension HTTP/1.1" 200 -
+2024-08-18 00:48:23,346 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 00:48:23] "[31m[1mPUT /api/dog/pension HTTP/1.1[0m" 400 -
