@@ -129,3 +129,180 @@
 2024-08-15 17:23:37,867 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:23:37] "GET /api/faq/questions?faq_id=13 HTTP/1.1" 200 -
 2024-08-15 17:23:59,678 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:23:59] "GET /api/faq/answer?faq_id=13 HTTP/1.1" 200 -
 2024-08-15 17:24:08,340 - werkzeug - INFO - 127.0.0.1 - - [15/Aug/2024 17:24:08] "GET /api/faq/questions HTTP/1.1" 200 -
+2024-08-16 13:21:48,505 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-16 13:21:48,506 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-16 13:21:51,027 - werkzeug - INFO - 127.0.0.1 - - [16/Aug/2024 13:21:51] "GET / HTTP/1.1" 200 -
+2024-08-16 13:31:16,051 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-16 13:31:16,053 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-16 13:31:26,955 - werkzeug - INFO - 127.0.0.1 - - [16/Aug/2024 13:31:26] "GET /api/user/profile?user_id=33 HTTP/1.1" 200 -
+2024-08-16 13:32:54,146 - werkzeug - INFO - 127.0.0.1 - - [16/Aug/2024 13:32:54] "GET /api/collar/battery?collar_id=testCollar HTTP/1.1" 200 -
+2024-08-16 13:35:37,955 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-16 13:35:37,955 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-16 13:35:42,514 - werkzeug - INFO - 127.0.0.1 - - [16/Aug/2024 13:35:42] "PUT /api/dog/profile HTTP/1.1" 200 -
+2024-08-16 13:35:51,915 - werkzeug - INFO - 127.0.0.1 - - [16/Aug/2024 13:35:51] "GET /api/dog/profile?dog_id=101 HTTP/1.1" 200 -
+2024-08-16 13:40:06,567 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-16 13:40:06,567 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-16 13:40:17,087 - werkzeug - INFO - 127.0.0.1 - - [16/Aug/2024 13:40:17] "GET /api/user/profile?user_id=33 HTTP/1.1" 200 -
+2024-08-16 13:41:58,507 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-16 13:41:58,507 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-16 13:42:06,130 - werkzeug - INFO - 127.0.0.1 - - [16/Aug/2024 13:42:06] "GET /api/dog/profile?dog_id=101 HTTP/1.1" 200 -
+2024-08-16 13:44:00,319 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-16 13:44:00,320 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-16 13:44:07,785 - werkzeug - INFO - 127.0.0.1 - - [16/Aug/2024 13:44:07] "GET /api/dog/profile?dog_id=101 HTTP/1.1" 200 -
+2024-08-17 15:15:25,761 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.100.102.64:5000
+2024-08-17 15:15:25,761 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-17 15:16:32,084 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:16:32] "GET /api/dog/fitness?dog_id=101&date=2024-08-13 HTTP/1.1" 200 -
+2024-08-17 15:18:29,863 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:18:29] "[31m[1mPUT /api/dog/fitness/steps?dog_id=101&steps=21 HTTP/1.1[0m" 400 -
+2024-08-17 15:22:08,866 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.100.102.64:5000
+2024-08-17 15:22:08,866 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-17 15:22:14,665 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:22:14] "[31m[1mPUT /api/dog/fitness/steps?dog_id=101&steps=21 HTTP/1.1[0m" 400 -
+2024-08-17 15:24:00,850 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.100.102.64:5000
+2024-08-17 15:24:00,851 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-17 15:24:06,444 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:24:06] "PUT /api/dog/fitness/steps?dog_id=101&steps=21 HTTP/1.1" 200 -
+2024-08-17 15:24:45,994 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:24:45] "PUT /api/dog/fitness/steps?dog_id=101&steps=25 HTTP/1.1" 200 -
+2024-08-17 15:25:11,485 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:25:11] "PUT /api/dog/fitness/steps?dog_id=101&steps=2 HTTP/1.1" 200 -
+2024-08-17 15:26:43,125 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.100.102.64:5000
+2024-08-17 15:26:43,126 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-17 15:26:59,552 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:26:59] "PUT /api/dog/fitness/steps?dog_id=101&steps=2 HTTP/1.1" 200 -
+2024-08-17 15:27:29,219 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:27:29] "PUT /api/dog/fitness/steps?dog_id=101&steps=50 HTTP/1.1" 200 -
+2024-08-17 15:27:34,637 - main - ERROR - Exception on /api/dog/fitness/steps [PUT]
+Traceback (most recent call last):
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\site-packages\flask\app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\site-packages\flask\app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\site-packages\flask\app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\AppData\Local\Programs\Python\Python311\Lib\site-packages\flask\app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nizan\Desktop\Doggo\backend\src\routes\fitness_routes.py", line 14, in add_dog_steps
+    json_error_res = add_dog_fitness(dog_id, STEPS_COLUMN, int(new_dog_steps))
+                                                           ^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: '5-'
+2024-08-17 15:27:34,654 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:27:34] "[35m[1mPUT /api/dog/fitness/steps?dog_id=101&steps=5- HTTP/1.1[0m" 500 -
+2024-08-17 15:27:57,104 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:27:57] "PUT /api/dog/fitness/steps?dog_id=101&steps=20 HTTP/1.1" 200 -
+2024-08-17 15:29:39,902 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.100.102.64:5000
+2024-08-17 15:29:39,903 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-17 15:29:51,558 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:29:51] "PUT /api/dog/fitness/steps?dog_id=101&steps=68 HTTP/1.1" 200 -
+2024-08-17 15:30:06,777 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:30:06] "PUT /api/dog/fitness/steps?dog_id=101&steps=22 HTTP/1.1" 200 -
+2024-08-17 15:30:23,395 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:30:23] "PUT /api/dog/fitness/steps?dog_id=101&steps=22 HTTP/1.1" 200 -
+2024-08-17 15:30:51,332 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:30:51] "PUT /api/dog/fitness/distance_calories?dog_id=101&distance=22 HTTP/1.1" 200 -
+2024-08-17 15:31:17,811 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:31:17] "PUT /api/dog/fitness/distance_calories?dog_id=101&distance=35122 HTTP/1.1" 200 -
+2024-08-17 15:31:31,000 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:31:31] "PUT /api/dog/fitness/distance_calories?dog_id=101&distance=2222 HTTP/1.1" 200 -
+2024-08-17 15:31:48,840 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:31:48] "PUT /api/dog/fitness/distance_calories?dog_id=101&distance=6231 HTTP/1.1" 200 -
+2024-08-17 15:33:23,932 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:33:23] "PUT /api/dog/fitness/distance_calories?dog_id=101&distance=45200 HTTP/1.1" 200 -
+2024-08-17 15:33:49,597 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:33:49] "PUT /api/dog/fitness/distance_calories?dog_id=101&distance=1 HTTP/1.1" 200 -
+2024-08-17 15:34:55,128 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:34:55] "PUT /api/dog/fitness/distance_calories?dog_id=101&distance=1000 HTTP/1.1" 200 -
+2024-08-17 15:38:48,248 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:38:48] "PUT /api/dog/fitness/steps?dog_id=101&steps=55 HTTP/1.1" 200 -
+2024-08-17 15:40:05,656 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:40:05] "PUT /api/dog/fitness/steps?dog_id=101&steps=105 HTTP/1.1" 200 -
+2024-08-17 15:40:25,966 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 15:40:25] "PUT /api/dog/fitness/distance_calories?dog_id=101&distance=2500 HTTP/1.1" 200 -
+2024-08-17 16:00:53,812 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.100.102.64:5000
+2024-08-17 16:00:53,812 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-17 16:02:00,779 - src.utils.logger - DEBUG - Values from collar: {'collarID': 'testCollar', 'battery': '22', 'steps': '44', 'distance': '13'}
+2024-08-17 16:02:03,207 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:02:03] "[31m[1mPUT /api/dog/collar_data HTTP/1.1[0m" 400 -
+2024-08-17 16:03:05,877 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.100.102.64:5000
+2024-08-17 16:03:05,877 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-17 16:03:17,398 - src.utils.logger - DEBUG - Values from collar: {'collarID': 'testCollar', 'battery': '22', 'steps': '44', 'distance': '13'}
+2024-08-17 16:03:20,207 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:03:20] "PUT /api/dog/collar_data HTTP/1.1" 200 -
+2024-08-17 16:03:21,671 - src.utils.logger - DEBUG - Values from collar: {'collarID': 'testCollar', 'battery': '22', 'steps': '44', 'distance': '13'}
+2024-08-17 16:03:25,243 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:03:25] "[31m[1mPUT /api/dog/collar_data HTTP/1.1[0m" 400 -
+2024-08-17 16:07:38,174 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.100.102.64:5000
+2024-08-17 16:07:38,174 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-17 16:07:56,439 - src.utils.logger - DEBUG - Values from collar: {'collarID': 'testCollar', 'battery': '22', 'steps': '44', 'distance': '13'}
+2024-08-17 16:07:59,885 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:07:59] "[31m[1mPUT /api/dog/collar_data HTTP/1.1[0m" 400 -
+2024-08-17 16:08:51,876 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.100.102.64:5000
+2024-08-17 16:08:51,877 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-17 16:08:56,143 - src.utils.logger - DEBUG - Values from collar: {'collarID': 'testCollar', 'battery': '22', 'steps': '44', 'distance': '13'}
+2024-08-17 16:08:59,752 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:08:59] "[31m[1mPUT /api/dog/collar_data HTTP/1.1[0m" 400 -
+2024-08-17 16:09:20,041 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.100.102.64:5000
+2024-08-17 16:09:20,041 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-17 16:09:23,218 - src.utils.logger - DEBUG - Values from collar: {'collarID': 'testCollar', 'battery': '22', 'steps': '44', 'distance': '13'}
+2024-08-17 16:09:26,602 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:09:26] "[31m[1mPUT /api/dog/collar_data HTTP/1.1[0m" 400 -
+2024-08-17 16:09:53,757 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.100.102.64:5000
+2024-08-17 16:09:53,757 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-17 16:09:57,507 - src.utils.logger - DEBUG - Values from collar: {'collarID': 'testCollar', 'battery': '22', 'steps': '44', 'distance': '13'}
+2024-08-17 16:10:01,034 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:10:01] "[31m[1mPUT /api/dog/collar_data HTTP/1.1[0m" 400 -
+2024-08-17 16:10:28,166 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.100.102.64:5000
+2024-08-17 16:10:28,166 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-17 16:10:31,061 - src.utils.logger - DEBUG - Values from collar: {'collarID': 'testCollar', 'battery': '22', 'steps': '44', 'distance': '13'}
+2024-08-17 16:10:34,556 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:10:34] "[31m[1mPUT /api/dog/collar_data HTTP/1.1[0m" 400 -
+2024-08-17 16:13:09,606 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.100.102.64:5000
+2024-08-17 16:13:09,606 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-17 16:13:12,731 - src.utils.logger - DEBUG - Values from collar: {'collarID': 'testCollar', 'battery': '22', 'steps': '44', 'distance': '13'}
+2024-08-17 16:13:15,564 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:13:15] "PUT /api/dog/collar_data HTTP/1.1" 200 -
+2024-08-17 16:13:39,875 - src.utils.logger - DEBUG - Values from collar: {'collarID': 'testCollar', 'battery': '22', 'steps': '544', 'distance': '13221'}
+2024-08-17 16:13:43,396 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:13:43] "[31m[1mPUT /api/dog/collar_data HTTP/1.1[0m" 400 -
+2024-08-17 16:15:20,683 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.100.102.64:5000
+2024-08-17 16:15:20,683 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-17 16:15:46,187 - src.utils.logger - DEBUG - Values from collar: {'collarID': 'testCollar', 'battery': '22', 'steps': '544', 'distance': '13221'}
+2024-08-17 16:15:49,701 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:15:49] "PUT /api/dog/collar_data HTTP/1.1" 200 -
+2024-08-17 16:16:12,285 - src.utils.logger - DEBUG - Values from collar: {'collarID': 'testCollar', 'battery': '22', 'steps': '44', 'distance': '222'}
+2024-08-17 16:16:15,670 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:16:15] "PUT /api/dog/collar_data HTTP/1.1" 200 -
+2024-08-17 16:16:55,249 - src.utils.logger - DEBUG - Values from collar: {'collarID': 'testCollar', 'battery': '22', 'steps': '44', 'distance': '222'}
+2024-08-17 16:16:58,052 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:16:58] "PUT /api/dog/collar_data HTTP/1.1" 200 -
+2024-08-17 16:18:57,510 - src.utils.logger - DEBUG - Values from collar: {'collarID': 'testCollar', 'battery': '22', 'steps': '6000', 'distance': '30000'}
+2024-08-17 16:19:00,274 - werkzeug - INFO - 127.0.0.1 - - [17/Aug/2024 16:19:00] "PUT /api/dog/collar_data HTTP/1.1" 200 -

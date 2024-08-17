@@ -52,7 +52,7 @@ def get_collar_id_by_dog_id():
 def get_battery_level():
     collar_id = request.args.get('collar_id')
     db = load_database_config()
-    get_battery_level_query = "SELECT battery_level FROM {0} WHERE collar_id = %s;".format(COLLARS_TABLE)
+    get_battery_level_query = f"SELECT battery_level FROM {COLLARS_TABLE} WHERE collar_id = %s;"
 
     try:
         with psycopg2.connect(**db) as connection:
@@ -120,36 +120,6 @@ def get_collar_connection():
         return jsonify({"error": str(error)}), 400
 
     return jsonify({"ble_connected": connection[0], "wifi_connected": connection[1]}), HTTP_200_OK
-
-
-@collar_routes.route("/api/collar/change", methods=['PUT'])
-def change_collar():
-    collar_id = request.args.get('collar_id')
-    dog_id = request.args.get('dog_id')
-    db = load_database_config()
-
-    change_collar_query =   f"""UPDATE {COLLARS_TABLE}
-                                SET {DOG_ID_COLUMN} = %s
-                                WHERE {COLLAR_ID_COLUMN} = %s
-                            """
-
-    disconnect_collar_query = f"""UPDATE {COLLARS_TABLE}
-                                    SET {DOG_ID_COLUMN} = NULL
-                                    WHERE {DOG_ID_COLUMN} = %s
-                                    """
-    try:
-        with psycopg2.connect(**db) as connection:
-            with connection.cursor() as cursor:
-                check_if_exists(cursor, COLLARS_TABLE, COLLAR_ID_COLUMN, collar_id)
-                check_collar_attachment(cursor, collar_id)
-                check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
-                cursor.execute(disconnect_collar_query, (dog_id,))
-                cursor.execute(change_collar_query, (dog_id, collar_id))
-                connection.commit()
-    except(Exception, ValueError, psycopg2.DatabaseError) as error:
-        return jsonify({"error": str(error)}), 400
-
-    return jsonify({"message": f"collar {collar_id} is attached to dog {dog_id}"}), HTTP_200_OK
 
 
 @collar_routes.route("/api/collar/disconnect", methods=['PUT'])

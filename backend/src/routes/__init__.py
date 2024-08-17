@@ -1,4 +1,4 @@
-from src.routes.care_info_routes import dog_care_info_routes
+from src.routes.care_info_routes import care_info_routes
 from src.routes.fitness_routes import fitness_routes
 from src.routes.other_routes import other_routes
 from src.routes.user_routes import user_routes
@@ -15,7 +15,7 @@ def init_routes(app):
     app.register_blueprint(collar_routes)
     app.register_blueprint(other_routes)
     app.register_blueprint(fitness_routes)
-    app.register_blueprint(dog_care_info_routes)
+    app.register_blueprint(care_info_routes)
     app.register_blueprint(faq_routes)
     app.register_blueprint(nutrition_routes)
     app.register_blueprint(vaccinations_routes)

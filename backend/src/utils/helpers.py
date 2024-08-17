@@ -23,6 +23,7 @@ def check_if_exists(cursor, table_to_check, column_to_check, data_to_check):
     if not does_exist(cursor, table_to_check, column_to_check, data_to_check):
         raise DataNotFoundError(table_to_check, column_to_check, data_to_check)
 
+
 def does_exist(cursor, table_to_check, column_to_check, data_to_check):
     cursor.execute("SELECT COUNT(*) FROM {0} WHERE {1} = %s".format(table_to_check, column_to_check), (data_to_check,))
     exists = cursor.fetchone()[0]
@@ -30,9 +31,10 @@ def does_exist(cursor, table_to_check, column_to_check, data_to_check):
 
 
 def does_exist_by_date(cursor, table_to_check, column1_to_check, data1_to_check, column2_to_check, data2_to_check):
-    cursor.execute("SELECT COUNT(*) FROM {0} WHERE {1} = %s and {2} = %s"
-                   .format(table_to_check, column1_to_check, column2_to_check), (data1_to_check, data2_to_check))
+    cursor.execute(f"SELECT COUNT(*) FROM {table_to_check} WHERE {column1_to_check} = %s and {column2_to_check} = %s",
+                   (data1_to_check, data2_to_check))
     exists = cursor.fetchone()[0]
+
     return exists
 
 
@@ -65,14 +67,14 @@ def create_dog_fitness(cursor, dog_id, fitness_column, fitness_new_data, today_d
     add_distance_and_calories_query = f""" INSERT INTO {FITNESS_TABLE} ({DOG_ID_COLUMN}, {FITNESS_DATE_COLUMN}, 
                                            {DISTANCE_COLUMN}, {CALORIES_COLUMN})
                                            VALUES (%s, %s, %s, %s); """
-    fitness_new_data = fix_data_before_create(cursor, dog_id, fitness_column, fitness_new_data)
+    fitness_to_db = fix_data_before_create(cursor, dog_id, fitness_column, fitness_new_data)
 
     if fitness_column == DISTANCE_COLUMN:
-        new_calories_burned = calculate_calories(cursor, dog_id, fitness_new_data)
+        new_calories_burned = calculate_calories(cursor, dog_id, fitness_to_db)
         cursor.execute(add_distance_and_calories_query, (dog_id, today_date,
-                                                         fitness_new_data, new_calories_burned))
+                                                         fitness_to_db, new_calories_burned))
     else:
-        cursor.execute(add_steps_query, (dog_id, today_date, fitness_new_data))
+        cursor.execute(add_steps_query, (dog_id, today_date, fitness_to_db))
 
 
 def update_dog_fitness(cursor, dog_id, fitness_column, fitness_new_data, today_date):
@@ -84,30 +86,26 @@ def update_dog_fitness(cursor, dog_id, fitness_column, fitness_new_data, today_d
                                               SET {DISTANCE_COLUMN} = %s, {CALORIES_COLUMN} = %s
                                               WHERE {DOG_ID_COLUMN} = %s AND {FITNESS_DATE_COLUMN} = %s; """
 
+    fitness_to_db = fix_data_before_update(cursor, dog_id, fitness_column, fitness_new_data)
+
     if fitness_column == DISTANCE_COLUMN:
-        new_calories_burned = calculate_calories(cursor, dog_id, fitness_new_data)
-        cursor.execute(update_distance_and_calories_query, (fitness_new_data, new_calories_burned,
+        new_calories_burned = calculate_calories(cursor, dog_id, fitness_to_db)
+        cursor.execute(update_distance_and_calories_query, (fitness_to_db, new_calories_burned,
                                                             dog_id, today_date))
     else:
-        cursor.execute(update_steps_query, (fitness_new_data, dog_id, today_date))
+        cursor.execute(update_steps_query, (fitness_to_db, dog_id, today_date))
 
 
 def fix_data_before_create(cursor, dog_id, fitness_column, fitness_new_data):
     # Get last updated fitness data (yesterday)
-    get_yesterday_fitness_query = f"""
-                            SELECT {fitness_column}
-                            FROM {FITNESS_TABLE} 
-                            WHERE {DOG_ID_COLUMN} = %s AND {FITNESS_DATE_COLUMN} = %s;
-                            """
+    yesterday_fitness = float(get_fitness_from_yesterday(cursor, dog_id, fitness_column, date.today()))
 
-    yesterday_date = date.today() - timedelta(days=1)
-    cursor.execute(get_yesterday_fitness_query, (dog_id, yesterday_date))
-    yesterday_fitness = cursor.fetchone()[0]
+    if yesterday_fitness <= fitness_new_data:
+        fitness_to_db = fitness_new_data - yesterday_fitness
+    else:
+        fitness_to_db = fitness_new_data
 
-    if yesterday_fitness is None or yesterday_fitness <= fitness_new_data:
-        fitness_new_data -= yesterday_fitness
-
-    return fitness_new_data
+    return fitness_to_db
 
 
 def fix_data_before_update(cursor, dog_id, fitness_column, fitness_new_data):
@@ -116,7 +114,77 @@ def fix_data_before_update(cursor, dog_id, fitness_column, fitness_new_data):
     get_last_fitness_query = f""" SELECT {fitness_column}
                                   FROM {FITNESS_TABLE}
                                   WHERE {DOG_ID_COLUMN} = %s AND {FITNESS_DATE_COLUMN} = %s; """
+
+    get_battery_level_query = f"SELECT battery_level FROM {COLLARS_TABLE} WHERE collar_id = %s;"
+    collar_id = get_collar_id_by_dog_id(cursor, dog_id)
+    cursor.execute(get_battery_level_query, (collar_id,))
+    battery_level_result = cursor.fetchone()[0]
+
     cursor.execute(get_last_fitness_query, (dog_id, today_date))
+    last_fitness_data = cursor.fetchone()[0]
+
+    # There is fitness record of today, but the current data is still None
+    # --> We use the previous fitness data (which is from yesterday)
+    if last_fitness_data is None:
+        last_fitness_data = get_fitness_from_yesterday(cursor, dog_id, fitness_column, today_date)
+        if last_fitness_data > fitness_new_data and battery_level_result < BATTERY_THRESHOLD:  # Battery was off
+            fitness_to_db = fitness_new_data
+        elif last_fitness_data > fitness_new_data:  # Overflow because of BLE
+            fitness_to_db = fitness_new_data + BLE_DOG_FITNESS_COUNT_LIMIT - last_fitness_data
+        else:
+            fitness_to_db = fitness_new_data - last_fitness_data
+
+    # There is fitness record of today, and current data is not None
+    # --> we use the previous fitness data (which is from today)
+    else:
+        if last_fitness_data > fitness_new_data and battery_level_result < BATTERY_THRESHOLD:  # Battery was off
+            fitness_to_db = fitness_new_data + last_fitness_data
+        elif last_fitness_data > fitness_new_data:  # Overflow because of BLE
+            fitness_to_db = fitness_new_data + BLE_DOG_FITNESS_COUNT_LIMIT - last_fitness_data
+        else:
+            fitness_to_db = fitness_new_data
+
+    return fitness_to_db
+
+
+def update_data_from_collar(cursor, dog_id, new_dog_steps, new_dog_distance):
+    update_fitness_query = f"""
+        UPDATE {FITNESS_TABLE}
+        SET {DISTANCE_COLUMN} = %s, {STEPS_COLUMN} = %s, {CALORIES_COLUMN} = %s
+        WHERE {DOG_ID_COLUMN} = %s AND {FITNESS_DATE_COLUMN} = %s; """
+
+    today_date = date.today()
+    steps_to_db = fix_data_before_update(cursor, dog_id, STEPS_COLUMN, new_dog_steps)
+    distance_to_db = fix_data_before_update(cursor, dog_id, DISTANCE_COLUMN, new_dog_distance)
+    calories_to_db = calculate_calories(cursor, dog_id, distance_to_db)
+
+    cursor.execute(update_fitness_query, (distance_to_db, steps_to_db, calories_to_db, dog_id, today_date))
+
+
+def create_data_from_collar(cursor, dog_id, new_dog_steps, new_dog_distance):
+    create_fitness_query = f""" INSERT INTO {FITNESS_TABLE} ({DOG_ID_COLUMN}, {FITNESS_DATE_COLUMN}, 
+                                {DISTANCE_COLUMN}, {STEPS_COLUMN}, {CALORIES_COLUMN})
+                                VALUES (%s, %s, %s, %s, %s); """
+
+    today_date = date.today()
+    steps_to_db = fix_data_before_create(cursor, dog_id, STEPS_COLUMN, new_dog_steps)
+    distance_to_db = fix_data_before_create(cursor, dog_id, DISTANCE_COLUMN, new_dog_distance)
+    calories_to_db = calculate_calories(cursor, dog_id, distance_to_db)
+
+    cursor.execute(create_fitness_query, (dog_id, today_date, distance_to_db, steps_to_db, calories_to_db))
+
+
+def get_fitness_from_yesterday(cursor, dog_id, fitness_column, today_date):
+    get_yesterday_fitness_query = f"""
+                                SELECT {fitness_column}
+                                FROM {FITNESS_TABLE} 
+                                WHERE {DOG_ID_COLUMN} = %s AND {FITNESS_DATE_COLUMN} = %s;
+                                """
+
+    yesterday_date = today_date - timedelta(days=1)
+    cursor.execute(get_yesterday_fitness_query, (dog_id, yesterday_date))
+
+    return cursor.fetchone()[0]
 
 
 def update_battery_level(cursor, collar_id, new_level):

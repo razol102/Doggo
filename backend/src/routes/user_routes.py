@@ -99,7 +99,7 @@ def logout():
 def get_user_info():
     user_id = request.args.get('user_id')
     db = load_database_config()
-    get_details_query = "SELECT email, name, date_of_birth, phone_number FROM {0} WHERE user_id = %s;".format(
+    get_details_query = "SELECT email, password, name, date_of_birth, phone_number FROM {0} WHERE user_id = %s;".format(
         USERS_TABLE)
 
     try:
@@ -114,9 +114,10 @@ def get_user_info():
 
     user_data = {
         "email": user_details[0],
-        "name": user_details[1],
-        "date_of_birth": user_details[2],
-        "phone_number": user_details[3]
+        "password": user_details[1],
+        "name": user_details[2],
+        "date_of_birth": user_details[3],
+        "phone_number": user_details[4]
     }
 
     return jsonify(user_data), HTTP_200_OK

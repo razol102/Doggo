@@ -11,7 +11,7 @@ fitness_routes = Blueprint('fitness_routes', __name__)
 def add_dog_steps():
     dog_id = request.args.get('dog_id')
     new_dog_steps = request.args.get('steps')
-    json_error_res = add_dog_fitness(dog_id, STEPS_COLUMN, new_dog_steps)
+    json_error_res = add_dog_fitness(dog_id, STEPS_COLUMN, int(new_dog_steps))
 
     if json_error_res is not None:
         return json_error_res
@@ -50,24 +50,14 @@ def add_data_from_collar():
     today_date = date.today()
     collar_id = data['collarID']
     battery_level = data['battery']
-    new_dog_steps = data['steps']
+    new_dog_steps = int(data['steps'])
     distance = data['distance']
 
-    # need to check if it's float
+    # need to check if distance is float and steps is int
     distance_in_meters = float(distance)
     new_dog_distance = meters_to_kilometers(distance_in_meters)
 
     logger.debug("Values from collar: {0}".format(data))
-
-    add_fitness_query = """ INSERT INTO {0} (dog_id, fitness_date, {1}, {2}, {3})
-                            VALUES (%s, %s, %s, %s, %s); """.format(FITNESS_TABLE,
-                                                                    DISTANCE_COLUMN, STEPS_COLUMN, CALORIES_COLUMN)
-
-    update_fitness_query = """
-    UPDATE {0}
-    SET {1} = %s, {2} = %s, {3} = %s
-    WHERE dog_id = %s AND fitness_date = %s;
-    """.format(FITNESS_TABLE, DISTANCE_COLUMN, STEPS_COLUMN, CALORIES_COLUMN)
 
     try:
         if not required_data.issubset(data.keys()):
@@ -80,12 +70,11 @@ def add_data_from_collar():
                 dog_id = get_dog_id_by_collar_id(cursor, collar_id)
                 update_collar_connection(cursor, collar_id, not CONNECTED_TO_MOBILE)
                 update_battery_level(cursor, collar_id, battery_level)
-                calories = calculate_calories(cursor, dog_id, new_dog_distance)
 
                 if does_exist_by_date(cursor, FITNESS_TABLE, DOG_ID_COLUMN, dog_id, FITNESS_DATE_COLUMN, today_date):
-                    cursor.execute(update_fitness_query, (new_dog_distance, new_dog_steps, calories, dog_id, today_date))
+                    update_data_from_collar(cursor, dog_id, new_dog_steps, new_dog_distance)
                 else:
-                    cursor.execute(add_fitness_query, (dog_id, today_date, new_dog_distance, new_dog_steps, calories))
+                    create_data_from_collar(cursor, dog_id, new_dog_steps, new_dog_distance)
 
                 connection.commit()
 
@@ -117,7 +106,7 @@ def get_dog_fitness():
         return jsonify({"error": str(error)}), 400
 
     response = {
-        "distance": 0,
+        "distance": 0.0,
         "steps": 0,
         "calories_burned": 0
     } if not fitness_details else {

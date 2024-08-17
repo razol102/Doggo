@@ -79,7 +79,8 @@ def update_dog_info():
 
     update_details_query = """
                            UPDATE {0}
-                           SET name = %(name)s, breed = %(breed)s, date_of_birth = %(date_of_birth)s,
+                           SET name = %(name)s, breed = %(breed)s, 
+                           gender = %(gender)s, date_of_birth = %(date_of_birth)s,
                            weight = %(weight)s, height = %(height)s, image = %(image)s, 
                            home_latitude = %(home_latitude)s, home_longitude = %(home_longitude)s
                            WHERE dog_id = %(dog_id)s;
