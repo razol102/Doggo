@@ -130,7 +130,7 @@ def fix_data_before_update(cursor, dog_id, fitness_column, fitness_new_data):
         if last_fitness_data > fitness_new_data and battery_level_result < BATTERY_THRESHOLD:  # Battery was off
             fitness_to_db = fitness_new_data
         elif last_fitness_data > fitness_new_data:  # Overflow because of BLE
-            fitness_to_db = fitness_new_data + BLE_DOG_FITNESS_COUNT_LIMIT - last_fitness_data
+            fitness_to_db = fitness_new_data + COLLAR_FITNESS_COUNT_LIMIT - last_fitness_data
         else:
             fitness_to_db = fitness_new_data - last_fitness_data
 
@@ -140,7 +140,7 @@ def fix_data_before_update(cursor, dog_id, fitness_column, fitness_new_data):
         if last_fitness_data > fitness_new_data and battery_level_result < BATTERY_THRESHOLD:  # Battery was off
             fitness_to_db = fitness_new_data + last_fitness_data
         elif last_fitness_data > fitness_new_data:  # Overflow because of BLE
-            fitness_to_db = fitness_new_data + BLE_DOG_FITNESS_COUNT_LIMIT - last_fitness_data
+            fitness_to_db = fitness_new_data + COLLAR_FITNESS_COUNT_LIMIT - last_fitness_data
         else:
             fitness_to_db = fitness_new_data
 
@@ -223,6 +223,19 @@ def get_dict_for_response(cursor):
     columns_names = [desc[0] for desc in cursor.description]
     return dict(zip(columns_names, data_from_query))
 
+
+def get_dict_of_dicts_for_response(cursor):
+    rows = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
+    result_dict = {}
+
+    for row in rows:
+        vaccination_id = row[0]
+        row_dict = dict(zip(column_names, row))
+        row_dict.pop(vaccination_id, None)
+        result_dict[vaccination_id] = row_dict
+
+    return result_dict
 
 def meters_to_kilometers(meters):
     return meters / 1000.0

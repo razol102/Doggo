@@ -9,6 +9,15 @@ def add_new_dog():
     data = request.json
     required_data = {"user_id", "name", "date_of_birth", "home_latitude", "home_longitude"}
 
+    add_new_dog_query = f""" INSERT INTO {DOGS_TABLE}
+                          (name, breed, gender, date_of_birth, weight, height, home_latitude, home_longitude) 
+                          VALUES (%(name)s, %(breed)s, %(gender)s, %(date_of_birth)s, %(weight)s, 
+                          %(height)s, %(home_latitude)s, %(home_longitude)s)
+                          RETURNING dog_id; """
+
+    add_user_dog_query = f""" INSERT INTO {USERS_DOGS_TABLE} (user_id, dog_id) 
+                            VALUES (%s, %s)"""
+
     try:
         if not required_data.issubset(data.keys()):
             missing_fields = required_data - data.keys()
@@ -16,16 +25,6 @@ def add_new_dog():
 
         db = load_database_config()
         user_id = data.get("user_id")
-        add_new_dog_query = """
-                           INSERT INTO {0}
-                           (name, breed, gender, date_of_birth, weight, height, home_latitude, home_longitude) 
-                           VALUES (%(name)s, %(breed)s, %(gender)s, %(date_of_birth)s, %(weight)s, 
-                           %(height)s, %(home_latitude)s, %(home_longitude)s)
-                           RETURNING dog_id;
-                           """.format(DOGS_TABLE)
-        add_user_dog_query = """
-                             INSERT INTO {0} (user_id, dog_id) 
-                             VALUES (%s, %s)""".format(USERS_DOGS_TABLE)
 
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:

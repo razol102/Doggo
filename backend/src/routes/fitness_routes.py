@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from flask import request, Blueprint
 from src.utils.helpers import *
 from src.utils.logger import logger
@@ -118,3 +117,26 @@ def get_dog_fitness():
     return jsonify(response), HTTP_200_OK
 
 
+@fitness_routes.route('/api/dog/bcs', methods=['GET'])
+def get_dog_bcs():
+    dog_id = request.args.get('dog_id')
+    db = load_database_config()
+
+    get_weight_and_height_query =   f"""
+                                    SELECT weight, height 
+                                    FROM {DOGS_TABLE} 
+                                    WHERE dog_id = %s;
+                                    """
+
+    try:
+        with psycopg2.connect(**db) as connection:
+            with connection.cursor() as cursor:
+                check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
+                cursor.execute(get_weight_and_height_query, (dog_id,))
+                weight, height = cursor.fetchone()
+    except(Exception, ValueError, psycopg2.DatabaseError) as error:
+        return jsonify({"error": str(error)}), 400
+
+    bcs = weight * height
+
+    return jsonify(bcs), HTTP_200_OK

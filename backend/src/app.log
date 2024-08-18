@@ -403,3 +403,140 @@ RuntimeError: Error reading configuration file: No section: 'postgresql'
 2024-08-18 00:47:48,855 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 00:47:48] "PUT /api/dog/vet HTTP/1.1" 200 -
 2024-08-18 00:48:18,137 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 00:48:18] "PUT /api/dog/pension HTTP/1.1" 200 -
 2024-08-18 00:48:23,346 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 00:48:23] "[31m[1mPUT /api/dog/pension HTTP/1.1[0m" 400 -
+2024-08-18 10:31:38,662 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 10:31:38,665 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 10:31:45,375 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 10:31:45] "GET /api/dog/bcs?dog_id=101 HTTP/1.1" 200 -
+2024-08-18 10:33:52,513 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 10:33:52,513 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 10:33:57,167 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 10:33:57] "GET /api/dog/bcs?dog_id=101 HTTP/1.1" 200 -
+2024-08-18 10:34:32,540 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 10:34:32,541 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 10:34:36,186 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 10:34:36] "GET /api/dog/bcs?dog_id=101 HTTP/1.1" 200 -
+2024-08-18 10:57:08,272 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 10:57:08,272 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 10:57:13,413 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 10:57:13] "GET /api/dog/bcs?dog_id=101 HTTP/1.1" 200 -
+2024-08-18 10:57:44,183 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 10:57:44] "[31m[1mGET /api/dog/vaccinations?dog_id=1 HTTP/1.1[0m" 400 -
+2024-08-18 10:57:49,566 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 10:57:49] "GET /api/dog/vaccinations?dog_id=101 HTTP/1.1" 200 -
+2024-08-18 10:58:43,688 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 10:58:43,688 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 10:58:47,937 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 10:58:47] "GET /api/dog/vaccinations?dog_id=101 HTTP/1.1" 200 -
+2024-08-18 10:59:01,153 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 10:59:01,153 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 10:59:05,851 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 10:59:05] "[35m[1mGET /api/dog/vaccinations?dog_id=101 HTTP/1.1[0m" 204 -
+2024-08-18 10:59:16,602 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 10:59:16] "GET /api/dog/vaccinations?dog_id=16 HTTP/1.1" 200 -
+2024-08-18 10:59:28,443 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 10:59:28,443 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 10:59:32,399 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 10:59:32] "GET /api/dog/vaccinations?dog_id=16 HTTP/1.1" 200 -
+2024-08-18 11:00:12,466 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 11:00:12,467 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 11:00:17,173 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 11:00:17] "GET /api/dog/vaccinations?dog_id=16 HTTP/1.1" 200 -
+2024-08-18 11:00:45,706 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 11:00:45,706 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 11:00:48,969 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 11:00:48] "GET /api/dog/vaccinations?dog_id=16 HTTP/1.1" 200 -
+2024-08-18 11:06:04,470 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 11:06:04] "GET /api/user/all HTTP/1.1" 200 -
+2024-08-18 14:34:36,190 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 14:34:36,190 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 14:34:44,552 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:34:44] "[31m[1mGET /api/dog/vaccinations?dog_id=16 HTTP/1.1[0m" 400 -
+2024-08-18 14:35:26,637 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:35:26] "GET /api/faq/questions HTTP/1.1" 200 -
+2024-08-18 14:46:35,515 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 14:46:35,515 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 14:47:25,033 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:47:25] "GET /api/dog/vaccinations?dog_id=16 HTTP/1.1" 200 -
+2024-08-18 14:49:02,217 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 14:49:02,217 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 14:49:05,919 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:49:05] "[31m[1mGET /api/dog/vaccinations?dog_id=16 HTTP/1.1[0m" 400 -
+2024-08-18 14:49:22,757 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:49:22] "[31m[1mGET /api/dog/vaccinations?dog_id=16 HTTP/1.1[0m" 400 -
+2024-08-18 14:49:26,496 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 14:49:26,496 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 14:49:29,515 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:49:29] "GET /api/dog/vaccinations?dog_id=16 HTTP/1.1" 200 -
+2024-08-18 14:49:54,593 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:49:54] "[35m[1mGET /api/dog/vaccinations?dog_id=101 HTTP/1.1[0m" 204 -
+2024-08-18 14:50:17,831 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:50:17] "[35m[1mPOST /api/dog/vaccinations HTTP/1.1[0m" 201 -
+2024-08-18 14:50:22,941 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:50:22] "GET /api/dog/vaccinations?dog_id=101 HTTP/1.1" 200 -
+2024-08-18 14:50:33,159 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:50:33] "[31m[1mPUT /api/dog/vaccinations HTTP/1.1[0m" 400 -
+2024-08-18 14:51:50,364 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 14:51:50,364 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 14:51:53,552 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:51:53] "[31m[1mPUT /api/dog/vaccinations HTTP/1.1[0m" 400 -
+2024-08-18 14:53:19,632 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:53:19] "[31m[1mPUT /api/dog/vaccinations HTTP/1.1[0m" 400 -
+2024-08-18 14:54:23,224 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 14:54:23,224 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 14:54:28,386 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:54:28] "PUT /api/dog/vaccinations HTTP/1.1" 200 -
+2024-08-18 14:54:36,834 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:54:36] "PUT /api/dog/vaccinations HTTP/1.1" 200 -
+2024-08-18 14:54:52,898 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:54:52] "[31m[1mDELETE /api/dog/vaccinations?vaccination_id=111 HTTP/1.1[0m" 400 -
+2024-08-18 14:54:57,861 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:54:57] "[31m[1mDELETE /api/dog/vaccinations?vaccination_id=111 HTTP/1.1[0m" 400 -
+2024-08-18 14:55:03,035 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:55:03] "[31m[1mDELETE /api/dog/vaccinations?vaccination_id=6 HTTP/1.1[0m" 400 -
+2024-08-18 14:55:08,203 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:55:08] "[31m[1mDELETE /api/dog/vaccinations?vaccination_id=5 HTTP/1.1[0m" 400 -
+2024-08-18 14:55:27,426 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 14:55:27,426 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 14:55:30,356 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:55:30] "[31m[1mDELETE /api/dog/vaccinations?vaccination_id=5 HTTP/1.1[0m" 400 -
+2024-08-18 14:56:22,751 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 14:56:22,752 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 14:56:25,057 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:56:25] "[31m[1mDELETE /api/dog/vaccinations?vaccination_id=5 HTTP/1.1[0m" 400 -
+2024-08-18 14:56:54,548 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 14:56:54,548 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 14:56:57,651 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:56:57] "[31m[1mDELETE /api/dog/vaccinations?vaccination_id=5 HTTP/1.1[0m" 400 -
+2024-08-18 14:57:17,455 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 14:57:17,455 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 14:57:21,001 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:57:21] "DELETE /api/dog/vaccinations?vaccination_id=5 HTTP/1.1" 200 -
+2024-08-18 14:57:30,778 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.10:5000
+2024-08-18 14:57:30,778 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-18 14:57:34,146 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:57:34] "[31m[1mDELETE /api/dog/vaccinations?vaccination_id=5 HTTP/1.1[0m" 400 -
+2024-08-18 14:58:16,297 - werkzeug - INFO - 127.0.0.1 - - [18/Aug/2024 14:58:16] "DELETE /api/dog/vaccinations?vaccination_id=6 HTTP/1.1" 200 -

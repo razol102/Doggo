@@ -7,6 +7,7 @@ from src.routes.collar_routes import collar_routes
 from src.routes.faq_routes import faq_routes
 from src.routes.nutrition_routes import nutrition_routes
 from src.routes.vaccinations_routes import vaccinations_routes
+from src.routes.medical_records_routes import medical_records_routes
 
 
 def init_routes(app):
@@ -19,3 +20,4 @@ def init_routes(app):
     app.register_blueprint(faq_routes)
     app.register_blueprint(nutrition_routes)
     app.register_blueprint(vaccinations_routes)
+    app.register_blueprint(medical_records_routes)
