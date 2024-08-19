@@ -224,18 +224,16 @@ def get_dict_for_response(cursor):
     return dict(zip(columns_names, data_from_query))
 
 
-def get_dict_of_dicts_for_response(cursor):
+def get_list_of_dicts_for_response(cursor):
     rows = cursor.fetchall()
     column_names = [desc[0] for desc in cursor.description]
-    result_dict = {}
 
-    for row in rows:
-        vaccination_id = row[0]
-        row_dict = dict(zip(column_names, row))
-        row_dict.pop(vaccination_id, None)
-        result_dict[vaccination_id] = row_dict
+    list_of_dicts = [
+        dict(zip(column_names, row)) for row in rows
+    ]
 
-    return result_dict
+    return list_of_dicts
+
 
 def meters_to_kilometers(meters):
     return meters / 1000.0

@@ -20,6 +20,7 @@ DISTANCE_COLUMN = "distance"
 CALORIES_COLUMN = "calories_burned"
 FITNESS_DATE_COLUMN = "fitness_date"
 VACCINATION_ID_COLUMN = "vaccination_id"
+MEDICAL_RECORD_ID_COLUMN = "record_id"
 
 # http status codes
 HTTP_200_OK = 200

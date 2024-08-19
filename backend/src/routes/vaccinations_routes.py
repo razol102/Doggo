@@ -19,21 +19,20 @@ def get_dog_vaccinations_list():
             with connection.cursor() as cursor:
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
                 cursor.execute(get_dog_vaccinations_query, (dog_id,))
-                dict_response = get_dict_of_dicts_for_response(cursor)
+                response = get_list_of_dicts_for_response(cursor)
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    if not dict_response:
+    if not response:
         return "", HTTP_204_STATUS_NO_CONTENT
 
-    return dict_response, HTTP_200_OK
+    return response, HTTP_200_OK
 
 
 @vaccinations_routes.route("/api/dog/vaccinations", methods=['POST'])
 def add_dog_vaccination():
     data = request.json
     required_data = {"dog_id", "vaccination_date", "vaccination_type", "dosage", "vet_name"}
-    print(type(required_data))
 
     add_vaccination_query = f"""
         INSERT INTO {VACCINATIONS_TABLE} 
@@ -78,8 +77,7 @@ def update_dog_vaccination():
         vet_name = %(vet_name)s,
         next_vaccination = %(next_vaccination)s,
         notes = %(notes)s
-        WHERE vaccination_id = %(vaccination_id)s
-        RETURNING {VACCINATION_ID_COLUMN};
+        WHERE vaccination_id = %(vaccination_id)s;
     """
 
     try:
