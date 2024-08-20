@@ -4,6 +4,7 @@ import 'package:mobile/main.dart';
 import 'package:mobile/screens/all_about_us/dog_data_screen.dart';
 import 'package:mobile/screens/all_about_us/personal_data_screen.dart';
 import 'package:mobile/screens/devices/doggo_collar_screen.dart';
+import 'package:mobile/screens/dog_care/pension_screen.dart';
 import 'package:mobile/screens/other/contact_us_screen.dart';
 import 'package:mobile/screens/other/faq_screen.dart';
 import 'package:mobile/screens/welcome_screen.dart';
@@ -79,16 +80,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
         Navigator.pushNamed(context, DoggoCollarScreen.routeName);
         break;
       case '2':
-      // Navigate to Food & Nutrition settings or related screen
+      // Navigate to Food & Nutrition settings
         Navigator.pushNamed(context, '/food_nutrition');
         break;
       case '3':
-      // Navigate to Medical Records settings or related screen
+      // Navigate to Medical Records settings
         Navigator.pushNamed(context, '/medical_records');
         break;
       case '4':
-      // Navigate to Emergency Contacts settings or related screen
-        Navigator.pushNamed(context, '/emergency_contacts');
+      // Navigate to Pension Info settings
+        Navigator.pushNamed(context, PensionScreen.routeName);
         break;
       case '5':
       // Navigate to Personal Data settings or related screen

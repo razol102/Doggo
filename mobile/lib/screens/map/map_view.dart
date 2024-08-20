@@ -11,7 +11,9 @@ class MapView extends StatelessWidget {
   final VoidCallback onUpdateLocation;
   final Function(LatLng, String) onSearch;
   final VoidCallback onClearMarkers;
-  final bool showClearMarkersButton; // New parameter to control visibility
+  final bool showClearMarkersButton;
+  final bool showSearchBar;
+  final Function(LatLng)? onTap;
 
   const MapView({
     Key? key,
@@ -22,6 +24,8 @@ class MapView extends StatelessWidget {
     required this.onSearch,
     required this.onClearMarkers,
     this.showClearMarkersButton = true, // Default to showing the button
+    this.showSearchBar = true, //  Default to showing the search bar
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -33,6 +37,7 @@ class MapView extends StatelessWidget {
           options: MapOptions(
             center: currentPosition,
             zoom: 14.0,
+            onTap: onTap != null ? (_, latlng) => onTap!(latlng) : null,
           ),
           children: [
             TileLayer(
@@ -42,12 +47,13 @@ class MapView extends StatelessWidget {
             MarkerLayer(markers: markers),
           ],
         ),
+        showSearchBar ?
         Positioned(
           top: 25,
           left: 10,
           right: 10,
           child: PlaceSearchBar(onSearch: onSearch),
-        ),
+        ): SizedBox(),
         Positioned(
           bottom: 16,
           right: 16,

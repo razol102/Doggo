@@ -396,9 +396,9 @@ class HttpService {
     }
   }
 
-  //--------------------------------------dog care info--------------------------------------
-  static Future<Map<String, dynamic>?> getDogCareInfo(int dogId) async {
-    final url = Uri.parse('$baseUrl/api/dog/care_info?dog_id=$dogId');
+  //--------------------------------------pension--------------------------------------
+  static Future<Map<String, dynamic>?> getPension(int dogId) async {
+    final url = Uri.parse('$baseUrl/api/dog/pension?dog_id=$dogId');
     final response = await http.get(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -413,6 +413,66 @@ class HttpService {
     }
   }
 
+  static Future<void> addUpdatePension(int dogId, String pensionName, double pensionLatitude, double pensionLongitude) async{
+    final url = Uri.parse('$baseUrl/api/dog/pension');
+    print('in http service update pension: ${dogId.toString()}, $pensionName, $pensionLatitude, $pensionLongitude');
+    final response = await http.put(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+        'dog_id': dogId.toString(),
+        'pension_name': pensionName,
+        "pension_latitude": pensionLatitude,
+        "pension_longitude": pensionLongitude,
+        })
+    );
+
+    if (response.statusCode == 200) {
+      print('Dog pension updated successfully');
+    } else {
+      print('Failed to update dog pension: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  //--------------------------------------vet--------------------------------------
+  static Future<Map<String, dynamic>?> getVet(int dogId) async {
+    final url = Uri.parse('$baseUrl/api/dog/vet?dog_id=$dogId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return  jsonDecode(response.body);
+    } else if (response.statusCode == 204) {
+      return null;
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<void> addUpdateVet(int dogId, String vetName, String vetPhone, double vetLatitude, double vetLongitude) async{
+    final url = Uri.parse('$baseUrl/api/dog/vet');
+    final response = await http.put(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'dog_id': dogId.toString(),
+          'vet_name': vetName,
+          'vet_phone': vetPhone,
+          "vet_latitude": vetLatitude,
+          "vet_longitude": vetLongitude,
+        })
+    );
+
+    if (response.statusCode == 200) {
+      print('Dog vet updated successfully');
+    } else {
+      print('Failed to update dog vet: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
 
   //--------------------------------------test--------------------------------------
   static Future<Map<String, dynamic>> getRoot() async {
