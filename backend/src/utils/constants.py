@@ -10,6 +10,7 @@ FAQ_TABLE = "faq"
 NUTRITION_TABLE = "nutrition"
 VACCINATIONS_TABLE = "vaccinations"
 MEDICAL_RECORDS_TABLE = "medical_records"
+PLACES_TABLE = "places"
 
 # Columns
 USER_ID_COLUMN = "user_id"
