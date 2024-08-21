@@ -11,6 +11,8 @@ NUTRITION_TABLE = "nutrition"
 VACCINATIONS_TABLE = "vaccinations"
 MEDICAL_RECORDS_TABLE = "medical_records"
 PLACES_TABLE = "places"
+GOALS_TABLE = "goals"
+ACTIVITIES_TABLE = "activities"
 
 # Columns
 USER_ID_COLUMN = "user_id"
@@ -21,6 +23,7 @@ DISTANCE_COLUMN = "distance"
 CALORIES_COLUMN = "calories_burned"
 FITNESS_DATE_COLUMN = "fitness_date"
 VACCINATION_ID_COLUMN = "vaccination_id"
+ACTIVITY_ID_COLUMN = "activity_id"
 MEDICAL_RECORD_ID_COLUMN = "record_id"
 
 # http status codes
