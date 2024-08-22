@@ -57,7 +57,6 @@ def update_data_from_collar(cursor, dog_id, embedded_steps):
     steps_to_db = prev_dog_steps + fixed_dog_steps
     distance_to_db = prev_dog_distance + fixed_dog_distance
     calories_to_db = get_burned_calories(dog_weight, distance_to_db)
-
     cursor.execute(update_fitness_query, (distance_to_db, steps_to_db, calories_to_db, dog_id, today_date))
 
 

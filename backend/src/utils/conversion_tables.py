@@ -1,3 +1,5 @@
+from src.utils.logger import logger
+
 TOY_DOG_STEP_LENGTH = (25, 35)
 SMALL_DOG_STEP_LENGTH = (35, 45)
 MEDIUM_DOG_STEP_LENGTH = (45, 55)
@@ -48,12 +50,15 @@ def get_fixed_steps_and_distance(weight, embedded_steps):
     factor_range, weight_range, step_length_range = get_ranges_by_weight(weight)
     fraction = get_position_in_range(weight, weight_range)
     fixed_steps = embedded_steps * number_in_range(fraction, factor_range)
-    fixed_distance = fixed_steps * number_in_range(fraction, step_length_range)
+    fixed_distance_cm = fixed_steps * number_in_range(fraction, step_length_range)
+    fixed_distance_km = fixed_distance_cm / 100000  # Convert to kilometers
 
-    return fixed_steps, meters_to_kilometers(fixed_distance)
+    return fixed_steps, fixed_distance_km
 
 
 def get_burned_calories(weight, distance):
+    logger.debug("Weight: {0}, distance: {1}".format(weight, distance))
+
     # Constants
     CALORIES_PER_KG_PER_KM = 1.0  # Approximate calories burned per kg per km
 
@@ -65,10 +70,9 @@ def get_burned_calories(weight, distance):
     calories_burned_exercise = weight * distance * CALORIES_PER_KG_PER_KM
 
     # 3. Total Daily Energy Expenditure (TDEE)
-    tdee = bmr + calories_burned_exercise
+    if distance <= 0.05:
+        tdee = 0
+    else:
+        tdee = bmr + calories_burned_exercise
 
     return tdee
-
-
-def meters_to_kilometers(meters):
-    return meters / 1000.0
