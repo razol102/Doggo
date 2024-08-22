@@ -1,13 +1,13 @@
 TOY_DOG_STEP_LENGTH = (25, 35)
-SMALL_DOG_STEP_LENGTH = (36, 45)
-MEDIUM_DOG_STEP_LENGTH = (46, 54)
+SMALL_DOG_STEP_LENGTH = (35, 45)
+MEDIUM_DOG_STEP_LENGTH = (45, 55)
 LARGE_DOG_STEP_LENGTH = (55, 65)
 EXTRA_LARGE_DOG_STEP_LENGTH = (65, 80)
 
 TOY_DOG_WEIGHT = (2, 5)
-SMALL_DOG_WEIGHT = (6, 10)
-MEDIUM_DOG_WEIGHT = (11, 25)
-LARGE_DOG_WEIGHT = (26, 40)
+SMALL_DOG_WEIGHT = (5, 10)
+MEDIUM_DOG_WEIGHT = (10, 25)
+LARGE_DOG_WEIGHT = (25, 40)
 EXTRA_LARGE_DOG_WEIGHT = (40, 80)
 
 TOY_DOG_FACTOR = (0.5, 0.7)
@@ -29,7 +29,7 @@ def get_ranges_by_weight(weight):
     elif EXTRA_LARGE_DOG_WEIGHT[0] <= weight <= EXTRA_LARGE_DOG_WEIGHT[1]:
         return EXTRA_LARGE_DOG_FACTOR, EXTRA_LARGE_DOG_WEIGHT, EXTRA_LARGE_DOG_STEP_LENGTH
     else:
-        return MEDIUM_DOG_FACTOR, MEDIUM_DOG_WEIGHT
+        return MEDIUM_DOG_FACTOR, MEDIUM_DOG_WEIGHT, MEDIUM_DOG_STEP_LENGTH
 
 
 def get_position_in_range(weight, weight_range):
@@ -44,16 +44,16 @@ def number_in_range(fraction, range_tuple):
     return start + fraction * (end - start)
 
 
-def get_fixed_steps_and_distance(weight):
+def get_fixed_steps_and_distance(weight, embedded_steps):
     factor_range, weight_range, step_length_range = get_ranges_by_weight(weight)
     fraction = get_position_in_range(weight, weight_range)
-    fixed_steps = number_in_range(fraction, factor_range)
+    fixed_steps = embedded_steps * number_in_range(fraction, factor_range)
     fixed_distance = fixed_steps * number_in_range(fraction, step_length_range)
 
-    return fixed_steps, fixed_distance
+    return fixed_steps, meters_to_kilometers(fixed_distance)
 
 
-def get_burned_calories(weight, height, daily_steps, distance):
+def get_burned_calories(weight, distance):
     # Constants
     CALORIES_PER_KG_PER_KM = 1.0  # Approximate calories burned per kg per km
 
@@ -68,3 +68,7 @@ def get_burned_calories(weight, height, daily_steps, distance):
     tdee = bmr + calories_burned_exercise
 
     return tdee
+
+
+def meters_to_kilometers(meters):
+    return meters / 1000.0

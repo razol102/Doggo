@@ -25,6 +25,7 @@ FITNESS_DATE_COLUMN = "fitness_date"
 VACCINATION_ID_COLUMN = "vaccination_id"
 ACTIVITY_ID_COLUMN = "activity_id"
 MEDICAL_RECORD_ID_COLUMN = "record_id"
+WEIGHT_COLUMN = "weight"
 
 # http status codes
 HTTP_200_OK = 200

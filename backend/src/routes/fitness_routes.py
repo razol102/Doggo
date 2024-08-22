@@ -1,60 +1,50 @@
 from datetime import datetime
 from flask import request, Blueprint
 from src.utils.helpers import *
+from src.utils.conversion_tables import *
 from src.utils.logger import logger
 
 fitness_routes = Blueprint('fitness_routes', __name__)
 
 
-@fitness_routes.route('/api/dog/fitness/steps', methods=['PUT'])
-def add_dog_steps():
+# Endpoint from mobile
+@fitness_routes.route('/api/dog/fitness', methods=['PUT'])
+def add_fitness_from_mobile():
     dog_id = request.args.get('dog_id')
-    new_dog_steps = request.args.get('steps')
-    json_error_res = add_dog_fitness(dog_id, STEPS_COLUMN, int(new_dog_steps))
-
-    if json_error_res is not None:
-        return json_error_res
-    else:
-        return jsonify({"message": str("Dog's steps were updated successfully!")}), HTTP_200_OK
-
-
-@fitness_routes.route('/api/dog/fitness/distance_calories', methods=['PUT'])
-def add_dog_distance_calories():
-    dog_id = request.args.get('dog_id')
-    new_dog_distance = request.args.get('distance')
+    embedded_steps = int(request.args.get('steps'))
+    today_date = date.today()
 
     try:
-        if new_dog_distance is None or not new_dog_distance:
-            raise MissingFieldsError({"distance"})
-    except MissingFieldsError as error:
+        db = load_database_config()
+        with psycopg2.connect(**db) as connection:
+            with connection.cursor() as cursor:
+                check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
+                collar_id = get_collar_id_by_dog_id(cursor, dog_id)
+                update_collar_connection(cursor, collar_id, CONNECTED_TO_MOBILE)
+
+                if does_exist_by_date(cursor, FITNESS_TABLE, DOG_ID_COLUMN, dog_id, FITNESS_DATE_COLUMN, today_date):
+                    update_data_from_collar(cursor, dog_id, embedded_steps)
+                else:
+                    create_data_from_collar(cursor, dog_id, embedded_steps)
+
+                connection.commit()
+
+    except(Exception, psycopg2.DatabaseError, MissingFieldsError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    # need to check if it's float
-    distance_in_meters = float(new_dog_distance)
-    new_dog_distance = meters_to_kilometers(distance_in_meters)
-    json_error_res = add_dog_fitness(dog_id, DISTANCE_COLUMN, new_dog_distance)
-
-    if json_error_res is not None:
-        return json_error_res
-    else:
-        return jsonify({"message": str("Dog's distance and calories were updated successfully!")}), HTTP_200_OK
+    return jsonify({"message": "Data was updated"}), HTTP_200_OK
 
 
 # Endpoint from collar
 @fitness_routes.route('/api/dog/collar_data', methods=['PUT'])
 def add_data_from_collar():
     data = request.form.to_dict()
-    required_data = {"collarID", "battery", "steps", "distance"}
+    required_data = {"collarID", "battery", "steps"}
 
     today_date = date.today()
     collar_id = data['collarID']
     battery_level = data['battery']
-    new_dog_steps = int(data['steps'])
-    distance = data['distance']
-
-    # need to check if distance is float and steps is int
-    distance_in_meters = float(distance)
-    new_dog_distance = meters_to_kilometers(distance_in_meters)
+    embedded_steps = int(data['steps'])
 
     logger.debug("Values from collar: {0}".format(data))
 
@@ -71,9 +61,9 @@ def add_data_from_collar():
                 update_battery_level(cursor, collar_id, battery_level)
 
                 if does_exist_by_date(cursor, FITNESS_TABLE, DOG_ID_COLUMN, dog_id, FITNESS_DATE_COLUMN, today_date):
-                    update_data_from_collar(cursor, dog_id, new_dog_steps, new_dog_distance)
+                    update_data_from_collar(cursor, dog_id, embedded_steps)
                 else:
-                    create_data_from_collar(cursor, dog_id, new_dog_steps, new_dog_distance)
+                    create_data_from_collar(cursor, dog_id, embedded_steps)
 
                 connection.commit()
 
