@@ -1,5 +1,4 @@
 from datetime import datetime
-
 import psycopg2
 from flask import Blueprint, request, jsonify
 
@@ -13,7 +12,10 @@ activities_routes = Blueprint('activities_routes', __name__)
 def get_dog_activities_list():
     dog_id = request.args.get('dog_id')
     db = load_database_config()
-    get_dog_activities_query = f"SELECT * FROM {ACTIVITIES_TABLE} WHERE {DOG_ID_COLUMN} = %s;"
+    get_dog_activities_query = f"""SELECT *, 
+                                TO_CHAR(duration, 'DD "days" HH24:MI:SS') AS duration,
+                                ROUND(distance::numeric, 2) AS distance
+                                FROM {ACTIVITIES_TABLE} WHERE {DOG_ID_COLUMN} = %s;"""
 
     try:
         with psycopg2.connect(**db) as connection:
@@ -23,6 +25,7 @@ def get_dog_activities_list():
                 response = get_list_of_dicts_for_response(cursor)
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
+    print(response)
 
     if not response:
         return "", HTTP_204_STATUS_NO_CONTENT
@@ -34,7 +37,10 @@ def get_dog_activities_list():
 def get_dog_activity_log():
     activity_id = request.args.get("activity_id")
     get_dog_activity_query = """
-    SELECT start_time, end_time, duration
+    SELECT start_time, end_time,         
+    ROUND(distance::numeric, 2) AS distance, 
+    steps, calories_burned,
+    TO_CHAR(duration, 'DD "days" HH24:MI:SS') AS duration
     FROM activities
     WHERE activity_id = %s;
     """
@@ -52,6 +58,7 @@ def get_dog_activity_log():
 
     if dict_res['duration'] is None:
         dict_res['duration'] = 0
+
 
     return dict_res, HTTP_200_OK
 

@@ -72,7 +72,6 @@ def create_data_from_collar(cursor, dog_id, embedded_steps):
     dog_weight = get_dog_weight(cursor, dog_id)
     steps_to_db, distance_to_db = get_fixed_steps_and_distance(dog_weight, embedded_steps)
     calories_to_db = get_burned_calories(dog_weight, distance_to_db)
-    print(calories_to_db)
 
     cursor.execute(create_fitness_query, (dog_id, today_date, distance_to_db, steps_to_db, calories_to_db))
     update_dog_activities(cursor, dog_id, steps_to_db, distance_to_db, dog_weight)
@@ -128,8 +127,13 @@ def get_collar_id_by_dog_id(cursor, dog_id):
 
 def get_dict_for_response(cursor):
     data_from_query = cursor.fetchone()
-    columns_names = [desc[0] for desc in cursor.description]
-    return dict(zip(columns_names, data_from_query))
+    res = None
+
+    if data_from_query is not None:
+        columns_names = [desc[0] for desc in cursor.description]
+        res = dict(zip(columns_names, data_from_query))
+
+    return res
 
 
 def get_list_of_dicts_for_response(cursor):
