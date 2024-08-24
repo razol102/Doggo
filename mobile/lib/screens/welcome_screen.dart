@@ -125,8 +125,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     RoundGradientButton(
                       title: "Login",
                       onPressed: () {
-                       Navigator.pushNamed(context, FoodNutritionScreen.routeName);
-                       // Navigator.pushNamed(context, LoginScreen.routeName);
+                       // Navigator.pushNamed(context, FoodNutritionScreen.routeName);
+                       Navigator.pushNamed(context, LoginScreen.routeName);
                       },
                     ),
                   ],
