@@ -158,7 +158,7 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
               children: [
                 Image.asset(
                   "assets/images/nutrition_background.png",
-                  width: media.width * 0.5,
+                  width: media.width * 0.7,
                 ),
                 const SizedBox(height: 15),
                 const Text(
@@ -172,7 +172,7 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                 const SizedBox(height: 25),
                 RoundTextField(
                   textEditingController: _foodBrandController,
-                  hintText: _foodBrand.isEmpty ? "Loading..." : _foodBrand,
+                  hintText: (_foodBrand == 'No nutrition information available' && _isEditing) ? "Food brand" : _foodBrand,
                   icon: "assets/icons/food_brand_icon.png",
                   textInputType: TextInputType.text,
                   readOnly: !_isEditing,
@@ -181,7 +181,7 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                 const SizedBox(height: 15),
                 RoundTextField(
                   textEditingController: _foodTypeController,
-                  hintText: _foodType.isEmpty ? "Loading..." : _foodType,
+                  hintText: (_foodType == 'No nutrition information available' && _isEditing) ? "Food type" : _foodType,
                   icon: "assets/icons/food_type_icon.png",
                   textInputType: TextInputType.text,
                   readOnly: true,
@@ -190,7 +190,7 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                 const SizedBox(height: 15),
                 RoundTextField(
                   textEditingController: _foodAmountGramsController,
-                  hintText: _foodAmountGrams.isEmpty ? "Loading..." : _foodAmountGrams,
+                  hintText: (_foodAmountGrams == 'No nutrition information available' && _isEditing) ? "Food amount (grams)" : _foodAmountGrams,
                   icon: "assets/icons/food_amount_icon.png",
                   textInputType: TextInputType.number,
                   readOnly: !_isEditing,
@@ -199,7 +199,7 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                 const SizedBox(height: 15),
                 RoundTextField(
                   textEditingController: _dailySnacksController,
-                  hintText: _dailySnacks.isEmpty ? "Loading..." : _dailySnacks,
+                  hintText: _dailySnacks.isEmpty ? "0" : _dailySnacks,
                   icon: "assets/icons/snacks_icon.png",
                   textInputType: TextInputType.number,
                   readOnly: !_isEditing,
@@ -208,7 +208,7 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                 const SizedBox(height: 15),
                 RoundTextField(
                   textEditingController: _notesController,
-                  hintText: _notes.isEmpty ? "Loading..." : _notes,
+                  hintText: _notes.isEmpty ? "-" : _notes,
                   icon: "assets/icons/notes_icon.png",
                   textInputType: TextInputType.text,
                   readOnly: !_isEditing,
