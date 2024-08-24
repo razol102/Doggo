@@ -4,7 +4,6 @@ from flask import request, Blueprint, jsonify
 
 from src.utils.config import load_database_config
 from src.utils.helpers import *
-from src.utils.conversion_tables import *
 from src.utils.logger import logger
 
 fitness_routes = Blueprint('fitness_routes', __name__)
@@ -35,7 +34,7 @@ def add_fitness_from_mobile():
     except(Exception, psycopg2.DatabaseError, MissingFieldsError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    return jsonify({"message": "Data was updated"}), HTTP_200_OK
+    return "Fitness was updated successfully", HTTP_200_OK
 
 
 # Endpoint from collar

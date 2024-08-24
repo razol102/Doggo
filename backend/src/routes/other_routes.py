@@ -1,4 +1,7 @@
-from flask import Blueprint, request
+import psycopg2
+from flask import Blueprint, jsonify
+
+from src.utils.config import load_database_config
 from src.utils.helpers import *
 
 other_routes = Blueprint('other_routes', __name__)

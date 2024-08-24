@@ -57,7 +57,10 @@ def update_data_from_collar(cursor, dog_id, embedded_steps):
     steps_to_db = prev_dog_steps + fixed_dog_steps
     distance_to_db = prev_dog_distance + fixed_dog_distance
     calories_to_db = get_burned_calories(dog_weight, distance_to_db)
+
     cursor.execute(update_fitness_query, (distance_to_db, steps_to_db, calories_to_db, dog_id, today_date))
+    # fixed steps and fixed distance would be added to activities
+    update_dog_activities(cursor, dog_id, fixed_dog_steps, fixed_dog_distance, dog_weight)
 
 
 def create_data_from_collar(cursor, dog_id, embedded_steps):
@@ -69,8 +72,10 @@ def create_data_from_collar(cursor, dog_id, embedded_steps):
     dog_weight = get_dog_weight(cursor, dog_id)
     steps_to_db, distance_to_db = get_fixed_steps_and_distance(dog_weight, embedded_steps)
     calories_to_db = get_burned_calories(dog_weight, distance_to_db)
+    print(calories_to_db)
 
     cursor.execute(create_fitness_query, (dog_id, today_date, distance_to_db, steps_to_db, calories_to_db))
+    update_dog_activities(cursor, dog_id, steps_to_db, distance_to_db, dog_weight)
 
 
 def get_fitness_from_yesterday(cursor, dog_id, fitness_column):
@@ -184,3 +189,29 @@ def get_dog_weight(cursor, dog_id):
     cursor.execute(get_dog_weight_query, (dog_id, ))
 
     return cursor.fetchone()[0]
+
+
+def update_dog_activities(cursor, dog_id, steps, distance, dog_weight):
+    add_fitness_data_to_active_activities_query = f"""
+    UPDATE {ACTIVITIES_TABLE}
+    SET {STEPS_COLUMN} = %s,
+        {DISTANCE_COLUMN} = %s,
+        {CALORIES_COLUMN} = %s
+    WHERE duration IS NULL AND {DOG_ID_COLUMN} = %s;
+    """
+
+    get_steps_and_distance_query = f"""
+        SELECT {STEPS_COLUMN}, {DISTANCE_COLUMN}
+        FROM {ACTIVITIES_TABLE}
+        WHERE duration IS NULL AND {DOG_ID_COLUMN} = %s;
+        """
+
+    cursor.execute(get_steps_and_distance_query, (dog_id,))
+    prev_steps, prev_distance = cursor.fetchone()
+    steps_to_db = prev_steps + steps
+    distance_to_db = prev_distance + distance
+    calories_burned_to_db = get_burned_calories(dog_weight, distance_to_db)
+
+    cursor.execute(add_fitness_data_to_active_activities_query,
+                   (steps_to_db, distance_to_db, calories_burned_to_db, dog_id))
+
