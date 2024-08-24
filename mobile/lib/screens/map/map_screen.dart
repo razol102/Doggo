@@ -106,7 +106,7 @@ class _MapScreenState extends State<MapScreen> {
         for (var markerData in markersData) {
           _markers.add(
             Marker(
-              point: LatLng(markerData['lat'], markerData['lon']),
+              point: LatLng(markerData['latitude'], markerData['longitude']),
               child: Icon(
                 Icons.location_pin,
                 color: _getCategoryColor(category),

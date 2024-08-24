@@ -4,6 +4,7 @@ import 'package:mobile/main.dart';
 import 'package:mobile/screens/all_about_us/dog_data_screen.dart';
 import 'package:mobile/screens/all_about_us/personal_data_screen.dart';
 import 'package:mobile/screens/devices/doggo_collar_screen.dart';
+import 'package:mobile/screens/dog_care/food_nutrition_screen.dart';
 import 'package:mobile/screens/dog_care/pension_screen.dart';
 import 'package:mobile/screens/other/contact_us_screen.dart';
 import 'package:mobile/screens/other/faq_screen.dart';
@@ -81,7 +82,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
         break;
       case '2':
       // Navigate to Food & Nutrition settings
-        Navigator.pushNamed(context, '/food_nutrition');
+        Navigator.pushNamed(context, FoodNutritionScreen.routeName);
         break;
       case '3':
       // Navigate to Medical Records settings

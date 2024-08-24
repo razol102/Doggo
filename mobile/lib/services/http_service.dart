@@ -232,54 +232,57 @@ class HttpService {
 
   //--------------------------------------dog friendly places--------------------------------------
   static Future<List<dynamic>> fetchMapMarkers(String category) async {
-    //TODO: send to backend by category
-    final url = Uri.parse('$baseUrl/'); // TODO: change to the real url
-    // final response = await http.get(Uri.parse(url));
+    final url = Uri.parse('$baseUrl/api/places/by_type?type=${category.toLowerCase()}');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load markers');
+    }
+
+    //TODO: delete dummy data for testing!
+    // // Dummy data representing marker locations
+    // List<dynamic> dummyData = [
+    //   {
+    //     'lat': 32.0853,
+    //     'lon': 34.7818,
+    //     'category': 'medical',
+    //   },
+    //   {
+    //     'lat': 32.04866461125274,
+    //     'lon': 34.76023473261021,
+    //     'category': 'parks',
+    //   },
+    //   {
+    //     'lat': 32.0857,
+    //     'lon': 34.7822,
+    //     'category': 'pensions',
+    //   },
+    //   {
+    //     'lat': 32.0859,
+    //     'lon': 34.7824,
+    //     'category': 'restaurants',
+    //   },
+    //   {
+    //     'lat': 32.0861,
+    //     'lon': 34.7826,
+    //     'category': 'beauty',
+    //   },
+    //   {
+    //     'lat': 32.0863,
+    //     'lon': 34.7828,
+    //     'category': 'hotels',
+    //   },
+    // ];
     //
-    // if (response.statusCode == 200) {
-    //   return jsonDecode(response.body);
-    // } else {
-    //   throw Exception('Failed to load markers');
-    // }
-
-    // Dummy data representing marker locations
-    List<dynamic> dummyData = [
-      {
-        'lat': 32.0853,
-        'lon': 34.7818,
-        'category': 'medical',
-      },
-      {
-        'lat': 32.04866461125274,
-        'lon': 34.76023473261021,
-        'category': 'parks',
-      },
-      {
-        'lat': 32.0857,
-        'lon': 34.7822,
-        'category': 'pensions',
-      },
-      {
-        'lat': 32.0859,
-        'lon': 34.7824,
-        'category': 'restaurants',
-      },
-      {
-        'lat': 32.0861,
-        'lon': 34.7826,
-        'category': 'beauty',
-      },
-      {
-        'lat': 32.0863,
-        'lon': 34.7828,
-        'category': 'hotels',
-      },
-    ];
-
-    // Filter data based on category
-    List<dynamic> filteredData = dummyData.where((marker) => marker['category'] == category).toList();
-
-    return filteredData;
+    // // Filter data based on category
+    // List<dynamic> filteredData = dummyData.where((marker) => marker['category'] == category).toList();
+    //
+    // return filteredData;
   }
 
   //--------------------------------------collar data--------------------------------------
@@ -366,6 +369,20 @@ class HttpService {
       throw Exception(jsonDecode(response.body)['error']);
     }
   }
+
+  static Future<bool> isCollarAvailable(String collarId) async {
+    final url = Uri.parse('$baseUrl/api/collar/availability?collar_id=$collarId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if(response.statusCode == 200) {
+      return jsonDecode(response.body)['availability'];
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+}
 
   //--------------------------------------faq--------------------------------------
   static Future<Map<String, dynamic>> getFrequentlyQuestions() async {
@@ -470,6 +487,47 @@ class HttpService {
       print('Dog vet updated successfully');
     } else {
       print('Failed to update dog vet: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  //--------------------------------------nutrition--------------------------------------
+  static Future<Map<String,dynamic>?> getNutritionData(int dogId) async {
+    final url = Uri.parse('$baseUrl/api/dog/nutrition?dog_id=$dogId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else if (response.statusCode == 204) {
+      return null;
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<void> addUpdateNutrition(int dogId, String foodBrand, String foodType, int foodAmountGrams, int dailySnacks, String notes) async {
+    final url = Uri.parse('$baseUrl/api/dog/nutrition');
+    print('in http service update nutrition: ${dogId.toString()}, $foodBrand, $foodType, ${foodAmountGrams.toString()}, ${dailySnacks.toString()}');
+    final response = await http.put(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'dog_id': dogId.toString(), //TODO: check if toString needed, also in pension put
+          'food_brand': foodBrand,
+          'food_type': foodType,
+          'food_amount_grams': foodAmountGrams,
+          'daily_snacks': dailySnacks,
+          'notes': notes
+        })
+    );
+
+    if (response.statusCode == 200) {
+      print('Dog pension updated successfully');
+    } else {
+      print('Failed to update dog pension: ${response.statusCode}');
       throw Exception(jsonDecode(response.body)['error']);
     }
   }
