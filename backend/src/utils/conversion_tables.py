@@ -57,22 +57,21 @@ def get_fixed_steps_and_distance(weight, embedded_steps):
 
 
 def get_burned_calories(weight, distance):
-    logger.debug("Weight: {0}, distance: {1}".format(weight, distance))
 
-    # Constants
-    CALORIES_PER_KG_PER_KM = 1.0  # Approximate calories burned per kg per km
+    # # Constants
+    # CALORIES_PER_KG_PER_KM = 1.0  # Approximate calories burned per kg per km
+    #
+    # # 1. Calculate BMR (Basal Metabolic Rate) - Simplified formula
+    # bmr = 70 * (weight ** 0.75)
+    #
+    # # 2. Calculate calories burned during exercise
+    # # Assuming average distance is provided in kilometers
+    # calories_burned_exercise = weight * distance * CALORIES_PER_KG_PER_KM
+    #
+    # # 3. Total Daily Energy Expenditure (TDEE)
+    # # if distance <= 0.05:
+    # #     tdee = 0
+    # # else:
+    # tdee = bmr + calories_burned_exercise
 
-    # 1. Calculate BMR (Basal Metabolic Rate) - Simplified formula
-    bmr = 70 * (weight ** 0.75)
-
-    # 2. Calculate calories burned during exercise
-    # Assuming average distance is provided in kilometers
-    calories_burned_exercise = weight * distance * CALORIES_PER_KG_PER_KM
-
-    # 3. Total Daily Energy Expenditure (TDEE)
-    if distance <= 0.05:
-        tdee = 0
-    else:
-        tdee = bmr + calories_burned_exercise
-
-    return tdee
+    return weight * distance
