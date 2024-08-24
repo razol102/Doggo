@@ -31,30 +31,28 @@ class ValidationMethods {
     return null;
   }
 
-  static String? validateHeight(String? value) {
-    String? emptyError = validateNotEmpty(value, 'Height');
+  static String? validatePositiveInt(String? value, String field) {
+    String? emptyError = validateNotEmpty(value, field);
     if (emptyError != null) { // field is empty
       return emptyError;
     } else if (int.tryParse(value!) == null) {
-      return 'Height must be an integer';
-    } else if (int.tryParse(value)! <= 0) {
-      return 'Height must be positive number';
+      return '$field must be an integer';
+    } else if (int.tryParse(value)! < 0) {
+      return '$field must be positive number';
     }
     return null;
   }
 
-  static String? validateWeight(String? value) {
-    String? emptyError = validateNotEmpty(value, 'Weight');
+  static String? validatePositiveDouble(String? value, String field) {
+    String? emptyError = validateNotEmpty(value, field);
     if (emptyError != null) { // field is empty
       return emptyError;
     } else if (double.tryParse(value!) == null) {
-      return 'Weight must be a number';
+      return '$field must be a number';
     } else if (double.tryParse(value)! <= 0) {
-      return 'Weight must be positive number';
+      return '$field must be positive number';
     }
     return null;
   }
-
-
 
 }

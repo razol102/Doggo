@@ -22,10 +22,20 @@ class _ConfigureCollarScreenState extends State<ConfigureCollarScreen> {
   void _configureCollarToBackend() async {
     try {
       final collarId = _collarIdController.text;
-      print(collarId);
-      await HttpService.configureCollar(widget.dogId, collarId);
-      print('Collar configured successfully');
-      Navigator.pushNamed(context, BottomMenu.routeName);
+      final isAvailable = await HttpService.isCollarAvailable(collarId);
+      if (isAvailable) {
+        await HttpService.configureCollar(widget.dogId, collarId);
+        print('Collar configured successfully');
+        Navigator.pushNamed(context, BottomMenu.routeName);
+      } else { // collar already attached to another dog
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('This collar is already attached to another dog.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+
     } catch (e) {
       print('Failed to configure collar: $e');
     }

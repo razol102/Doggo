@@ -105,8 +105,8 @@ class _DogDataScreenState extends State<DogDataScreen> {
       _breedError = _validateBreed(_selectedBreed);
       _genderError = _validateGender(_selectedGender);
       _dateOfBirthError = ValidationMethods.validateNotEmpty(_dateOfBirthController.text, 'Date of birth');
-      _heightError = ValidationMethods.validateHeight(_heightController.text);
-      _weightError = ValidationMethods.validateWeight(_weightController.text);
+      _heightError = ValidationMethods.validatePositiveInt(_heightController.text, 'Height');
+      _weightError = ValidationMethods.validatePositiveDouble(_weightController.text, 'Weight');
     });
 
     if (_nameError != null || _breedError != null || _genderError != null ||

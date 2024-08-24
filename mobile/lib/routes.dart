@@ -16,6 +16,7 @@ import 'package:mobile/screens/bottom_menu.dart';
 import 'package:mobile/screens/activity/activity_screen.dart';
 import 'package:mobile/screens/devices/BLE_connection_screen.dart';
 import 'package:mobile/screens/devices/doggo_collar_screen.dart';
+import 'package:mobile/screens/dog_care/food_nutrition_screen.dart';
 import 'package:mobile/screens/dog_care/pension_screen.dart';
 import 'package:mobile/screens/home/home_screen.dart';
 import 'package:mobile/screens/map/map_screen.dart';
@@ -44,6 +45,8 @@ final Map<String, WidgetBuilder> routes = {
   DogDataScreen.routeName: (context) => const DogDataScreen(),
   //personal data
   PersonalDataScreen.routeName: (context) => const PersonalDataScreen(),
+  //food nutrition
+  FoodNutritionScreen.routeName: (context) => const FoodNutritionScreen(),
   //pension
   PensionScreen.routeName: (context) => const PensionScreen(),
   //faq

@@ -4,6 +4,7 @@ import 'package:mobile/screens/all_about_us/dog_data_screen.dart';
 import 'package:mobile/screens/all_about_us/personal_data_screen.dart';
 import 'package:mobile/screens/bottom_menu.dart';
 import 'package:mobile/screens/activity/activity_screen.dart';
+import 'package:mobile/screens/dog_care/food_nutrition_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:mobile/services/preferences_service.dart';  // Import PreferencesService
 import 'auth/signup_step1_screen.dart';
@@ -25,7 +26,6 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   bool _hasPermission = false;
   bool _permissionDenied = false;
-  String _responseMessage = ""; // For testing purposes
 
   @override
   void initState() {
@@ -66,34 +66,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Permission Denied'),
         content: const Text('The app cannot function without the required permissions. Please grant them in your device settings.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // For testing purposes
-  Future<void> _testGetRoot() async {
-    try {
-      final response = await HttpService.getRoot();
-      setState(() {
-        _responseMessage = response['message'] ?? 'No message';
-      });
-    } catch (e) {
-      setState(() {
-        _responseMessage = e.toString();
-      });
-    }
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Response'),
-        content: Text(_responseMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -153,6 +125,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     RoundGradientButton(
                       title: "Login",
                       onPressed: () {
+                       // Navigator.pushNamed(context, FoodNutritionScreen.routeName);
                        Navigator.pushNamed(context, LoginScreen.routeName);
                       },
                     ),
