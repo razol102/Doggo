@@ -36,13 +36,15 @@ jobs:
       run: |
         docker push niznaor/doggo-app:${{ env.TAG }}
         
-    - name: SSH to EC2 and deploy
-      uses: appleboy/ssh-action@v1.0.3
+    - name: Set up SSH agent
+      uses: webfactory/ssh-agent@v0.7.0
       with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: SSH to EC2 and deploy
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
           docker ps -q -f name=doggo-app | grep -q . && docker stop doggo-app || echo "No running container found with the name doggo-app"
           docker pull niznaor/doggo-app:${{ env.TAG }}
           docker run -d --name doggo-app -p 5000:5000 niznaor/doggo-app:${{ env.TAG }}
+        EOF
