@@ -99,7 +99,7 @@ def is_collar_available():
                 check_if_exists(cursor, COLLARS_TABLE, COLLAR_ID_COLUMN, collar_id)
                 cursor.execute(get_attached_dog_query, (collar_id, ))
                 dog_id = cursor.fetchone()[0]
-                is_available = dog_id is not None
+                is_available = dog_id is None
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
 

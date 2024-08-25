@@ -107,10 +107,9 @@ def delete_dog():
     try:
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
+                check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
+                remove_dog_from_data_tables(cursor, dog_id)
                 cursor.execute(delete_dog_query, (dog_id,))
-                # check if there was any change in the DB
-                if cursor.rowcount == 0:
-                    raise ValueError("Dog does not exist.")
                 connection.commit()
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400

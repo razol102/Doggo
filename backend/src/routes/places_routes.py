@@ -47,6 +47,7 @@ def get_places_by_type():
 def set_favorite_place_by_type():
     data = request.json
     required_data = {"place_name", "address", "type"}
+
     reset_favorite_places_query = f"UPDATE {PLACES_TABLE} SET is_favorite = FALSE WHERE type = '{data.get('type')}'"
     set_favorite_place_query = f"""
     UPDATE {PLACES_TABLE}

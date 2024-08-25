@@ -219,3 +219,52 @@ def update_dog_activities(cursor, dog_id, steps, distance, dog_weight):
     cursor.execute(add_fitness_data_to_active_activities_query,
                    (steps_to_db, distance_to_db, calories_burned_to_db, dog_id))
 
+
+def remove_dog_from_data_tables(cursor, dog_id):
+    remove_dog_from_activities_table(cursor, dog_id)
+    remove_dog_from_care_info_table(cursor, dog_id)
+    remove_dog_from_fitness_table(cursor, dog_id)
+    remove_dog_from_goals_table(cursor, dog_id)
+    remove_dog_from_medical_records_table(cursor, dog_id)
+    remove_dog_from_nutrition_table(cursor, dog_id)
+    remove_dog_from_vaccinations_table(cursor, dog_id)
+    remove_dog_from_users_dogs_table(cursor, dog_id)
+
+def remove_dog_from_activities_table(cursor, dog_id):
+    delete_activities_query = f"DELETE FROM {ACTIVITIES_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_activities_query, (dog_id,))
+
+
+def remove_dog_from_care_info_table(cursor, dog_id):
+    delete_care_info_query = f"DELETE FROM {CARE_INFO_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_care_info_query, (dog_id,))
+
+
+def remove_dog_from_fitness_table(cursor, dog_id):
+    delete_fitness_query = f"DELETE FROM {FITNESS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_fitness_query, (dog_id,))
+
+
+def remove_dog_from_goals_table(cursor, dog_id):
+    delete_goals_query = f"DELETE FROM {GOALS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_goals_query, (dog_id,))
+
+
+def remove_dog_from_medical_records_table(cursor, dog_id):
+    delete_medical_records_query = f"DELETE FROM {MEDICAL_RECORDS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_medical_records_query, (dog_id,))
+
+
+def remove_dog_from_nutrition_table(cursor, dog_id):
+    delete_nutrition_query = f"DELETE FROM {NUTRITION_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_nutrition_query, (dog_id,))
+
+
+def remove_dog_from_vaccinations_table(cursor, dog_id):
+    delete_vaccinations_query = f"DELETE FROM {VACCINATIONS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_vaccinations_query, (dog_id,))
+
+
+def remove_dog_from_users_dogs_table(cursor, dog_id):
+    delete_users_dogs_query = f"DELETE FROM {USERS_DOGS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_users_dogs_query, (dog_id,))
