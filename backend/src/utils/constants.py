@@ -14,6 +14,7 @@ PLACES_TABLE = "places"
 GOALS_TABLE = "goals"
 ACTIVITIES_TABLE = "activities"
 FAVORITE_PLACES_TABLE = "favorite_places"
+NOTIFICATIONS_TABLE = "notifications"
 
 # Columns
 USER_ID_COLUMN = "user_id"
