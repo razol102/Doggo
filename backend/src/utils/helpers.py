@@ -200,6 +200,8 @@ def get_dog_weight(cursor, dog_id):
 
 
 def update_dog_activities(cursor, dog_id, steps, distance, dog_weight):
+    prev_steps, prev_distance = 0, 0.0
+
     add_fitness_data_to_active_activities_query = f"""
     UPDATE {ACTIVITIES_TABLE}
     SET {STEPS_COLUMN} = %s,
@@ -215,7 +217,10 @@ def update_dog_activities(cursor, dog_id, steps, distance, dog_weight):
         """
 
     cursor.execute(get_steps_and_distance_query, (dog_id,))
-    prev_steps, prev_distance = cursor.fetchone()
+    res = cursor.fetchone()
+    if res is not None: # if there is no active activity for the dog.
+        prev_steps, prev_distance = cursor.fetchone()
+
     steps_to_db = prev_steps + steps
     distance_to_db = prev_distance + distance
     calories_burned_to_db = get_burned_calories(dog_weight, distance_to_db)

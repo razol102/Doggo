@@ -7,7 +7,6 @@ app = Flask(__name__)
 # Initialize routes
 init_routes(app)
 
-# Run
 run_task_threads()
 
 if __name__ == '__main__':

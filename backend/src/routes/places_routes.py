@@ -27,7 +27,7 @@ def get_all_places():
 @places_routes.route("/api/places/by_type", methods=['GET'])
 def get_places_by_type():
     place_type = request.args.get('place_type')
-    get_places_by_type_query = f"SELECT * FROM {PLACES_TABLE} WHERE type = '{place_type}';"
+    get_places_by_type_query = f"SELECT * FROM {PLACES_TABLE} WHERE place_type = '{place_type}';"
 
     try:
         db = load_database_config()
