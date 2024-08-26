@@ -287,5 +287,3 @@ def remove_dog_from_vaccinations_table(cursor, dog_id):
 def remove_dog_from_users_dogs_table(cursor, dog_id):
     delete_users_dogs_query = f"DELETE FROM {USERS_DOGS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
     cursor.execute(delete_users_dogs_query, (dog_id,))
-
-

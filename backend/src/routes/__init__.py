@@ -11,6 +11,7 @@ from src.routes.medical_records_routes import medical_records_routes
 from src.routes.places_routes import places_routes
 from src.routes.goals_routes import goals_routes
 from src.routes.activities_routes import activities_routes
+from src.routes.favorite_places_routes import favorite_places_routes
 
 
 def init_routes(app):
@@ -27,3 +28,4 @@ def init_routes(app):
     app.register_blueprint(places_routes)
     app.register_blueprint(goals_routes)
     app.register_blueprint(activities_routes)
+    app.register_blueprint(favorite_places_routes)

@@ -7,7 +7,7 @@ from src.utils.config import load_database_config
 from src.utils.constants import *
 from src.utils.logger import logger
 
-TIME_THRESHOLD = timedelta(hours=1)
+TIME_THRESHOLD = timedelta(hours=5)
 
 
 def run_task_threads():
