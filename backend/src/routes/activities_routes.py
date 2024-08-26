@@ -13,8 +13,7 @@ def get_dog_activities_list():
     dog_id = request.args.get('dog_id')
     db = load_database_config()
     get_dog_activities_query = f"""SELECT *, 
-                                TO_CHAR(duration, 'HH24:MI:SS') AS duration,
-                                ROUND(distance::numeric, 2) AS distance
+                                TO_CHAR(duration, 'HH24:MI:SS') AS duration, distance
                                 FROM {ACTIVITIES_TABLE} WHERE {DOG_ID_COLUMN} = %s;"""
 
     try:
@@ -22,15 +21,17 @@ def get_dog_activities_list():
             with connection.cursor() as cursor:
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
                 cursor.execute(get_dog_activities_query, (dog_id,))
-                response = get_list_of_dicts_for_response(cursor)
+                list_of_dicts = get_list_of_dicts_for_response(cursor)
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
-    print(response)
 
-    if not response:
+    if not list_of_dicts:
         return "", HTTP_204_STATUS_NO_CONTENT
+    else:
+        for dictionary in list_of_dicts:
+            dictionary['distance'] = round(dictionary['distance'], 2)
 
-    return response, HTTP_200_OK
+    return list_of_dicts, HTTP_200_OK
 
 
 @activities_routes.route("/api/dog/activities", methods=['GET'])
@@ -38,8 +39,7 @@ def get_dog_activity_log():
     activity_id = request.args.get("activity_id")
     get_dog_activity_query = """
     SELECT start_time, end_time,         
-    ROUND(distance::numeric, 2) AS distance, 
-    steps, calories_burned,
+    distance, steps, calories_burned,
     TO_CHAR(duration, 'HH24:MI:SS') AS duration
     FROM activities
     WHERE activity_id = %s;
@@ -58,6 +58,8 @@ def get_dog_activity_log():
 
     if dict_res['duration'] is None:
         dict_res['duration'] = 0
+
+    dict_res['distance'] = round(dict_res['distance'], 2)
 
     return dict_res, HTTP_200_OK
 

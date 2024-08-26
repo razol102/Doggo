@@ -118,7 +118,7 @@ def get_dog_id_by_collar_id(cursor, collar_id):
         return dog_id[0]
 
 
-def get_collar_id_by_dog_id(cursor, dog_id):
+def get_collar_from_dog(cursor, dog_id):
     get_collar_id_query = "SELECT {0} FROM {1} WHERE {2} = %s;".format(COLLAR_ID_COLUMN, COLLARS_TABLE, DOG_ID_COLUMN)
     cursor.execute(get_collar_id_query, (dog_id,))
     collar_id = cursor.fetchone()

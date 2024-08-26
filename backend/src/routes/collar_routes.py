@@ -78,7 +78,7 @@ def update_battery_collar():
     try:
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
-                collar_id = get_collar_id_by_dog_id(cursor, dog_id)
+                collar_id = get_collar_from_dog(cursor, dog_id)
                 update_battery_level(cursor, collar_id, new_battery_level)
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400

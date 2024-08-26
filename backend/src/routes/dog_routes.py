@@ -81,7 +81,6 @@ def update_dog_info():
                            SET name = %(name)s, breed = %(breed)s, 
                            gender = %(gender)s, date_of_birth = %(date_of_birth)s,
                            weight = %(weight)s, height = %(height)s, image = %(image)s, 
-                           home_latitude = %(home_latitude)s, home_longitude = %(home_longitude)s
                            WHERE dog_id = %(dog_id)s;
                            """.format(DOGS_TABLE)
     try:

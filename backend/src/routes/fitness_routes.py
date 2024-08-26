@@ -82,8 +82,7 @@ def get_dog_fitness():
     fitness_date = request.args.get('date')
     db = load_database_config()
     get_fitness_query = """
-                        SELECT ROUND(distance::numeric, 2) AS distance,
-                        steps, calories_burned
+                        SELECT distance, steps, calories_burned
                         FROM {0} 
                         WHERE dog_id = %s AND fitness_date = %s;
                         """.format(FITNESS_TABLE)
@@ -105,7 +104,7 @@ def get_dog_fitness():
         "steps": 0,
         "calories_burned": 0
     } if not fitness_details else {
-        "distance": float(fitness_details[0]),
+        "distance": round(fitness_details[0], 2),
         "steps": fitness_details[1],
         "calories_burned": fitness_details[2]
     }
