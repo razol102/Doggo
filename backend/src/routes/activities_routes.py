@@ -13,7 +13,7 @@ def get_dog_activities_list():
     dog_id = request.args.get('dog_id')
     db = load_database_config()
     get_dog_activities_query = f"""SELECT *, 
-                                TO_CHAR(duration, 'DD "days" HH24:MI:SS') AS duration,
+                                TO_CHAR(duration, 'HH24:MI:SS') AS duration,
                                 ROUND(distance::numeric, 2) AS distance
                                 FROM {ACTIVITIES_TABLE} WHERE {DOG_ID_COLUMN} = %s;"""
 
@@ -40,7 +40,7 @@ def get_dog_activity_log():
     SELECT start_time, end_time,         
     ROUND(distance::numeric, 2) AS distance, 
     steps, calories_burned,
-    TO_CHAR(duration, 'DD "days" HH24:MI:SS') AS duration
+    TO_CHAR(duration, 'HH24:MI:SS') AS duration
     FROM activities
     WHERE activity_id = %s;
     """
@@ -59,14 +59,40 @@ def get_dog_activity_log():
     if dict_res['duration'] is None:
         dict_res['duration'] = 0
 
-
     return dict_res, HTTP_200_OK
+
+
+@activities_routes.route("/api/dog/activities", methods=['POST'])
+def add_dog_activity():
+    dog_id = int(request.args.get("dog_id"))
+    activity_type = request.args.get("activity_type")
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    add_dog_activity_query = f"""
+                            INSERT INTO {ACTIVITIES_TABLE} 
+                            ({DOG_ID_COLUMN}, activity_type, start_time)
+                            VALUES (%s, %s, %s);
+                            """
+
+    try:
+        db = load_database_config()
+
+        with psycopg2.connect(**db) as connection:
+            with connection.cursor() as cursor:
+                check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
+                check_for_active_activity(cursor, dog_id)
+                cursor.execute(add_dog_activity_query, (dog_id, activity_type, current_time))
+                connection.commit()
+    except(Exception, psycopg2.DatabaseError, ActiveActivityExistsError, DataNotFoundError) as error:
+        return jsonify({"error": str(error)}), 400
+
+    return "Activity was created successfully", 201
 
 
 @activities_routes.route("/api/dog/activities/end", methods=['PUT'])
 def end_dog_activity():
     activity_id = request.args.get("activity_id")
-    current_datetime = datetime.now()
+    current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     update_end_time_activity_query = f"""
         UPDATE {ACTIVITIES_TABLE}
