@@ -1,7 +1,5 @@
-import psycopg2
 from flask import Blueprint, request, jsonify
 
-from src.utils.config import load_database_config
 from src.utils.helpers import *
 
 favorite_places_routes = Blueprint('favorite_places_routes', __name__)
@@ -30,9 +28,9 @@ def set_favorite_places():
     data = request.json
     required_data = {"dog_id", "place_name", "place_latitude", "place_longitude", "address", "place_type"}
 
-    insert_favorite_places_query = f"INSERT INTO {FAVORITE_PLACES_TABLE} (%(dog_id)s, %(place_name)s, " \
-                                   f"%(place_latitude)s, " \
-                                   f"%(place_longitude)s, %(address)s, %(place_type)s);"
+    insert_favorite_places_query = f"""INSERT INTO {FAVORITE_PLACES_TABLE} (%(dog_id)s, %(place_name)s,
+                                    %(place_latitude)s,
+                                    %(place_longitude)s, %(address)s, %(place_type)s);"""
     delete_favorite_place_query = f"DELETE FROM {FAVORITE_PLACES_TABLE} WHERE dog_id = %s AND place_name = %s;"
 
     try:
@@ -52,5 +50,3 @@ def set_favorite_places():
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
     return "Favorite place was set successfully", HTTP_200_OK
-
-

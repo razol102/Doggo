@@ -10,12 +10,11 @@ dog_routes = Blueprint('dog_routes', __name__)
 @dog_routes.route('/api/dog/add', methods=['POST'])
 def add_new_dog():
     data = request.json
-    required_data = {"user_id", "name", "date_of_birth", "home_latitude", "home_longitude"}
+    required_data = {"user_id", "name", "date_of_birth"}
 
     add_new_dog_query = f""" INSERT INTO {DOGS_TABLE}
-                          (name, breed, gender, date_of_birth, weight, height, home_latitude, home_longitude) 
-                          VALUES (%(name)s, %(breed)s, %(gender)s, %(date_of_birth)s, %(weight)s, 
-                          %(height)s, %(home_latitude)s, %(home_longitude)s)
+                          (name, breed, gender, date_of_birth, weight, height) 
+                          VALUES (%(name)s, %(breed)s, %(gender)s, %(date_of_birth)s, %(weight)s, %(height)s)
                           RETURNING dog_id; """
 
     add_user_dog_query = f""" INSERT INTO {USERS_DOGS_TABLE} (user_id, dog_id) 
@@ -66,8 +65,6 @@ def get_dog_info():
         "weight": dog_details[5],
         "height": dog_details[6],
         #        "image": dog_details[7],
-        "home_latitude": dog_details[8],
-        "home_longitude": dog_details[9]
     }
 
     return jsonify(dog_data), HTTP_200_OK
@@ -115,28 +112,3 @@ def delete_dog():
         return jsonify({"error": str(error)}), 400
 
     return jsonify({"message": "Dog '{0}' was successfully deleted".format(dog_id)}), HTTP_200_OK
-
-
-@dog_routes.route('/api/dog/profile/home', methods=['PUT'])
-def update_dog_home_location():
-    data = request.json
-    dog_id = data.get("dog_id")
-    home_latitude = data.get("home_latitude")
-    home_longitude = data.get("home_longitude")
-    db = load_database_config()
-    update_home_loc_query = """
-                            UPDATE {0}
-                            SET home_latitude = %s, home_longitude = %s
-                            WHERE {1} = %s;
-                            """.format(DOGS_TABLE, DOG_ID_COLUMN)
-
-    try:
-        with psycopg2.connect(**db) as connection:
-            with connection.cursor() as cursor:
-                check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
-                cursor.execute(update_home_loc_query, (home_latitude, home_longitude, dog_id))
-                connection.commit()
-    except(Exception, ValueError, psycopg2.DatabaseError) as error:
-        return jsonify({"error": str(error)}), 400
-
-    return jsonify({"message": "Home location was updated!"}), HTTP_200_OK
