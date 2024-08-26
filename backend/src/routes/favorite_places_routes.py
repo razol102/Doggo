@@ -14,13 +14,15 @@ def get_all_favorite_places():
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 cursor.execute(get_dog_favorite_places_query)
-                rows = cursor.fetchall()
-                columns_names = [desc[0] for desc in cursor.description]
-                result = [dict(zip(columns_names, row)) for row in rows]
+                dict_response = get_list_of_dicts_for_response(cursor)
     except(Exception, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    return jsonify(result), HTTP_200_OK
+    if not dict_response:
+        return "", HTTP_204_STATUS_NO_CONTENT
+
+
+    return dict_response, HTTP_200_OK
 
 
 @favorite_places_routes.route("/api/favorite_places", methods=['PUT'])
@@ -28,9 +30,12 @@ def set_favorite_places():
     data = request.json
     required_data = {"dog_id", "place_name", "place_latitude", "place_longitude", "address", "place_type"}
 
-    insert_favorite_places_query = f"""INSERT INTO {FAVORITE_PLACES_TABLE} (%(dog_id)s, %(place_name)s,
-                                    %(place_latitude)s,
-                                    %(place_longitude)s, %(address)s, %(place_type)s);"""
+    insert_favorite_places_query = f"""
+    INSERT INTO {FAVORITE_PLACES_TABLE} 
+    (dog_id, place_name, place_latitude, place_longitude, address, place_type) 
+    VALUES (%(dog_id)s, %(place_name)s, %(place_latitude)s, %(place_longitude)s, %(address)s, %(place_type)s);
+    """
+
     delete_favorite_place_query = f"DELETE FROM {FAVORITE_PLACES_TABLE} WHERE dog_id = %s AND place_name = %s;"
 
     try:
@@ -42,10 +47,9 @@ def set_favorite_places():
 
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
-                cursor.execute(delete_favorite_place_query, data)
+                cursor.execute(delete_favorite_place_query, (data['dog_id'], data['place_name']))
                 cursor.execute(insert_favorite_places_query, data)
                 connection.commit()
-
     except(Exception, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 

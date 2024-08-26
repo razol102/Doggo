@@ -15,13 +15,11 @@ def get_all_places():
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 cursor.execute(all_places_query)
-                rows = cursor.fetchall()
-                columns_names = [desc[0] for desc in cursor.description]
-                result = [dict(zip(columns_names, row)) for row in rows]
+                dict_response = get_list_of_dicts_for_response(cursor)
     except(Exception, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    return jsonify(result), HTTP_200_OK
+    return jsonify(dict_response), HTTP_200_OK
 
 
 @places_routes.route("/api/places/by_type", methods=['GET'])
@@ -34,10 +32,8 @@ def get_places_by_type():
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 cursor.execute(get_places_by_type_query)
-                rows = cursor.fetchall()
-                columns_names = [desc[0] for desc in cursor.description]
-                result = [dict(zip(columns_names, row)) for row in rows]
+                dict_response = get_list_of_dicts_for_response(cursor)
     except(Exception, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    return jsonify(result), HTTP_200_OK
+    return jsonify(dict_response), HTTP_200_OK
