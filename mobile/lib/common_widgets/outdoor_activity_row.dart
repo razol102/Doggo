@@ -28,7 +28,7 @@ class OutdoorActivityRow extends StatelessWidget {
         imagePath = "assets/images/hike_activity.png";
         break;
       default:
-        imagePath = "";
+        imagePath = "assets/images/unknown_activity.png";
     }
     return imagePath;
   }

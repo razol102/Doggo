@@ -26,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   final BleService _bleService = BleService();
   bool _isConnectedToBle = false;
   String? _dogName;
+  late List<Map<String, dynamic>> activitiesArr = [];
 
   @override
   void initState() {
@@ -54,6 +55,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   void _initialize() {
     _checkBleConnectionStatus();
     _fetchDogInfo();
+    _fetchDogLatestActivities();
   }
 
   void _checkBleConnectionStatus() async {
@@ -73,6 +75,17 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
       });
     }
   }
+
+  void _fetchDogLatestActivities() async {
+    final dogId = await PreferencesService.getDogId();
+    if (dogId != null) {
+      final activities = await HttpService.getAllOutdoorActivities(dogId);
+      setState(() {
+        activitiesArr = activities;
+      });
+    }
+  }
+
 
   List<int> showingTooltipOnSpots = [21];
 
@@ -159,37 +172,6 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     ],
   );
 
-  List lastWorkoutArr = [
-    {
-      "activity_type": "walk",
-      "calories_burned": "100",
-      "distance": "0.5",
-      "steps": "500",
-      "duration": "50",
-      "start_time": "test",
-      "end_time": "test"
-    },
-    {
-      "activity_type": "run",
-      "calories_burned": "100",
-      "distance": "0.5",
-      "steps": "500",
-      "duration": "50",
-      "start_time": "test",
-      "end_time": "test"
-    },
-    {
-      "activity_type": "swim",
-      "calories_burned": "100",
-      "distance": "0.5",
-      "steps": "500",
-      "duration": "50",
-      "start_time": "test",
-      "end_time": "test"
-    },
-
-  ];
-
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -218,51 +200,57 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
 
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
-        appBar: AppBar(
-          backgroundColor: AppColors.whiteColor,
-          centerTitle: true,
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          leading: Container(
-            margin: const EdgeInsets.only(left: 8),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.bluetooth,
-                  color: _isConnectedToBle ? Colors.green : Colors.red,),
-                  color: AppColors.blackColor,
-                  onPressed: () async {
-                    await Navigator.pushNamed(context, BleConnectionScreen.routeName);
-                    _checkBleConnectionStatus();
-                  },
-                ),
-              ],
-            ),
-          ),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+      appBar: AppBar(
+        backgroundColor: AppColors.whiteColor,
+        centerTitle: true,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        leading: Container(
+          margin: const EdgeInsets.only(left: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                Icons.home, // TODO: show only if the collar connected to wifi
+              IconButton(
+                icon: Icon(Icons.bluetooth,
+                  color: _isConnectedToBle ? Colors.green : Colors.red,),
                 color: AppColors.blackColor,
-                size: 20,
+                onPressed: () async {
+                  await Navigator.pushNamed(context, BleConnectionScreen.routeName);
+                  _checkBleConnectionStatus();
+                },
               ),
-              SizedBox(width: 8),
-              Text(
-                _dogName ?? 'Dog Name',
-                style: const TextStyle(
-                  color: AppColors.blackColor,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(width: 8), // Space between the icon and the title
-              Icon(Icons.battery_3_bar), // TODO: change by battery level
             ],
           ),
-          actions: [
-            InkWell(
+        ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _isConnectedToBle ?
+            const Icon(
+              Icons.phone,
+              color: AppColors.blackColor,
+              size: 20,
+            ) :
+            const Icon(
+              Icons.home,
+              color: AppColors.blackColor,
+              size: 20,
+            ) ,
+            SizedBox(width: 8),
+            Text(
+              _dogName ?? 'Dog Name',
+              style: const TextStyle(
+                color: AppColors.blackColor,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(width: 8), // Space between the icon and the title
+            Icon(Icons.battery_3_bar), // TODO: change by battery level
+          ],
+        ),
+        actions: [
+          InkWell(
               onTap: () {
                 // Navigator.pushNamed(context, NotificationScreen.routeName);
               },
@@ -277,7 +265,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                   // Navigator.pushNamed(context, NotificationsScreen.routeName);
                 },
               )
-            ),],),
+          ),],),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -310,13 +298,16 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                     ),
                   ],
                 ),
+                activitiesArr.isEmpty ?
+                    const Center(child: Text("No Activities Available."),)
+                    :
                 ListView.builder(
                     padding: EdgeInsets.zero,
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: lastWorkoutArr.length,
+                    itemCount: 3, //show 3 latest activities
                     itemBuilder: (context, index) {
-                      var wObj = lastWorkoutArr[index] as Map? ?? {};
+                      var wObj = activitiesArr[index];
                       return InkWell(
                           onTap: () {
                             //Navigator.pushNamed(context, FinishWorkoutScreen.routeName);

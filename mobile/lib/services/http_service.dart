@@ -218,7 +218,6 @@ class HttpService {
   static Future<Map<String, dynamic>> fetchDogActivityStatus(String formattedDate, int dogId) async {
 
     final url = Uri.parse('$baseUrl/api/dog/fitness?dog_id=$dogId&date=$formattedDate');
-
     final response = await http.get(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -243,46 +242,6 @@ class HttpService {
     } else {
       throw Exception('Failed to load markers');
     }
-
-    //TODO: delete dummy data for testing!
-    // // Dummy data representing marker locations
-    // List<dynamic> dummyData = [
-    //   {
-    //     'lat': 32.0853,
-    //     'lon': 34.7818,
-    //     'category': 'medical',
-    //   },
-    //   {
-    //     'lat': 32.04866461125274,
-    //     'lon': 34.76023473261021,
-    //     'category': 'parks',
-    //   },
-    //   {
-    //     'lat': 32.0857,
-    //     'lon': 34.7822,
-    //     'category': 'pensions',
-    //   },
-    //   {
-    //     'lat': 32.0859,
-    //     'lon': 34.7824,
-    //     'category': 'restaurants',
-    //   },
-    //   {
-    //     'lat': 32.0861,
-    //     'lon': 34.7826,
-    //     'category': 'beauty',
-    //   },
-    //   {
-    //     'lat': 32.0863,
-    //     'lon': 34.7828,
-    //     'category': 'hotels',
-    //   },
-    // ];
-    //
-    // // Filter data based on category
-    // List<dynamic> filteredData = dummyData.where((marker) => marker['category'] == category).toList();
-    //
-    // return filteredData;
   }
 
   //--------------------------------------collar data--------------------------------------
@@ -502,7 +461,7 @@ class HttpService {
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'dog_id': dogId.toString(), //TODO: check if toString needed, also in pension put
+          'dog_id': dogId.toString(),
           'food_brand': foodBrand,
           'food_type': foodType,
           'food_amount_grams': foodAmountGrams,
@@ -520,7 +479,7 @@ class HttpService {
   }
 
   //--------------------------------------outdoor activities--------------------------------------
-  static Future<Map<String,dynamic>?> getAllOutdoorActivities(String dogId) async {
+  static Future<List<Map<String, dynamic>>> getAllOutdoorActivities(int dogId) async {
     final url = Uri.parse('$baseUrl/api/dog/activities/all?dog_id=$dogId');
     final response = await http.get(
         url,
@@ -528,11 +487,43 @@ class HttpService {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      List<dynamic> decodedData = jsonDecode(response.body);
+      return decodedData.cast<Map<String, dynamic>>();
     } else {
       print('Failed to get dog activities: ${response.statusCode}');
       throw Exception(jsonDecode(response.body)['error']);
     }
+
+    // return [
+    //   {
+    //     "activity_type": "walk",
+    //     "calories_burned": "200",
+    //     "distance": "0.5",
+    //     "steps": "500",
+    //     "duration": "50",
+    //     "start_time": "test",
+    //     "end_time": "test"
+    //   },
+    //   {
+    //     "activity_type": "run",
+    //     "calories_burned": "100",
+    //     "distance": "0.5",
+    //     "steps": "500",
+    //     "duration": "50",
+    //     "start_time": "test",
+    //     "end_time": "test"
+    //   },
+    //   {
+    //     "activity_type": "swim",
+    //     "calories_burned": "100",
+    //     "distance": "0.5",
+    //     "steps": "500",
+    //     "duration": "50",
+    //     "start_time": "test",
+    //     "end_time": "test"
+    //   },
+    //
+    // ];
   }
 
   //--------------------------------------test--------------------------------------
