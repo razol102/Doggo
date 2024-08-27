@@ -23,11 +23,13 @@ class _ConfigureCollarScreenState extends State<ConfigureCollarScreen> {
     try {
       final collarId = _collarIdController.text;
       final isAvailable = await HttpService.isCollarAvailable(collarId);
+      print('collar Id: $collarId is available? $isAvailable');
       if (isAvailable) {
         await HttpService.configureCollar(widget.dogId, collarId);
         print('Collar configured successfully');
         Navigator.pushNamed(context, BottomMenu.routeName);
       } else { // collar already attached to another dog
+        print('Collar configuration failed');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('This collar is already attached to another dog.'),

@@ -218,7 +218,6 @@ class HttpService {
   static Future<Map<String, dynamic>> fetchDogActivityStatus(String formattedDate, int dogId) async {
 
     final url = Uri.parse('$baseUrl/api/dog/fitness?dog_id=$dogId&date=$formattedDate');
-
     final response = await http.get(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -232,7 +231,7 @@ class HttpService {
 
   //--------------------------------------dog friendly places--------------------------------------
   static Future<List<dynamic>> fetchMapMarkers(String category) async {
-    final url = Uri.parse('$baseUrl/api/places/by_type?type=${category.toLowerCase()}');
+    final url = Uri.parse('$baseUrl/api/places/by_type?place_type=${category.toLowerCase()}');
     final response = await http.get(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -243,51 +242,11 @@ class HttpService {
     } else {
       throw Exception('Failed to load markers');
     }
-
-    //TODO: delete dummy data for testing!
-    // // Dummy data representing marker locations
-    // List<dynamic> dummyData = [
-    //   {
-    //     'lat': 32.0853,
-    //     'lon': 34.7818,
-    //     'category': 'medical',
-    //   },
-    //   {
-    //     'lat': 32.04866461125274,
-    //     'lon': 34.76023473261021,
-    //     'category': 'parks',
-    //   },
-    //   {
-    //     'lat': 32.0857,
-    //     'lon': 34.7822,
-    //     'category': 'pensions',
-    //   },
-    //   {
-    //     'lat': 32.0859,
-    //     'lon': 34.7824,
-    //     'category': 'restaurants',
-    //   },
-    //   {
-    //     'lat': 32.0861,
-    //     'lon': 34.7826,
-    //     'category': 'beauty',
-    //   },
-    //   {
-    //     'lat': 32.0863,
-    //     'lon': 34.7828,
-    //     'category': 'hotels',
-    //   },
-    // ];
-    //
-    // // Filter data based on category
-    // List<dynamic> filteredData = dummyData.where((marker) => marker['category'] == category).toList();
-    //
-    // return filteredData;
   }
 
   //--------------------------------------collar data--------------------------------------
   static Future<void> sendStepCountToBackend(String dogId, int stepCount) async {
-    final url = Uri.parse('$baseUrl/api/dog/fitness/steps?dog_id=$dogId&steps=$stepCount');
+    final url = Uri.parse('$baseUrl/api/dog/fitness?dog_id=$dogId&steps=$stepCount');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -300,22 +259,8 @@ class HttpService {
     }
   }
 
-  static Future<void> sendDistanceToBackend(String dogId, int distance) async {
-    final url = Uri.parse('$baseUrl/api/dog/fitness/distance_calories?dog_id=$dogId&distance=$distance');
-    final response = await http.put(
-      url,
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    if (response.statusCode == 200) {
-      print('Distance updated successfully');
-    } else {
-      print('Failed to update distance: ${response.statusCode}');
-    }
-  }
-
-  static Future<void> sendBatteryLevelToBackend(String deviceId, int batteryLevel) async {
-    final url = Uri.parse('$baseUrl/api/collar/battery?collar_id=$deviceId&battery_level=$batteryLevel');
+  static Future<void> sendBatteryLevelToBackend(String dogId, int batteryLevel) async {
+    final url = Uri.parse('$baseUrl/api/collar/battery?dog_id=$dogId&battery_level=$batteryLevel');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -371,6 +316,7 @@ class HttpService {
   }
 
   static Future<bool> isCollarAvailable(String collarId) async {
+    print(collarId);
     final url = Uri.parse('$baseUrl/api/collar/availability?collar_id=$collarId');
     final response = await http.get(
       url,
@@ -378,7 +324,7 @@ class HttpService {
     );
 
     if(response.statusCode == 200) {
-      return jsonDecode(response.body)['availability'];
+      return jsonDecode(response.body)['Available'];
     } else {
       throw Exception(jsonDecode(response.body)['error']);
     }
@@ -515,7 +461,7 @@ class HttpService {
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'dog_id': dogId.toString(), //TODO: check if toString needed, also in pension put
+          'dog_id': dogId.toString(),
           'food_brand': foodBrand,
           'food_type': foodType,
           'food_amount_grams': foodAmountGrams,
@@ -524,12 +470,60 @@ class HttpService {
         })
     );
 
-    if (response.statusCode == 200) {
-      print('Dog pension updated successfully');
+    if (response.statusCode == 201) {
+      print('Dog nutrition updated successfully');
     } else {
-      print('Failed to update dog pension: ${response.statusCode}');
+      print('Failed to update dog nutrition: ${response.statusCode}');
       throw Exception(jsonDecode(response.body)['error']);
     }
+  }
+
+  //--------------------------------------outdoor activities--------------------------------------
+  static Future<List<Map<String, dynamic>>> getAllOutdoorActivities(int dogId) async {
+    final url = Uri.parse('$baseUrl/api/dog/activities/all?dog_id=$dogId');
+    final response = await http.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> decodedData = jsonDecode(response.body);
+      return decodedData.cast<Map<String, dynamic>>();
+    } else {
+      print('Failed to get dog activities: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+
+    // return [
+    //   {
+    //     "activity_type": "walk",
+    //     "calories_burned": "200",
+    //     "distance": "0.5",
+    //     "steps": "500",
+    //     "duration": "50",
+    //     "start_time": "test",
+    //     "end_time": "test"
+    //   },
+    //   {
+    //     "activity_type": "run",
+    //     "calories_burned": "100",
+    //     "distance": "0.5",
+    //     "steps": "500",
+    //     "duration": "50",
+    //     "start_time": "test",
+    //     "end_time": "test"
+    //   },
+    //   {
+    //     "activity_type": "swim",
+    //     "calories_burned": "100",
+    //     "distance": "0.5",
+    //     "steps": "500",
+    //     "duration": "50",
+    //     "start_time": "test",
+    //     "end_time": "test"
+    //   },
+    //
+    // ];
   }
 
   //--------------------------------------test--------------------------------------

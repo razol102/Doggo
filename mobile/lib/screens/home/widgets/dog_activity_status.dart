@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/common_widgets/round_button.dart';
+import 'package:mobile/services/preferences_service.dart';
 import 'package:mobile/utils/app_colors.dart';
 import 'package:mobile/common_widgets/title_subtitle_cell.dart';
 import 'package:mobile/services/http_service.dart';
@@ -43,17 +44,20 @@ class _DogActivityStatusState extends State<DogActivityStatus>
 
   Future<void> _fetchActivityStatus(DateTime date) async {
     String formattedDate = DateFormat('yyyy-MM-dd').format(date);
-    final status = await HttpService.fetchDogActivityStatus(formattedDate, 15); //TODO: change to dogId by preferencesClass
-    setState(() {
-      currentSteps = status['steps']!;
-      totalSteps = 1000; // TODO: ask for the daily steps goal
-      calories = status['calories_burned']!;
-      distance = status['distance']!;
-      double newProgress = currentSteps / totalSteps;
-      _animation = Tween<double>(begin: _currentProgress, end: newProgress).animate(_controller);
-      _currentProgress = newProgress;
-      _controller.forward(from: 0);
-    });
+    final dogId = await PreferencesService.getDogId();
+    if (dogId != null) {
+      final status = await HttpService.fetchDogActivityStatus(formattedDate, dogId);
+      setState(() {
+        currentSteps = status['steps']!;
+        totalSteps = 1000; // TODO: ask for the daily steps goal
+        calories = status['calories_burned']!;
+        distance = status['distance']!;
+        double newProgress = currentSteps / totalSteps;
+        _animation = Tween<double>(begin: _currentProgress, end: newProgress).animate(_controller);
+        _currentProgress = newProgress;
+        _controller.forward(from: 0);
+      });
+    }
   }
 
   void _onDateSelected(DateTime date) {

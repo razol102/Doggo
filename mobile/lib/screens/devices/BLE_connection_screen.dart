@@ -65,9 +65,7 @@ class _BleConnectionScreenState extends State<BleConnectionScreen> with WidgetsB
             (int stepCount) {
           // Handle step count update if needed
         },
-        (int distance) {
-          // Handle distance update if needed
-        },
+
           () {
             setState(() {
               _statusMessage = 'Disconnected';
