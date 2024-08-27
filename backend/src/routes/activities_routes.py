@@ -14,7 +14,7 @@ def get_dog_activities_list():
     db = load_database_config()
     get_dog_activities_query = f"""
             SELECT 
-            activity_id, activity_type, calories_burned, distance, dog_id, 
+            activity_id, activity_type, calories_burned, distance, 
             TO_CHAR(duration, 'HH24:MI:SS') AS duration, 
             end_time, start_time, steps
             FROM {ACTIVITIES_TABLE} 
