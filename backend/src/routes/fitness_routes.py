@@ -97,8 +97,6 @@ def get_dog_fitness():
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
 
-    print(type(fitness_details[0]))
-
     response = {
         "distance": 0.0,
         "steps": 0,
@@ -108,7 +106,6 @@ def get_dog_fitness():
         "steps": fitness_details[1],
         "calories_burned": fitness_details[2]
     }
-    print(type(fitness_details[0]))
 
     return jsonify(response), HTTP_200_OK
 

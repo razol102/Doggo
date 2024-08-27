@@ -12,9 +12,14 @@ activities_routes = Blueprint('activities_routes', __name__)
 def get_dog_activities_list():
     dog_id = request.args.get('dog_id')
     db = load_database_config()
-    get_dog_activities_query = f"""SELECT *, 
-                                TO_CHAR(duration, 'HH24:MI:SS') AS duration, distance
-                                FROM {ACTIVITIES_TABLE} WHERE {DOG_ID_COLUMN} = %s;"""
+    get_dog_activities_query = f"""
+            SELECT 
+            activity_id, activity_type, calories_burned, distance, dog_id, 
+            TO_CHAR(duration, 'HH24:MI:SS') AS duration, 
+            end_time, start_time, steps
+            FROM {ACTIVITIES_TABLE} 
+            WHERE {DOG_ID_COLUMN} = %s;
+            """
 
     try:
         with psycopg2.connect(**db) as connection:

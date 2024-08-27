@@ -12,7 +12,7 @@ def health_check():
     db = load_database_config()
     print(db)
     print("checking....")
-    return "Hello Beautiful World !@!@!@"
+    return "Hello World ..."
 
 
 @other_routes.route("/api/user/all", methods=['GET'])

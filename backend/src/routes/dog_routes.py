@@ -76,13 +76,13 @@ def update_dog_info():
     dog_id = data.get("dog_id")
     db = load_database_config()
 
-    update_details_query = """
-                           UPDATE {0}
+    update_details_query = f"""
+                           UPDATE {DOGS_TABLE}
                            SET name = %(name)s, breed = %(breed)s, 
                            gender = %(gender)s, date_of_birth = %(date_of_birth)s,
-                           weight = %(weight)s, height = %(height)s, image = %(image)s, 
+                           weight = %(weight)s, height = %(height)s, image = %(image)s
                            WHERE dog_id = %(dog_id)s;
-                           """.format(DOGS_TABLE)
+                           """
     try:
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
