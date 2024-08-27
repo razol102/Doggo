@@ -27,7 +27,7 @@ def get_dog_nutrition():
     return jsonify(dict_response), HTTP_200_OK
 
 
-@nutrition_routes.route("/api/dog/nutrition", methods=['POST'])
+@nutrition_routes.route("/api/dog/nutrition", methods=['PUT'])
 def add_dog_nutrition():
     data = request.json
     db = load_database_config()

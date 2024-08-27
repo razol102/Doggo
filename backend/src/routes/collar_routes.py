@@ -71,14 +71,14 @@ def get_battery_level():
 
 @collar_routes.route("/api/collar/battery", methods=['PUT'])
 def update_battery_collar():
-    collar_id = request.args.get('collar_id')
+    dog_id = request.args.get('dog_id')
     new_battery_level = request.args.get('battery_level')
     db = load_database_config()
 
     try:
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
-                check_if_exists(cursor, COLLARS_TABLE, COLLAR_ID_COLUMN, collar_id)
+                collar_id = get_collar_from_dog(cursor, dog_id)
                 update_battery_level(cursor, collar_id, new_battery_level)
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
@@ -99,7 +99,7 @@ def is_collar_available():
                 check_if_exists(cursor, COLLARS_TABLE, COLLAR_ID_COLUMN, collar_id)
                 cursor.execute(get_attached_dog_query, (collar_id, ))
                 dog_id = cursor.fetchone()[0]
-                is_available = dog_id is not None
+                is_available = dog_id is None
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
 

@@ -13,7 +13,8 @@ fitness_routes = Blueprint('fitness_routes', __name__)
 @fitness_routes.route('/api/dog/fitness', methods=['PUT'])
 def add_fitness_from_mobile():
     dog_id = request.args.get('dog_id')
-    embedded_steps = int(request.args.get('steps'))
+    steps = request.args.get('steps')
+    embedded_steps = int(steps)
     today_date = date.today()
 
     try:
@@ -23,7 +24,6 @@ def add_fitness_from_mobile():
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
                 collar_id = get_collar_id_by_dog_id(cursor, dog_id)
                 update_collar_connection(cursor, collar_id, CONNECTED_TO_MOBILE)
-
                 if does_exist_by_date(cursor, FITNESS_TABLE, DOG_ID_COLUMN, dog_id, FITNESS_DATE_COLUMN, today_date):
                     update_data_from_collar(cursor, dog_id, embedded_steps)
                 else:
@@ -55,6 +55,7 @@ def add_data_from_collar():
             missing_fields = required_data - data.keys()
             raise MissingFieldsError(missing_fields)
         db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, COLLARS_TABLE, COLLAR_ID_COLUMN, collar_id)
@@ -81,8 +82,7 @@ def get_dog_fitness():
     fitness_date = request.args.get('date')
     db = load_database_config()
     get_fitness_query = """
-                        SELECT ROUND(distance::numeric, 2) AS distance,
-                        steps, calories_burned
+                        SELECT distance, steps, calories_burned
                         FROM {0} 
                         WHERE dog_id = %s AND fitness_date = %s;
                         """.format(FITNESS_TABLE)
@@ -97,15 +97,18 @@ def get_dog_fitness():
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
 
+    print(type(fitness_details[0]))
+
     response = {
         "distance": 0.0,
         "steps": 0,
         "calories_burned": 0
     } if not fitness_details else {
-        "distance": fitness_details[0],
+        "distance": round(fitness_details[0], 2),
         "steps": fitness_details[1],
         "calories_burned": fitness_details[2]
     }
+    print(type(fitness_details[0]))
 
     return jsonify(response), HTTP_200_OK
 

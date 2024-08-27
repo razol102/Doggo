@@ -652,3 +652,15 @@ RuntimeError: Error reading configuration file: No section: 'postgresql'
 2024-08-21 19:49:57,024 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2024 19:49:57] "[31m[1mGET /api/dog/activities?dog_id=105 HTTP/1.1[0m" 400 -
 2024-08-21 19:50:07,502 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2024 19:50:07] "[35m[1mGET /api/dog/activities?dog_id=16 HTTP/1.1[0m" 204 -
 2024-08-21 19:50:18,461 - werkzeug - INFO - 127.0.0.1 - - [21/Aug/2024 19:50:18] "[31m[1mDELETE /api/dog/activities?activity_id=56 HTTP/1.1[0m" 400 -
+2024-08-26 19:34:13,504 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-26 19:34:13,504 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-26 19:34:18,136 - werkzeug - INFO - 127.0.0.1 - - [26/Aug/2024 19:34:18] "[35m[1mGET /api/dog/profile?dog_id=101 HTTP/1.1[0m" 500 -
+2024-08-26 19:34:52,806 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-08-26 19:34:52,806 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-08-26 19:34:57,292 - werkzeug - INFO - 127.0.0.1 - - [26/Aug/2024 19:34:57] "GET /api/dog/profile?dog_id=101 HTTP/1.1" 200 -

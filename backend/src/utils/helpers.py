@@ -1,5 +1,9 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
+import time
+import psycopg2
+from flask import jsonify
 
+from src.utils.config import load_database_config
 from src.utils.constants import *
 from src.utils.conversion_tables import get_fixed_steps_and_distance, get_burned_calories
 from src.utils.exceptions import *
@@ -114,7 +118,7 @@ def get_dog_id_by_collar_id(cursor, collar_id):
         return dog_id[0]
 
 
-def get_collar_id_by_dog_id(cursor, dog_id):
+def get_collar_from_dog(cursor, dog_id):
     get_collar_id_query = "SELECT {0} FROM {1} WHERE {2} = %s;".format(COLLAR_ID_COLUMN, COLLARS_TABLE, DOG_ID_COLUMN)
     cursor.execute(get_collar_id_query, (dog_id,))
     collar_id = cursor.fetchone()
@@ -196,6 +200,8 @@ def get_dog_weight(cursor, dog_id):
 
 
 def update_dog_activities(cursor, dog_id, steps, distance, dog_weight):
+    prev_steps, prev_distance = 0, 0.0
+
     add_fitness_data_to_active_activities_query = f"""
     UPDATE {ACTIVITIES_TABLE}
     SET {STEPS_COLUMN} = %s,
@@ -211,7 +217,10 @@ def update_dog_activities(cursor, dog_id, steps, distance, dog_weight):
         """
 
     cursor.execute(get_steps_and_distance_query, (dog_id,))
-    prev_steps, prev_distance = cursor.fetchone()
+    res = cursor.fetchone()
+    if res is not None: # if there is no active activity for the dog.
+        prev_steps, prev_distance = cursor.fetchone()
+
     steps_to_db = prev_steps + steps
     distance_to_db = prev_distance + distance
     calories_burned_to_db = get_burned_calories(dog_weight, distance_to_db)
@@ -219,3 +228,67 @@ def update_dog_activities(cursor, dog_id, steps, distance, dog_weight):
     cursor.execute(add_fitness_data_to_active_activities_query,
                    (steps_to_db, distance_to_db, calories_burned_to_db, dog_id))
 
+
+def check_for_active_activity(cursor, dog_id):
+    get_active_activity =   f"""
+                            SELECT COUNT(*) 
+                            FROM {ACTIVITIES_TABLE} 
+                            WHERE {DOG_ID_COLUMN} = %s AND end_time IS NULL
+                            ;"""
+
+    cursor.execute(get_active_activity, (dog_id,))
+    activities_count = cursor.fetchone()[0]
+
+    if activities_count != 0:
+        raise ActiveActivityExistsError()
+
+
+def remove_dog_from_data_tables(cursor, dog_id):
+    remove_dog_from_activities_table(cursor, dog_id)
+    remove_dog_from_care_info_table(cursor, dog_id)
+    remove_dog_from_fitness_table(cursor, dog_id)
+    remove_dog_from_goals_table(cursor, dog_id)
+    remove_dog_from_medical_records_table(cursor, dog_id)
+    remove_dog_from_nutrition_table(cursor, dog_id)
+    remove_dog_from_vaccinations_table(cursor, dog_id)
+    remove_dog_from_users_dogs_table(cursor, dog_id)
+
+
+def remove_dog_from_activities_table(cursor, dog_id):
+    delete_activities_query = f"DELETE FROM {ACTIVITIES_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_activities_query, (dog_id,))
+
+
+def remove_dog_from_care_info_table(cursor, dog_id):
+    delete_care_info_query = f"DELETE FROM {CARE_INFO_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_care_info_query, (dog_id,))
+
+
+def remove_dog_from_fitness_table(cursor, dog_id):
+    delete_fitness_query = f"DELETE FROM {FITNESS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_fitness_query, (dog_id,))
+
+
+def remove_dog_from_goals_table(cursor, dog_id):
+    delete_goals_query = f"DELETE FROM {GOALS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_goals_query, (dog_id,))
+
+
+def remove_dog_from_medical_records_table(cursor, dog_id):
+    delete_medical_records_query = f"DELETE FROM {MEDICAL_RECORDS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_medical_records_query, (dog_id,))
+
+
+def remove_dog_from_nutrition_table(cursor, dog_id):
+    delete_nutrition_query = f"DELETE FROM {NUTRITION_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_nutrition_query, (dog_id,))
+
+
+def remove_dog_from_vaccinations_table(cursor, dog_id):
+    delete_vaccinations_query = f"DELETE FROM {VACCINATIONS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_vaccinations_query, (dog_id,))
+
+
+def remove_dog_from_users_dogs_table(cursor, dog_id):
+    delete_users_dogs_query = f"DELETE FROM {USERS_DOGS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_users_dogs_query, (dog_id,))
