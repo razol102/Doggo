@@ -106,7 +106,7 @@ class _MapScreenState extends State<MapScreen> {
         for (var markerData in markersData) {
           _markers.add(
             Marker(
-              point: LatLng(markerData['latitude'], markerData['longitude']),
+              point: LatLng(markerData['place_latitude'], markerData['place_longitude']),
               child: Icon(
                 Icons.location_pin,
                 color: _getCategoryColor(category),
@@ -131,7 +131,7 @@ class _MapScreenState extends State<MapScreen> {
         return Colors.blue;
       case 'restaurants':
         return Colors.orange;
-      case 'beauty':
+      case 'beauty salons':
         return Colors.purple;
       case 'hotels':
         return Colors.teal;

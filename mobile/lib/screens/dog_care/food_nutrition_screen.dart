@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:mobile/services/preferences_service.dart';
-import 'package:intl/intl.dart';
 import 'package:mobile/services/validation_methods.dart';
 
 import '../../common_widgets/round_textfield.dart';
@@ -83,10 +82,12 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
 
   Future<void> _saveNutritionData() async {
     setState(() {
-      String? _foodBrandError = ValidationMethods.validateNotEmpty(_foodBrandController.text, 'Food brand');
-      String? _foodTypeError = ValidationMethods.validateNotEmpty(_foodTypeController.text, 'Food type');
-      String? _foodAmountGramsError = ValidationMethods.validatePositiveInt(_foodAmountGramsController.text, 'Food amount');
-      String? _dailySnacksError = ValidationMethods.validatePositiveInt(_dailySnacksController.text, 'Daily Snacks');
+      _foodBrandError = ValidationMethods.validateNotEmpty(_foodBrandController.text, 'Food brand');
+      _foodTypeError = ValidationMethods.validateNotEmpty(_foodTypeController.text, 'Food type');
+      _foodAmountGramsError = ValidationMethods.validatePositiveInt(_foodAmountGramsController.text, 'Food amount');
+      if (_dailySnacksController.text.isEmpty) {
+        _dailySnacksController.text = '0';
+      }
     });
 
     if (_foodBrandError != null || _foodTypeError != null || _foodAmountGramsError != null || _dailySnacksError != null) {
@@ -184,14 +185,14 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                   hintText: (_foodType == 'No nutrition information available' && _isEditing) ? "Food type" : _foodType,
                   icon: "assets/icons/food_type_icon.png",
                   textInputType: TextInputType.text,
-                  readOnly: true,
+                  readOnly: !_isEditing,
                   errorText: _foodTypeError,
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
                   textEditingController: _foodAmountGramsController,
                   hintText: (_foodAmountGrams == 'No nutrition information available' && _isEditing) ? "Food amount (grams)" : _foodAmountGrams,
-                  icon: "assets/icons/food_amount_icon.png",
+                    icon: "assets/icons/food_amount_icon.png",
                   textInputType: TextInputType.number,
                   readOnly: !_isEditing,
                   errorText: _foodAmountGramsError,

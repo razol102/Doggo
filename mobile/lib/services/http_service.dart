@@ -232,7 +232,7 @@ class HttpService {
 
   //--------------------------------------dog friendly places--------------------------------------
   static Future<List<dynamic>> fetchMapMarkers(String category) async {
-    final url = Uri.parse('$baseUrl/api/places/by_type?type=${category.toLowerCase()}');
+    final url = Uri.parse('$baseUrl/api/places/by_type?place_type=${category.toLowerCase()}');
     final response = await http.get(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -287,7 +287,7 @@ class HttpService {
 
   //--------------------------------------collar data--------------------------------------
   static Future<void> sendStepCountToBackend(String dogId, int stepCount) async {
-    final url = Uri.parse('$baseUrl/api/dog/fitness/steps?dog_id=$dogId&steps=$stepCount');
+    final url = Uri.parse('$baseUrl/api/dog/fitness?dog_id=$dogId&steps=$stepCount');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -300,22 +300,8 @@ class HttpService {
     }
   }
 
-  static Future<void> sendDistanceToBackend(String dogId, int distance) async {
-    final url = Uri.parse('$baseUrl/api/dog/fitness/distance_calories?dog_id=$dogId&distance=$distance');
-    final response = await http.put(
-      url,
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    if (response.statusCode == 200) {
-      print('Distance updated successfully');
-    } else {
-      print('Failed to update distance: ${response.statusCode}');
-    }
-  }
-
-  static Future<void> sendBatteryLevelToBackend(String deviceId, int batteryLevel) async {
-    final url = Uri.parse('$baseUrl/api/collar/battery?collar_id=$deviceId&battery_level=$batteryLevel');
+  static Future<void> sendBatteryLevelToBackend(String dogId, int batteryLevel) async {
+    final url = Uri.parse('$baseUrl/api/collar/battery?dog_id=$dogId&battery_level=$batteryLevel');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -371,6 +357,7 @@ class HttpService {
   }
 
   static Future<bool> isCollarAvailable(String collarId) async {
+    print(collarId);
     final url = Uri.parse('$baseUrl/api/collar/availability?collar_id=$collarId');
     final response = await http.get(
       url,
@@ -378,7 +365,7 @@ class HttpService {
     );
 
     if(response.statusCode == 200) {
-      return jsonDecode(response.body)['availability'];
+      return jsonDecode(response.body)['Available'];
     } else {
       throw Exception(jsonDecode(response.body)['error']);
     }
@@ -524,10 +511,26 @@ class HttpService {
         })
     );
 
-    if (response.statusCode == 200) {
-      print('Dog pension updated successfully');
+    if (response.statusCode == 201) {
+      print('Dog nutrition updated successfully');
     } else {
-      print('Failed to update dog pension: ${response.statusCode}');
+      print('Failed to update dog nutrition: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  //--------------------------------------outdoor activities--------------------------------------
+  static Future<Map<String,dynamic>?> getAllOutdoorActivities(String dogId) async {
+    final url = Uri.parse('$baseUrl/api/dog/activities/all?dog_id=$dogId');
+    final response = await http.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      print('Failed to get dog activities: ${response.statusCode}');
       throw Exception(jsonDecode(response.body)['error']);
     }
   }

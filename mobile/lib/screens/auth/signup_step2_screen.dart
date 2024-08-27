@@ -30,6 +30,7 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
       int user_id = response['user_id'];
       print('user $user_id was created');
       await PreferencesService.saveUserId(response['user_id']);
+      Navigator.pushNamed(context, AddNewDogScreen.routeName); // Navigate in case of successful user register
     } catch (e) {
       print(e);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
@@ -133,17 +134,8 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
                                   final email = _emailController.text;
                                   final password = _passwordController.text;
 
-                                  // Perform the registration action
-                                  //TODO: delete after implementation
-                                  print("Full Name: $fullName");
-                                  print("Birthdate: $birthdate");
-                                  print("Phone Number: $phoneNumber");
-                                  print("Email: $email");
-                                  print("Password: $password");
-
                                   _register(fullName, birthdate, phoneNumber, email, password);
                                   // After successful registration, navigate to add new dog screen
-                                  Navigator.pushNamed(context, AddNewDogScreen.routeName);
                                 }
                               },
                               backgroundColor: AppColors.whiteColor,

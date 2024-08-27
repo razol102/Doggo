@@ -6,7 +6,7 @@ import 'package:mobile/services/ble_service.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:mobile/services/preferences_service.dart';
 import 'package:mobile/utils/app_colors.dart';
-import 'package:mobile/screens/home/widgets/workout_row.dart';
+import 'package:mobile/common_widgets/outdoor_activity_row.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/main.dart';
@@ -161,26 +161,33 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
 
   List lastWorkoutArr = [
     {
-      "name": "Full Body Workout",
-      "image": "assets/images/Workout1.png",
-      "kcal": "180",
-      "time": "20",
-      "progress": 0.3
+      "activity_type": "walk",
+      "calories_burned": "100",
+      "distance": "0.5",
+      "steps": "500",
+      "duration": "50",
+      "start_time": "test",
+      "end_time": "test"
     },
     {
-      "name": "Lower Body Workout",
-      "image": "assets/images/Workout2.png",
-      "kcal": "200",
-      "time": "30",
-      "progress": 0.4
+      "activity_type": "run",
+      "calories_burned": "100",
+      "distance": "0.5",
+      "steps": "500",
+      "duration": "50",
+      "start_time": "test",
+      "end_time": "test"
     },
     {
-      "name": "Ab Workout",
-      "image": "assets/images/Workout3.png",
-      "kcal": "300",
-      "time": "40",
-      "progress": 0.7
+      "activity_type": "swim",
+      "calories_burned": "100",
+      "distance": "0.5",
+      "steps": "500",
+      "duration": "50",
+      "start_time": "test",
+      "end_time": "test"
     },
+
   ];
 
   @override
@@ -314,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                           onTap: () {
                             //Navigator.pushNamed(context, FinishWorkoutScreen.routeName);
                           },
-                          child: WorkoutRow(wObj: wObj));
+                          child: OutdoorActivityRow(wObj: wObj));
                     }),
                 SizedBox(
                   height: media.width * 0.1,
