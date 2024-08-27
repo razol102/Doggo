@@ -36,6 +36,9 @@ jobs:
       run: |
         docker push niznaor/doggo-app:${{ env.TAG }}
         
+    - name: Debug SSH Key Access
+      run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > /dev/null
+
     - name: SSH to EC2 and deploy
       uses: appleboy/ssh-action@v1.0.3
       with:
