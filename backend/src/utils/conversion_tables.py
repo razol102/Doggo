@@ -46,7 +46,24 @@ def number_in_range(fraction, range_tuple):
     return start + fraction * (end - start)
 
 
-def get_fixed_steps_and_distance(weight, embedded_steps):
+def get_converted_steps(weight, steps_to_convert):
+    factor_range, weight_range, step_length_range = get_ranges_by_weight(weight)
+    fraction = get_position_in_range(weight, weight_range)
+    converted_steps = steps_to_convert * number_in_range(fraction, factor_range)
+
+    return converted_steps
+
+
+def get_converted_distance(weight, steps):
+    factor_range, weight_range, step_length_range = get_ranges_by_weight(weight)
+    fraction = get_position_in_range(weight, weight_range)
+    converted_distance_cm = steps * number_in_range(fraction, step_length_range)
+    converted_distance_km = converted_distance_cm / 100000  # Convert to kilometers
+
+    return converted_distance_km
+
+
+def get_converted_steps_and_distance(weight, embedded_steps):
     factor_range, weight_range, step_length_range = get_ranges_by_weight(weight)
     fraction = get_position_in_range(weight, weight_range)
     fixed_steps = embedded_steps * number_in_range(fraction, factor_range)

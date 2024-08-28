@@ -11,7 +11,7 @@ fitness_routes = Blueprint('fitness_routes', __name__)
 
 # Endpoint from mobile
 @fitness_routes.route('/api/dog/fitness', methods=['PUT'])
-def add_fitness_from_mobile():
+def fitness_from_mobile():
     dog_id = request.args.get('dog_id')
     steps = request.args.get('steps')
     embedded_steps = int(steps)
@@ -22,12 +22,13 @@ def add_fitness_from_mobile():
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
-                collar_id = get_collar_id_by_dog_id(cursor, dog_id)
+                collar_id = get_collar_from_dog(cursor, dog_id)
                 update_collar_connection(cursor, collar_id, CONNECTED_TO_MOBILE)
+
                 if does_exist_by_date(cursor, FITNESS_TABLE, DOG_ID_COLUMN, dog_id, FITNESS_DATE_COLUMN, today_date):
-                    update_data_from_collar(cursor, dog_id, embedded_steps)
+                    update_fitness(cursor, dog_id, embedded_steps)
                 else:
-                    create_data_from_collar(cursor, dog_id, embedded_steps)
+                    create_fitness(cursor, dog_id, embedded_steps)
 
                 connection.commit()
 
@@ -39,7 +40,7 @@ def add_fitness_from_mobile():
 
 # Endpoint from collar
 @fitness_routes.route('/api/dog/collar_data', methods=['PUT'])
-def add_data_from_collar():
+def data_from_collar():
     data = request.form.to_dict()
     required_data = {"collarID", "battery", "steps"}
 
@@ -64,9 +65,9 @@ def add_data_from_collar():
                 update_battery_level(cursor, collar_id, battery_level)
 
                 if does_exist_by_date(cursor, FITNESS_TABLE, DOG_ID_COLUMN, dog_id, FITNESS_DATE_COLUMN, today_date):
-                    update_data_from_collar(cursor, dog_id, embedded_steps)
+                    update_fitness(cursor, dog_id, embedded_steps)
                 else:
-                    create_data_from_collar(cursor, dog_id, embedded_steps)
+                    create_fitness(cursor, dog_id, embedded_steps)
 
                 connection.commit()
 
