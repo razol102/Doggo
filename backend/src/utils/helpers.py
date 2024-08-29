@@ -44,20 +44,24 @@ def does_exist_by_date(cursor, table_to_check, column1_to_check, data1_to_check,
 def update_fitness(cursor, dog_id, embedded_steps):
     update_fitness_query = f"""
         UPDATE {FITNESS_TABLE}
-        SET {DISTANCE_COLUMN} = %s, {STEPS_COLUMN} = %s, {CALORIES_COLUMN} = %s
-        WHERE {DOG_ID_COLUMN} = %s AND {FITNESS_DATE_COLUMN} = %s; """
+        SET {STEPS_COLUMN} = {STEPS_COLUMN} + %s, 
+            {DISTANCE_COLUMN} = {DISTANCE_COLUMN} + %s, 
+            {CALORIES_COLUMN} = {CALORIES_COLUMN} + %s
+        WHERE {DOG_ID_COLUMN} = %s AND {FITNESS_DATE_COLUMN} = %s;
+    """
 
     today_date = date.today()
     dog_weight = get_dog_weight(cursor, dog_id)
 
     converted_steps = get_converted_steps(dog_weight, embedded_steps)
-    steps_to_db, steps_to_subtract = fix_steps_before_update(cursor, dog_id, converted_steps, dog_weight)
-    distance_to_db = get_converted_distance(dog_weight, steps_to_db)
-    calories_to_db = get_burned_calories(dog_weight, distance_to_db)
+    steps_to_db = fix_steps_before_update(cursor, dog_id, converted_steps, dog_weight)
 
-    save_last_steps(cursor, dog_id, steps_to_db)
-    cursor.execute(update_fitness_query, (distance_to_db, steps_to_db, calories_to_db, dog_id, today_date))
-    update_dog_activity_after_update_fitness(cursor, dog_id, steps_to_db - steps_to_subtract, dog_weight)
+    if steps_to_db != 0:
+        distance_to_db = get_converted_distance(dog_weight, steps_to_db)
+        calories_to_db = get_burned_calories(dog_weight, distance_to_db)
+        cursor.execute(update_fitness_query, (steps_to_db, distance_to_db, calories_to_db, dog_id, today_date))
+        update_dog_activity(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db)
+        save_last_steps(cursor, dog_id, converted_steps)
 
 
 def create_fitness(cursor, dog_id, embedded_steps):
@@ -72,10 +76,9 @@ def create_fitness(cursor, dog_id, embedded_steps):
     distance_to_db = get_converted_distance(dog_weight, steps_to_db)
     calories_to_db = get_burned_calories(dog_weight, distance_to_db)
 
-    save_last_steps(cursor, dog_id, steps_to_db)
+    save_last_steps(cursor, dog_id, converted_steps)
     cursor.execute(create_fitness_query, (dog_id, today_date, distance_to_db, steps_to_db, calories_to_db))
-    update_dog_activity_after_create_fitness(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db)
-    #update_dog_activities(cursor, dog_id, steps_to_db, last_steps, dog_weight)
+    update_dog_activity(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db)
 
 
 def update_battery_level(cursor, collar_id, new_level):
@@ -179,76 +182,18 @@ def get_dog_weight(cursor, dog_id):
     return cursor.fetchone()[0]
 
 
-def update_dog_activity(cursor, dog_id, steps, distance, dog_weight):
-    prev_steps, prev_distance = 0, 0.0
-
-    add_fitness_data_to_active_activities_query = f"""
-    UPDATE {ACTIVITIES_TABLE}
-    SET {STEPS_COLUMN} = %s,
-        {DISTANCE_COLUMN} = %s,
-        {CALORIES_COLUMN} = %s
-    WHERE duration IS NULL AND {DOG_ID_COLUMN} = %s;
-    """
-
-    get_steps_and_distance_query = f"""
-        SELECT {STEPS_COLUMN}, {DISTANCE_COLUMN}
-        FROM {ACTIVITIES_TABLE}
-        WHERE duration IS NULL AND {DOG_ID_COLUMN} = %s;
-        """
-
-    cursor.execute(get_steps_and_distance_query, (dog_id,))
-    res = cursor.fetchone()
-    if res is not None: # if there is no active activity for the dog.
-        prev_steps, prev_distance = cursor.fetchone()
-
-    steps_to_db = prev_steps + steps
-    distance_to_db = prev_distance + distance
-    calories_burned_to_db = get_burned_calories(dog_weight, distance_to_db)
-
-    cursor.execute(add_fitness_data_to_active_activities_query,
-                   (steps_to_db, distance_to_db, calories_burned_to_db, dog_id))
-
-
-def update_dog_activity_after_update_fitness(cursor, dog_id, steps_to_add, dog_weight):
+def update_dog_activity(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db):
 
     add_fitness_data_to_active_activity_query = f"""
     UPDATE {ACTIVITIES_TABLE}
-    SET {STEPS_COLUMN} = %s,
-        {DISTANCE_COLUMN} = %s,
-        {CALORIES_COLUMN} = %s
+    SET {STEPS_COLUMN} = {STEPS_COLUMN} + %s, 
+        {DISTANCE_COLUMN} = {DISTANCE_COLUMN} + %s, 
+        {CALORIES_COLUMN} = {CALORIES_COLUMN} + %s
     WHERE duration IS NULL AND {DOG_ID_COLUMN} = %s;
     """
-    get_steps_query = f"""
-        SELECT {STEPS_COLUMN}
-        FROM {ACTIVITIES_TABLE}
-        WHERE duration IS NULL AND {DOG_ID_COLUMN} = %s;
-        """
-
-    cursor.execute(get_steps_query, (dog_id,))
-    res = cursor.fetchone()
-    if res is None: # if there is no active activity for the dog.
-        return
-
-    prev_steps = res[0]
-
-    steps_to_db = prev_steps + steps_to_add
-    distance_to_db = get_converted_distance(dog_weight, steps_to_db)
-    calories_burned_to_db = get_burned_calories(dog_weight, distance_to_db)
 
     cursor.execute(add_fitness_data_to_active_activity_query,
-                   (steps_to_db, distance_to_db, calories_burned_to_db, dog_id))
-
-
-# Just need to add this fitness data: steps_to_add, distance_to_add, calories_to_add
-def update_dog_activity_after_create_fitness(cursor, dog_id, steps_to_add, distance_to_add, calories_to_add):
-    add_fitness_data_to_active_activity_query = f"""
-        UPDATE activities
-        SET steps = steps + %s, distance = distance + %s, calories_burned = calories_burned + %s 
-        WHERE duration IS NULL AND {DOG_ID_COLUMN} = %s;
-        """
-
-    cursor.execute(add_fitness_data_to_active_activity_query,
-                   (steps_to_add, distance_to_add, calories_to_add, dog_id))
+                   (steps_to_db, distance_to_db, calories_to_db, dog_id))
 
 
 def check_for_active_activity(cursor, dog_id):
@@ -327,10 +272,7 @@ def fix_steps_before_create(cursor, dog_id, new_steps):
     return fixed_fitness_to_db
 
 
-# Also return a value to subtract from 'fixed_fitness_to_db' for updating goals and activities
 def fix_steps_before_update(cursor, dog_id, new_steps, dog_weight):
-    # For updating goals and activities later
-    steps_to_subtract = 0
     # Get the battery level
     get_battery_level_query = f"SELECT battery_level FROM {COLLARS_TABLE} WHERE collar_id = %s;"
     collar_id = get_collar_from_dog(cursor, dog_id)
@@ -341,14 +283,15 @@ def fix_steps_before_update(cursor, dog_id, new_steps, dog_weight):
     converted_collar_count_limit = get_converted_steps(dog_weight, COLLAR_FITNESS_COUNT_LIMIT)
 
     if last_steps > new_steps and battery_level_result < BATTERY_THRESHOLD:  # Battery was off
-        fixed_fitness_to_db = new_steps + last_steps
+        fixed_fitness_to_db = new_steps
     elif last_steps > new_steps:      # Overflow because of BLE
         fixed_fitness_to_db = new_steps + converted_collar_count_limit - last_steps
-    else:
-        fixed_fitness_to_db = new_steps
-        steps_to_subtract = last_steps
+    elif last_steps == new_steps:
+        fixed_fitness_to_db = 0
+    else:   # last_steps < new_steps
+        fixed_fitness_to_db = new_steps - last_steps
 
-    return fixed_fitness_to_db, steps_to_subtract
+    return fixed_fitness_to_db
 
 
 def save_last_steps(cursor, dog_id, current_steps):

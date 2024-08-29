@@ -113,6 +113,8 @@ def get_dog_fitness():
 
 @fitness_routes.route('/api/dog/bcs', methods=['GET'])
 def get_dog_bcs():
+
+
     dog_id = request.args.get('dog_id')
     db = load_database_config()
 
