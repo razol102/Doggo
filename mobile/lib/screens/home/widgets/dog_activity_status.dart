@@ -19,7 +19,7 @@ class _DogActivityStatusState extends State<DogActivityStatus>
   late AnimationController _controller;
   late Animation<double> _animation;
   int currentSteps = 0;
-  int totalSteps = 1; // Avoid division by zero
+  int totalSteps = 2000; // Avoid division by zero
   int calories = 0;
   double distance = 0;
   Timer? _timer;
@@ -37,7 +37,7 @@ class _DogActivityStatusState extends State<DogActivityStatus>
     _fetchActivityStatus(selectedDate);
 
     // Set up the periodic timer
-    _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
+    _timer = Timer.periodic(Duration(seconds: 5), (Timer timer) {
       _fetchActivityStatus(selectedDate);
     });
   }
@@ -47,9 +47,10 @@ class _DogActivityStatusState extends State<DogActivityStatus>
     final dogId = await PreferencesService.getDogId();
     if (dogId != null) {
       final status = await HttpService.fetchDogActivityStatus(formattedDate, dogId);
+      final dailyStepsGoal = await HttpService.getDailyStepsGoal(dogId);
       setState(() {
         currentSteps = status['steps']!;
-        totalSteps = 1000; // TODO: ask for the daily steps goal
+        totalSteps = dailyStepsGoal;
         calories = status['calories_burned']!;
         distance = status['distance']!;
         double newProgress = currentSteps / totalSteps;

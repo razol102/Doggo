@@ -49,8 +49,8 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
           setState(() {
             _foodBrand = nutritionData['food_brand'];
             _foodType = nutritionData['food_type'];
-            _foodAmountGrams = nutritionData['food_amount_grams'];
-            _dailySnacks = nutritionData['daily_snacks'];
+            _foodAmountGrams = nutritionData['food_amount_grams'].toString();
+            _dailySnacks = nutritionData['daily_snacks'].toString();
             _notes = nutritionData['notes'];
 
             _foodBrandController.text = _foodBrand;

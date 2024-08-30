@@ -1,4 +1,3 @@
-import 'package:mobile/screens/activity/activity_screen.dart';
 import 'package:mobile/screens/home/widgets/BCS_pie_chart.dart';
 import 'package:mobile/screens/home/widgets/dog_activity_status.dart';
 import 'package:mobile/screens/home/widgets/workout_progress_line_chart.dart';
@@ -11,7 +10,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/main.dart';
 import '../../common_widgets/round_button.dart';
-import '../bottom_menu.dart';
 import '../devices/BLE_connection_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -80,12 +78,17 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     final dogId = await PreferencesService.getDogId();
     if (dogId != null) {
       final activities = await HttpService.getAllOutdoorActivities(dogId);
-      setState(() {
-        activitiesArr = activities;
-      });
+      if (activities != null) {
+        setState(() {
+          activitiesArr = activities;
+        });
+      }
     }
   }
 
+  void _addNewActivity() {
+
+  }
 
   List<int> showingTooltipOnSpots = [21];
 
@@ -277,7 +280,13 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                 SizedBox(height: media.width * 0.05),
                 const Divider(),
                 SizedBox(height: media.width * 0.0005),
-                RoundButton(title: "Add New Activity", onPressed: () {}, backgroundColor: AppColors.primaryColor2, titleColor: AppColors.whiteColor),
+                RoundButton(
+                    title: "Add New Activity",
+                    onPressed: () {
+                      _addNewActivity();
+                    },
+                    backgroundColor: AppColors.primaryColor2,
+                    titleColor: AppColors.whiteColor),
                 const Divider(),
                 SizedBox(height: media.width * 0.05),
                 BcsPieChart(),

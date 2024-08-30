@@ -56,7 +56,8 @@ final Map<String, WidgetBuilder> routes = {
   //home
   HomeScreen.routeName: (context) => const HomeScreen(),
   //activity
-  ActivityScreen.routeName: (context) => const ActivityScreen(),
+  // ActivityScreen.routeName: (context) => const ActivityScreen(),
+  ActivityScreen.routeName: (context) => ActivityScreen(),
   //map
   MapScreen.routeName: (context) => const MapScreen(),
   //ble connection

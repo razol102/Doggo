@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:mobile/common_widgets/breed_selector.dart';
 import 'package:mobile/common_widgets/gender_selector.dart';
 import 'package:mobile/screens/add_new_dog/add_safe_zone.dart';
+import 'package:mobile/services/http_service.dart';
 import '../../common_widgets/round_gradient_button.dart';
 import '../../common_widgets/round_textfield.dart';
+import '../../services/preferences_service.dart';
 import '../../utils/app_colors.dart';
 import 'package:mobile/common_widgets/date_selector.dart';
 
@@ -99,20 +101,34 @@ class _AddNewDogScreenState extends State<AddNewDogScreen> {
                 const SizedBox(height: 15),
                 RoundGradientButton(
                   title: "Next >",
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddSafeZoneScreen(
-                          name: _nameController.text,
-                          breed: selectedBreed,
-                          gender: selectedGender,
-                          birthdate: _birthdateController.text,
-                          weight: _weightController.text,
-                          height: _heightController.text,
+                  onPressed: () async {
+                    int? currUserId = await PreferencesService.getUserId();
+
+                    // Add new dog
+                    int? dogId = await HttpService.addNewDog
+                      (name: _nameController.text,
+                        breed: selectedBreed!,
+                        gender: selectedGender!,
+                        dateOfBirth: _birthdateController.text,
+                        weight: double.tryParse(_weightController.text) ?? 0.0,
+                        height: double.tryParse(_heightController.text) ?? 0.0,
+                        userId: currUserId!);
+                    if (dogId != null) {
+                      // Navigate to next step
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddSafeZoneScreen(dogId: dogId),
                         ),
-                      ),
-                    );
+                      );
+                    } else {
+                      // Show SnackBar with error message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Failed to add the dog. Please try again.'),
+                        ),
+                      );
+                    }
                   },
                 ),
               ],
