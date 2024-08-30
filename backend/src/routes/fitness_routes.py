@@ -13,8 +13,7 @@ fitness_routes = Blueprint('fitness_routes', __name__)
 @fitness_routes.route('/api/dog/fitness', methods=['PUT'])
 def fitness_from_mobile():
     dog_id = request.args.get('dog_id')
-    steps = request.args.get('steps')
-    embedded_steps = int(steps)
+    embedded_steps = request.args.get('steps', type=int)
     today_date = date.today()
 
     try:
@@ -80,7 +79,7 @@ def data_from_collar():
 @fitness_routes.route('/api/dog/fitness', methods=['GET'])
 def get_dog_fitness():
     dog_id = request.args.get('dog_id')
-    fitness_date = request.args.get('date')
+    fitness_date = datetime.strptime(request.args.get('date'), '%Y-%m-%d').date()
     db = load_database_config()
     get_fitness_query = """
                         SELECT distance, steps, calories_burned
@@ -92,8 +91,7 @@ def get_dog_fitness():
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
-                date_obj = datetime.strptime(fitness_date, '%Y-%m-%d').date()
-                cursor.execute(get_fitness_query, (dog_id, date_obj))
+                cursor.execute(get_fitness_query, (dog_id, fitness_date))
                 fitness_details = cursor.fetchone()
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400

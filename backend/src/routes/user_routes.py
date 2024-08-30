@@ -158,10 +158,9 @@ def delete_user():
     try:
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
+                check_if_exists(cursor, USERS_TABLE, USER_ID_COLUMN, user_id)
+                delete_user_dogs(cursor, user_id)
                 cursor.execute(delete_user_query, (user_id,))
-                # check if there was any change in the DB
-                if cursor.rowcount == 0:
-                    raise ValueError("User does not exist.")
                 connection.commit()
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
@@ -185,4 +184,5 @@ def is_user_connected():
         return jsonify({"error": str(error)}), 400
 
     return jsonify({"user_connection": is_connected[0]}), HTTP_200_OK
+
 

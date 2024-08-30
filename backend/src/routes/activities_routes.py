@@ -11,6 +11,9 @@ activities_routes = Blueprint('activities_routes', __name__)
 @activities_routes.route("/api/dog/activities/all", methods=['GET'])
 def get_dog_activities_list():
     dog_id = request.args.get('dog_id')
+    limit = request.args.get('limit', type=int)  # Number of activities to retrieve
+    offset = request.args.get('offset', type=int)  # Number of activities to skip
+
     db = load_database_config()
     get_dog_activities_query = f"""
             SELECT 
@@ -18,14 +21,16 @@ def get_dog_activities_list():
             TO_CHAR(duration, 'HH24:MI:SS') AS duration, 
             end_time, start_time, steps
             FROM {ACTIVITIES_TABLE} 
-            WHERE {DOG_ID_COLUMN} = %s;
+            WHERE {DOG_ID_COLUMN} = %s
+            ORDER BY start_time DESC
+            LIMIT %s OFFSET %s;
             """
 
     try:
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
-                cursor.execute(get_dog_activities_query, (dog_id,))
+                cursor.execute(get_dog_activities_query, (dog_id, limit, offset))
                 list_of_dicts = get_list_of_dicts_for_response(cursor)
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
@@ -66,6 +71,7 @@ def get_dog_activity_log():
         dict_res['duration'] = 0
 
     dict_res['distance'] = round(dict_res['distance'], 2)
+    dict_res['calories_burned'] = int(dict_res['calories_burned'])
 
     return dict_res, HTTP_200_OK
 
@@ -80,6 +86,7 @@ def add_dog_activity():
                             INSERT INTO {ACTIVITIES_TABLE} 
                             ({DOG_ID_COLUMN}, activity_type, start_time)
                             VALUES (%s, %s, %s);
+                            RETURNING activity_id
                             """
 
     try:
@@ -90,11 +97,12 @@ def add_dog_activity():
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
                 check_for_active_activity(cursor, dog_id)
                 cursor.execute(add_dog_activity_query, (dog_id, activity_type, current_time))
+                new_activity_id = cursor.fetchone()[0]
                 connection.commit()
     except(Exception, psycopg2.DatabaseError, ActiveActivityExistsError, DataNotFoundError) as error:
         return jsonify({"error": str(error)}), 400
 
-    return "Activity was created successfully", 201
+    return jsonify({"activity_id": new_activity_id}), 201
 
 
 @activities_routes.route("/api/dog/activities/end", methods=['PUT'])

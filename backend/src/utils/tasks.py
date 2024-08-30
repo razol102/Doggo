@@ -10,7 +10,7 @@ from src.utils.logger import logger
 TIME_THRESHOLD = timedelta(hours=5)
 
 
-def run_task_threads():
+def run_tasks_thread():
     activities_check_thread = Thread(target=check_and_end_activities)
     activities_check_thread.start()
 

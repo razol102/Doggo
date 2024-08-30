@@ -63,7 +63,6 @@ def update_fitness(cursor, dog_id, embedded_steps):
         calories_to_db = get_burned_calories(dog_weight, distance_to_db)
         cursor.execute(update_fitness_query, (steps_to_db, distance_to_db, calories_to_db, dog_id, today_date))
         update_dog_activity(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db)
-        logger.debug("Fitness was updated")
 
 
 def create_fitness(cursor, dog_id, embedded_steps):
@@ -223,6 +222,7 @@ def remove_dog_from_data_tables(cursor, dog_id):
     remove_dog_from_nutrition_table(cursor, dog_id)
     remove_dog_from_vaccinations_table(cursor, dog_id)
     remove_dog_from_users_dogs_table(cursor, dog_id)
+    remove_dog_from_favorites_table(cursor, dog_id)
 
 
 def remove_dog_from_activities_table(cursor, dog_id):
@@ -263,6 +263,11 @@ def remove_dog_from_vaccinations_table(cursor, dog_id):
 def remove_dog_from_users_dogs_table(cursor, dog_id):
     delete_users_dogs_query = f"DELETE FROM {USERS_DOGS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
     cursor.execute(delete_users_dogs_query, (dog_id,))
+
+
+def remove_dog_from_favorites_table(cursor, dog_id):
+    delete_favorites_query = f"DELETE FROM {FAVORITE_PLACES_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+    cursor.execute(delete_favorites_query, (dog_id,))
 
 
 def fix_steps_before_create(cursor, dog_id, new_steps):
@@ -306,7 +311,7 @@ def fix_steps_before_update(cursor, dog_id, new_steps):
 def save_last_steps(cursor, dog_id, current_steps):
     update_last_steps_query = f"""
     UPDATE {DOGS_TABLE}
-    SET last_step = %s
+    SET last_steps = %s
     WHERE {DOG_ID_COLUMN} = %s;
     """
 
@@ -315,7 +320,7 @@ def save_last_steps(cursor, dog_id, current_steps):
 
 def load_last_steps(cursor, dog_id):
     get_last_steps_query = f"""
-    SELECT last_step
+    SELECT last_steps
     FROM {DOGS_TABLE}
     WHERE {DOG_ID_COLUMN} = %s;
     """
@@ -323,3 +328,18 @@ def load_last_steps(cursor, dog_id):
     cursor.execute(get_last_steps_query, (dog_id, ))
 
     return int(cursor.fetchone()[0])
+
+
+def delete_user_dogs(cursor, user_id):
+    get_dogs_query = f"SELECT {DOG_ID_COLUMN} FROM {USERS_DOGS_TABLE} WHERE {USER_ID_COLUMN} = %s;"
+    delete_dog_query = f"DELETE FROM {DOGS_TABLE} WHERE {DOG_ID_COLUMN} = %s;"
+
+    cursor.execute(get_dogs_query, (user_id,))
+    dogs = cursor.fetchall()
+
+    for dog in dogs:
+        dog_id = dog[0]
+        remove_dog_from_data_tables(cursor, dog_id)
+        cursor.execute(delete_dog_query, (dog_id,))
+
+

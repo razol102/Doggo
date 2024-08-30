@@ -25,15 +25,20 @@ def get_all_places():
 @places_routes.route("/api/places/by_type", methods=['GET'])
 def get_places_by_type():
     place_type = request.args.get('place_type')
+    all_places_query = "SELECT * FROM {0};".format(PLACES_TABLE)
     get_places_by_type_query = f"SELECT * FROM {PLACES_TABLE} WHERE place_type = '{place_type}';"
 
     try:
         db = load_database_config()
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
-                cursor.execute(get_places_by_type_query)
-                dict_response = get_list_of_dicts_for_response(cursor)
+                if place_type == "ALL":
+                    cursor.execute(all_places_query)
+                    response = cursor.fetchall()
+                else:
+                    cursor.execute(get_places_by_type_query)
+                    response = get_list_of_dicts_for_response(cursor)
     except(Exception, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    return jsonify(dict_response), HTTP_200_OK
+    return jsonify(response), HTTP_200_OK
