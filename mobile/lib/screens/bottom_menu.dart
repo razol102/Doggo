@@ -24,7 +24,8 @@ class _BottomMenuState extends State<BottomMenu> {
     //const HomeScreenOld(),
     const HomeScreen(),
     const UserProfileScreen(),
-    const ActivityScreen(),
+    // const ActivityScreen(),
+    ActivityScreen(),
     const MapScreen(),
     //const socialMediaScreen(),
   ];

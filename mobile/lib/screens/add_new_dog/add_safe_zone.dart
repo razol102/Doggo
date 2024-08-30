@@ -3,7 +3,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:mobile/screens/add_new_dog/configure_collar_screen.dart';
-import 'package:mobile/services/preferences_service.dart';
 import 'package:mobile/utils/app_colors.dart';
 import 'package:mobile/screens/map/map_view.dart';
 import 'package:mobile/common_widgets/round_gradient_button.dart';
@@ -12,22 +11,9 @@ import 'package:mobile/screens/map/safe_zone_map_view.dart';
 import '../../services/http_service.dart';
 
 class AddSafeZoneScreen extends StatefulWidget {
-  final String name;
-  final String? breed;
-  final String? gender;
-  final String birthdate;
-  final String weight;
-  final String height;
+  final int dogId;
 
-  const AddSafeZoneScreen({
-    Key? key,
-    required this.name,
-    this.breed,
-    this.gender,
-    required this.birthdate,
-    required this.weight,
-    required this.height,
-  }) : super(key: key);
+  const AddSafeZoneScreen({Key? key, required this.dogId}) : super(key: key);
 
   static String routeName = "/AddSafeZoneScreen";
 
@@ -40,7 +26,10 @@ class _AddSafeZoneScreenState extends State<AddSafeZoneScreen> {
   LatLng _currentPosition = const LatLng(32.0853, 34.7818); // Default position in Tel Aviv
 
   LatLng? _selectedPosition;
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _placeNameController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _latitudeController = TextEditingController();
+  final TextEditingController _longitudeController = TextEditingController();
 
   Future<void> _updateUserLocation() async {
     try {
@@ -64,55 +53,50 @@ class _AddSafeZoneScreenState extends State<AddSafeZoneScreen> {
   void _updateSelectedPosition(LatLng position) {
     setState(() {
       _selectedPosition = position;
+      _latitudeController.text = position.latitude.toString();
+      _longitudeController.text = position.longitude.toString();
     });
   }
 
   void _onSearch(LatLng position, String placeName) {
     _mapController.move(position, 14.0);
     _updateSelectedPosition(position);
-    _nameController.text = placeName;
+    _placeNameController.text = placeName;
   }
 
-  void _saveSafeZone() async {
-    final dogId = await _addNewDogToServer(); // Save all information to the server and get the dogId
-    if (dogId != null) {
+  void _saveHome() async {
+    final placeName = _placeNameController.text;
+    final address = _addressController.text;
+    final latitude = _selectedPosition?.latitude ?? 0.0;
+    final longitude = _selectedPosition?.longitude ?? 0.0;
+
+    if (placeName.isEmpty || address.isEmpty) {
+      print('Please fill in all fields');
+      return;
+    }
+
+    try {
+      await HttpService.setFavoritePlace(
+        widget.dogId.toString(),
+        placeName,
+        latitude,
+        longitude,
+        address,
+        "home",
+      );
+      print('Home added successfully');
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ConfigureCollarScreen(dogId: dogId),
+          builder: (context) => ConfigureCollarScreen(dogId: widget.dogId),
         ),
       );
-    }
-  }
-
-  Future<int?> _addNewDogToServer() async {
-    try {
-      int? currUserId = await PreferencesService.getUserId();
-      if (currUserId == null) {
-        throw Exception('User ID is null');
-      }
-      final dogId = await HttpService.addNewDog(
-          name: widget.name,
-          breed: widget.breed!,
-          gender: widget.gender!,
-          dateOfBirth: widget.birthdate,
-          weight: double.tryParse(widget.weight) ?? 0.0,
-          height: double.tryParse(widget.height) ?? 0.0,
-          homeLatitude: _selectedPosition?.latitude ?? 0.0,
-          homeLongitude: _selectedPosition?.longitude ?? 0.0,
-          userId: currUserId
-      );
-      print('Dog added successfully');
-      return dogId; // Assuming the response contains the dogId
     } catch (e) {
-      print('Failed to add dog: $e');
-      return null;
+      print('Failed to add home: $e');
     }
   }
 
-
-
-@override
+  @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
     return Scaffold(
@@ -125,16 +109,16 @@ class _AddSafeZoneScreenState extends State<AddSafeZoneScreen> {
               children: [
                 const SizedBox(height: 45),
                 const Text(
-                  "Save your dog's safe zone",
+                  "Save your dog's home",
                   style: TextStyle(
                     color: AppColors.blackColor,
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 const Text(
-                  "Drag the marker to define your dog's safe zone",
+                  "Drag the marker to define your dog's home",
                   style: TextStyle(
                     color: AppColors.grayColor,
                     fontSize: 12,
@@ -142,7 +126,7 @@ class _AddSafeZoneScreenState extends State<AddSafeZoneScreen> {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                SizedBox(height: 25),
+                const SizedBox(height: 25),
                 Container(
                   height: 450,
                   decoration: BoxDecoration(
@@ -159,18 +143,33 @@ class _AddSafeZoneScreenState extends State<AddSafeZoneScreen> {
                         onUpdateLocation: _updateUserLocation,
                         onSearch: _onSearch,
                         onClearMarkers: () {},
-                        showClearMarkersButton: false, // Hide the Clear Markers button
+                        showClearMarkersButton: false,
                       ),
                       selectedPosition: _selectedPosition,
                       onPositionChanged: _updateSelectedPosition,
                     ),
                   ),
                 ),
-
-                SizedBox(height: 25),
+                const SizedBox(height: 25),
+                TextFormField(
+                  controller: _placeNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Place Name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                TextFormField(
+                  controller: _addressController,
+                  decoration: const InputDecoration(
+                    labelText: 'Address',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 25),
                 RoundGradientButton(
-                  title: "Save Safe Zone",
-                  onPressed: _saveSafeZone,
+                  title: "Save Home",
+                  onPressed: _saveHome,
                 ),
               ],
             ),

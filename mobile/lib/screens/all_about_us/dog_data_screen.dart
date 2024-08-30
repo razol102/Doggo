@@ -29,8 +29,7 @@ class _DogDataScreenState extends State<DogDataScreen> {
   DateTime? _dogDateOfBirth;
   String _dogHeight = 'Loading...';
   String _dogWeight = 'Loading...';
-  String _homeLatitude = 'Loading...';
-  String _homeLongitude = 'Loading...';
+
 
   String? _nameError;
   String? _breedError;
@@ -73,8 +72,7 @@ class _DogDataScreenState extends State<DogDataScreen> {
               .toLocal();
           _dogHeight = '${dogInfo['height']} cm';
           _dogWeight = '${dogInfo['weight']} kg';
-          _homeLatitude = dogInfo['home_latitude'].toString();
-          _homeLongitude = dogInfo['home_longitude'].toString();
+
 
           _nameController.text = _dogName;
           _breedController.text = _dogBreed;
@@ -93,8 +91,7 @@ class _DogDataScreenState extends State<DogDataScreen> {
         _dogDateOfBirth = null;
         _dogHeight = 'Error loading data';
         _dogWeight = 'Error loading data';
-        _homeLatitude = 'Error loading data';
-        _homeLongitude = 'Error loading data';
+
       });
     }
   }
@@ -124,9 +121,7 @@ class _DogDataScreenState extends State<DogDataScreen> {
           _selectedGender!,
           DateFormat('yyyy-MM-dd').parse(_dateOfBirthController.text).toString(),
           double.parse(_weightController.text),
-          int.parse(_heightController.text),
-          double.parse(_homeLatitude),
-          double.parse(_homeLongitude),
+          int.parse(_heightController.text)
         );
         await _fetchDogData();
         setState(() {

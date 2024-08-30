@@ -83,8 +83,6 @@ class HttpService {
     required String dateOfBirth,
     required double weight,
     required double height,
-    required double homeLatitude,
-    required double homeLongitude,
     required int userId
   }) async {
     final url = Uri.parse('$baseUrl/api/dog/add');
@@ -98,8 +96,6 @@ class HttpService {
         'date_of_birth': dateOfBirth,
         'weight': weight,
         'height': height,
-        'home_latitude': homeLatitude,
-        'home_longitude': homeLongitude,
         'user_id': userId
       }),
     );
@@ -186,7 +182,7 @@ class HttpService {
     }
   }
 
-  static Future<void> updateDogProfile(int dogId, String name, String breed, String gender, String dateOfBirth, double weight, int height, double homeLatitude, double homeLongitude) async {
+  static Future<void> updateDogProfile(int dogId, String name, String breed, String gender, String dateOfBirth, double weight, int height) async {
     final url = Uri.parse('$baseUrl/api/dog/profile');
     final response = await http.put(
       url,
@@ -199,9 +195,7 @@ class HttpService {
         'date_of_birth': dateOfBirth,
         'weight': weight,
         'height': height,
-        'image': "",
-        "home_latitude": homeLatitude,
-        "home_longitude": homeLongitude
+        'image': ""
       }),
     );
 
@@ -241,6 +235,31 @@ class HttpService {
       return jsonDecode(response.body);
     } else {
       throw Exception('Failed to load markers');
+    }
+  }
+
+  //--------------------------------------favorite places--------------------------------------
+  static Future<void> setFavoritePlace(String dogId, String placeName, double placeLatitude, double placeLongitude, String address, String placeType) async {
+    final url = Uri.parse('$baseUrl/api/favorite_places');
+
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'dog_id': dogId,
+        'place_name': placeName,
+        'place_latitude': placeLatitude,
+        'place_longitude': placeLongitude,
+        'address': address,
+        'place_type': placeType.toLowerCase()
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('favorite place was set successfully');
+    } else {
+      print('Failed to set favorite place: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
     }
   }
 
@@ -479,7 +498,7 @@ class HttpService {
   }
 
   //--------------------------------------outdoor activities--------------------------------------
-  static Future<List<Map<String, dynamic>>> getAllOutdoorActivities(int dogId) async {
+  static Future<List<Map<String, dynamic>>?> getAllOutdoorActivities(int dogId) async {
     final url = Uri.parse('$baseUrl/api/dog/activities/all?dog_id=$dogId');
     final response = await http.get(
         url,
@@ -489,43 +508,59 @@ class HttpService {
     if (response.statusCode == 200) {
       List<dynamic> decodedData = jsonDecode(response.body);
       return decodedData.cast<Map<String, dynamic>>();
+    } else if(response.statusCode == 204) {
+      return null;
     } else {
       print('Failed to get dog activities: ${response.statusCode}');
       throw Exception(jsonDecode(response.body)['error']);
     }
-
-    // return [
-    //   {
-    //     "activity_type": "walk",
-    //     "calories_burned": "200",
-    //     "distance": "0.5",
-    //     "steps": "500",
-    //     "duration": "50",
-    //     "start_time": "test",
-    //     "end_time": "test"
-    //   },
-    //   {
-    //     "activity_type": "run",
-    //     "calories_burned": "100",
-    //     "distance": "0.5",
-    //     "steps": "500",
-    //     "duration": "50",
-    //     "start_time": "test",
-    //     "end_time": "test"
-    //   },
-    //   {
-    //     "activity_type": "swim",
-    //     "calories_burned": "100",
-    //     "distance": "0.5",
-    //     "steps": "500",
-    //     "duration": "50",
-    //     "start_time": "test",
-    //     "end_time": "test"
-    //   },
-    //
-    // ];
   }
 
+  static Future<int> startNewActivity(int dogId, String activityType) async {
+    final url = Uri.parse('$baseUrl/api/dog/activities?dog_id=$dogId&activity_type=${activityType.toLowerCase()}');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 201) {
+      return jsonDecode(response.body)['activity_id'];
+    } else {
+      print('Failed to create new activity: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<void> endActivity(int activity_id) async {
+    final url = Uri.parse('$baseUrl/api/dog/activities/end?activity_id=${activity_id.toString()}');
+    final response = await http.put(
+        url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      print('End activity: $activity_id');
+    } else {
+      print('Failed to create new activity: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+  //--------------------------------------goals--------------------------------------
+  static Future<int> getDailyStepsGoal(int dogId) async { //TODO: check after backend implementation
+    // final url = Uri.parse('$baseUrl/api/dog/dailyStepsGoal?dog_id=$dogId');
+    // final response = await http.get(
+    //   url,
+    //   headers: {'Content-Type': 'application/json'},
+    // );
+    //
+    // if (response.statusCode == 200) {
+    //   return jsonDecode(response.body)['daily_steps_goal'];
+    // } else {
+    //   print('Failed to get dog daily steps goal: ${response.statusCode}');
+    //   throw Exception(jsonDecode(response.body)['error']);
+    // }
+    return 2000;
+  }
   //--------------------------------------test--------------------------------------
   static Future<Map<String, dynamic>> getRoot() async {
     final url = Uri.parse('$baseUrl/');
