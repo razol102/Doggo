@@ -35,6 +35,7 @@ def get_dog_activities_list():
     else:
         for dictionary in list_of_dicts:
             dictionary['distance'] = round(dictionary['distance'], 2)
+            dictionary['calories_burned'] = int(dictionary['calories_burned'])
 
     return list_of_dicts, HTTP_200_OK
 

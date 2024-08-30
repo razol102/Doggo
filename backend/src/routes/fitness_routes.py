@@ -105,7 +105,7 @@ def get_dog_fitness():
     } if not fitness_details else {
         "distance": round(fitness_details[0], 2),
         "steps": fitness_details[1],
-        "calories_burned": fitness_details[2]
+        "calories_burned": int(fitness_details[2])
     }
 
     return jsonify(response), HTTP_200_OK
