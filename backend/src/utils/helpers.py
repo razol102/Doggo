@@ -8,6 +8,7 @@ from src.utils.constants import *
 from src.utils.conversion_tables import get_converted_steps_and_distance, get_burned_calories, \
     get_converted_steps, get_converted_distance
 from src.utils.exceptions import *
+from src.utils.logger import logger
 
 
 def is_in_use(cursor, query, data_to_check):
@@ -53,15 +54,16 @@ def update_fitness(cursor, dog_id, embedded_steps):
     today_date = date.today()
     dog_weight = get_dog_weight(cursor, dog_id)
 
-    converted_steps = get_converted_steps(dog_weight, embedded_steps)
-    steps_to_db = fix_steps_before_update(cursor, dog_id, converted_steps, dog_weight)
+    fixed_steps = fix_steps_before_update(cursor, dog_id, embedded_steps)
+    save_last_steps(cursor, dog_id, embedded_steps)
+    steps_to_db = get_converted_steps(dog_weight, fixed_steps)
 
     if steps_to_db != 0:
         distance_to_db = get_converted_distance(dog_weight, steps_to_db)
         calories_to_db = get_burned_calories(dog_weight, distance_to_db)
         cursor.execute(update_fitness_query, (steps_to_db, distance_to_db, calories_to_db, dog_id, today_date))
         update_dog_activity(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db)
-        save_last_steps(cursor, dog_id, converted_steps)
+        logger.debug("Fitness was updated")
 
 
 def create_fitness(cursor, dog_id, embedded_steps):
@@ -71,12 +73,14 @@ def create_fitness(cursor, dog_id, embedded_steps):
 
     today_date = date.today()
     dog_weight = get_dog_weight(cursor, dog_id)
-    converted_steps = get_converted_steps(dog_weight, embedded_steps)
-    steps_to_db = fix_steps_before_create(cursor, dog_id, converted_steps)
+
+    fixed_steps = fix_steps_before_create(cursor, dog_id, embedded_steps)
+    save_last_steps(cursor, dog_id, embedded_steps)
+
+    steps_to_db = get_converted_steps(dog_weight, fixed_steps)
     distance_to_db = get_converted_distance(dog_weight, steps_to_db)
     calories_to_db = get_burned_calories(dog_weight, distance_to_db)
 
-    save_last_steps(cursor, dog_id, converted_steps)
     cursor.execute(create_fitness_query, (dog_id, today_date, distance_to_db, steps_to_db, calories_to_db))
     update_dog_activity(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db)
 
@@ -265,33 +269,38 @@ def fix_steps_before_create(cursor, dog_id, new_steps):
     last_steps = load_last_steps(cursor, dog_id)
 
     if last_steps <= new_steps:
-        fixed_fitness_to_db = new_steps - last_steps
+        fixed_steps = new_steps - last_steps
     else:   # Can happen because of BLE overflow or embedded was off
-        fixed_fitness_to_db = new_steps
+        fixed_steps = new_steps
 
-    return fixed_fitness_to_db
+    return fixed_steps
 
 
-def fix_steps_before_update(cursor, dog_id, new_steps, dog_weight):
-    # Get the battery level
-    get_battery_level_query = f"SELECT battery_level FROM {COLLARS_TABLE} WHERE collar_id = %s;"
-    collar_id = get_collar_from_dog(cursor, dog_id)
-    cursor.execute(get_battery_level_query, (collar_id,))
-    battery_level_result = cursor.fetchone()[0]
+def fix_steps_before_update(cursor, dog_id, new_steps):
+    # # Get the battery level
+    # get_battery_level_query = f"SELECT battery_level FROM {COLLARS_TABLE} WHERE collar_id = %s;"
+    # collar_id = get_collar_from_dog(cursor, dog_id)
+    # cursor.execute(get_battery_level_query, (collar_id,))
+    # battery_level_result = cursor.fetchone()[0]
 
     last_steps = load_last_steps(cursor, dog_id)
-    converted_collar_count_limit = get_converted_steps(dog_weight, COLLAR_FITNESS_COUNT_LIMIT)
 
-    if last_steps > new_steps and battery_level_result < BATTERY_THRESHOLD:  # Battery was off
-        fixed_fitness_to_db = new_steps
-    elif last_steps > new_steps:      # Overflow because of BLE
-        fixed_fitness_to_db = new_steps + converted_collar_count_limit - last_steps
+    logger.debug("Last steps loaded: {0}".format(last_steps))
+
+    # if last_steps > new_steps and battery_level_result < BATTERY_THRESHOLD:  # Battery was off
+    if last_steps > new_steps: # Battery was off
+        fixed_steps = new_steps
+    # elif last_steps > new_steps:      # Overflow because of Arduino
+    #     converted_collar_count_limit = get_converted_steps(dog_weight, COLLAR_FITNESS_COUNT_LIMIT)
+    #     fixed_fitness_to_db = new_steps + converted_collar_count_limit - last_steps
+    #     logger.debug("Fixed after BLE LIMIT: {0}".format(fixed_fitness_to_db))
     elif last_steps == new_steps:
-        fixed_fitness_to_db = 0
+        fixed_steps = 0
     else:   # last_steps < new_steps
-        fixed_fitness_to_db = new_steps - last_steps
+        fixed_steps = new_steps - last_steps
+        logger.debug("Fixed after 'else': {0}".format(fixed_steps))
 
-    return fixed_fitness_to_db
+    return fixed_steps
 
 
 def save_last_steps(cursor, dog_id, current_steps):

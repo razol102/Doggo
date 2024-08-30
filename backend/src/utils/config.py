@@ -1,7 +1,7 @@
 from configparser import ConfigParser
 
 
-def load_database_config(filename="../configurations.ini"):
+def load_database_config(filename="/app/configurations.ini"):
     parser = ConfigParser()
     try:
         parser.read(filename)
