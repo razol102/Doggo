@@ -47,7 +47,7 @@ def get_all_favorite_place_by_type():
 
 
 @favorite_places_routes.route("/api/favorite_places", methods=['PUT'])
-def set_favorite_places():
+def set_favorite_place():
     data = request.json
     required_data = {"dog_id", "place_name", "place_latitude", "place_longitude", "address", "place_type"}
 
@@ -57,7 +57,7 @@ def set_favorite_places():
     VALUES (%(dog_id)s, %(place_name)s, %(place_latitude)s, %(place_longitude)s, %(address)s, %(place_type)s);
     """
 
-    delete_favorite_place_query = f"DELETE FROM {FAVORITE_PLACES_TABLE} WHERE dog_id = %s AND place_name = %s;"
+    delete_favorite_place_query = f"DELETE FROM {FAVORITE_PLACES_TABLE} WHERE dog_id = %s AND place_type = %s;"
 
     try:
         if not required_data.issubset(data.keys()):
@@ -68,7 +68,7 @@ def set_favorite_places():
 
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
-                cursor.execute(delete_favorite_place_query, (data['dog_id'], data['place_name']))
+                cursor.execute(delete_favorite_place_query, (data['dog_id'], data['place_type']))
                 cursor.execute(insert_favorite_places_query, data)
                 connection.commit()
     except(Exception, psycopg2.DatabaseError) as error:
