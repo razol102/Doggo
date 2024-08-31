@@ -16,6 +16,7 @@ import '../devices/BLE_connection_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   static String routeName = "/HomeScreen";
+
   const HomeScreen({super.key});
 
   @override
@@ -43,8 +44,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
 
   @override
   void didPopNext() {
-    // This method is called when the user navigates back to this screen in case to take care of updating dog name
+    _checkBleConnectionStatus();
     _fetchDogInfo();
+    _fetchDog3LatestActivities();
   }
 
   @override
@@ -349,9 +351,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.refresh),
+                      icon: Icon(Icons.open_in_new),
                       color: AppColors.primaryColor1,
-                      onPressed: _fetchDog3LatestActivities,
+                      onPressed: () {print('open activities');},
                       tooltip: 'Refresh Activities',
                     ),
                   ],
