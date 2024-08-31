@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mobile/utils/app_colors.dart';
 import 'package:mobile/screens/map/widgets/map_view.dart';
+import '../../services/preferences_service.dart';
 import 'widgets/category_buttons.dart';
 import 'widgets/all_categories_modal.dart';
 import 'widgets/favorite_places_list.dart';
@@ -22,17 +23,21 @@ class _MapScreenState extends State<MapScreen> {
   LatLng _currentPosition = const LatLng(32.0853, 34.7818); // Default position in Tel Aviv
   final List<Marker> _markers = [];
   Marker? _searchMarker;
-  final List<Map<String, dynamic>> _favoritePlaces = [
-    {'name': 'Favorite Park', 'address': 'Save your favorite park'},
-    {'name': 'Favorite Pension', 'address': 'Save your Favorite Pension'},
-    {'name': 'Favorite Salon', 'address': 'Save your Favorite Salon'},
-  ];
+  int? dogId;
 
   @override
   void initState() {
     super.initState();
     _mapController = MapController();
     _getCurrentLocation();
+    _loadDogId();
+  }
+
+  Future<void> _loadDogId() async {
+    int? id = await PreferencesService.getDogId();
+    setState(() {
+      dogId = id;
+    });
   }
 
   Future<void> _getCurrentLocation() async {
@@ -178,7 +183,7 @@ class _MapScreenState extends State<MapScreen> {
                     onMorePressed: () => _showAllCategories(context),
                   ),
                   Expanded(
-                    child: FavoritePlacesList(),
+                    child: FavoritePlacesList(dogId: dogId!,),
                   ),
                 ],
               ),

@@ -513,7 +513,7 @@ class HttpService {
   }
 
   //--------------------------------------outdoor activities--------------------------------------
-  static Future<List<Map<String, dynamic>>?> getAllOutdoorActivities(int dogId, int limit, int offset) async {
+  static Future<List<Map<String, dynamic>>?> getOutdoorActivities(int dogId, int limit, int offset) async {
     final url = Uri.parse('$baseUrl/api/dog/activities/all?dog_id=$dogId&limit=$limit&offset=$offset');
     final response = await http.get(
         url,

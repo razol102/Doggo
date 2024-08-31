@@ -7,13 +7,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 class StartNewActivityScreen extends StatefulWidget {
   final String activityType;
   final int dogId;
-  final int? currentActivityId; // Added to receive the current activity ID if one exists
+  final int? currentActivityId;
 
   const StartNewActivityScreen({
     Key? key,
     required this.activityType,
     required this.dogId,
-    this.currentActivityId, // Pass the current activity ID
+    this.currentActivityId,
   }) : super(key: key);
 
   @override

@@ -450,27 +450,50 @@
 //     );
 //   }
 // }
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/common_widgets/round_gradient_button.dart';
 import 'package:mobile/screens/activity/start_new_activity.dart';
 import 'package:mobile/screens/activity/widgets/activity_circles_widget.dart';
-import 'package:mobile/services/http_service.dart';
-
+import '../../common_widgets/round_button.dart';
 import '../../services/preferences_service.dart';
 import '../../utils/app_colors.dart';
+import 'activities_history.dart';
 
-class ActivityScreen extends StatelessWidget {
+class ActivityScreen extends StatefulWidget {
   static String routeName = "/ActivityScreen";
 
-  Future<void> _startActivity(BuildContext context, String activityType) async {
+  @override
+  _ActivityScreenState createState() => _ActivityScreenState();
+}
+
+class _ActivityScreenState extends State<ActivityScreen> {
+  int? _dogId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDogId();
+  }
+
+  Future<void> _loadDogId() async {
     final dogId = await PreferencesService.getDogId();
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => StartNewActivityScreen(activityType: activityType, dogId: dogId!),
-      ),
-    );
+    setState(() {
+      _dogId = dogId;
+    });
+  }
+
+  Future<void> _startActivity(BuildContext context, String activityType) async {
+    if (_dogId != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => StartNewActivityScreen(activityType: activityType, dogId: _dogId!),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to retrieve dog ID')),
+      );
+    }
   }
 
   @override
@@ -526,7 +549,7 @@ class ActivityScreen extends StatelessWidget {
                         const SizedBox(height: 7),
                         ActivityCirclesWidget(
                           onActivitySelected: (activityType) {
-                            _startActivity(context,activityType);
+                            _startActivity(context, activityType);
                           },
                         ),
                       ],
@@ -535,6 +558,29 @@ class ActivityScreen extends StatelessWidget {
                 ],
               ),
             ),
+            SizedBox(height: media.width * 0.05),
+            const Divider(),
+            SizedBox(height: media.width * 0.0005),
+            RoundButton(
+                title: "Show Activities History",
+                onPressed: () {
+                  if (_dogId != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ActivitiesHistoryScreen(dogId: _dogId!),
+                      ),
+                    );
+                  } else {
+                    // Handle case where dogId is null, e.g., show an error message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to retrieve dog ID')),
+                    );
+                  }
+                },
+                backgroundColor: AppColors.primaryColor2,
+                titleColor: AppColors.whiteColor),
+            const Divider(),
           ],
         ),
       ),

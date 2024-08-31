@@ -1,3 +1,4 @@
+import 'package:mobile/screens/activity/widgets/activities_list.dart';
 import 'package:mobile/screens/home/widgets/BCS_pie_chart.dart';
 import 'package:mobile/screens/home/widgets/dog_activity_status.dart';
 import 'package:mobile/screens/home/widgets/workout_progress_line_chart.dart';
@@ -10,6 +11,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/main.dart';
 import '../../common_widgets/round_button.dart';
+import '../activity/activities_history.dart';
 import '../activity/start_new_activity.dart';
 import '../activity/widgets/activity_circles_widget.dart';
 import '../devices/BLE_connection_screen.dart';
@@ -83,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     print('fetch');
     final dogId = await PreferencesService.getDogId();
     if (dogId != null) {
-      final activities = await HttpService.getAllOutdoorActivities(dogId, 3, 0); // request for the latest 3 activities
+      final activities = await HttpService.getOutdoorActivities(dogId, 3, 0); // request for the latest 3 activities
       if (activities != null) {
         setState(() {
           activitiesArr = activities;
@@ -353,28 +355,20 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                     IconButton(
                       icon: Icon(Icons.open_in_new),
                       color: AppColors.primaryColor1,
-                      onPressed: () {print('open activities');},
-                      tooltip: 'Refresh Activities',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ActivitiesHistoryScreen(dogId: dogId!),
+                          ),
+                        );
+                      },
+                      tooltip: 'Open Activities History',
                     ),
+
                   ],
                 ),
-
-                activitiesArr.isEmpty ?
-                    const Center(child: Text("No Activities Available."),)
-                    :
-                ListView.builder(
-                    padding: EdgeInsets.zero,
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: activitiesArr.length,
-                    itemBuilder: (context, index) {
-                      var wObj = activitiesArr[index];
-                      return InkWell(
-                          onTap: () {
-                            //Navigator.pushNamed(context, FinishWorkoutScreen.routeName);
-                          },
-                          child: OutdoorActivityRow(wObj: wObj, dogId: dogId,));
-                    }),
+                ActivitiesList(activitiesArr: activitiesArr, dogId: dogId),
                 SizedBox(
                   height: media.width * 0.1,
                 ),

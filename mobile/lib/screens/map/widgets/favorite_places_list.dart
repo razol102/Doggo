@@ -7,7 +7,7 @@ import '../../../main.dart';
 class FavoritePlacesList extends StatefulWidget {
   final int dogId;
 
-  const FavoritePlacesList({Key? key, this.dogId = 15}) : super(key: key);
+  const FavoritePlacesList({Key? key, required this.dogId}) : super(key: key);
 
   @override
   _FavoritePlacesListState createState() => _FavoritePlacesListState();
@@ -73,8 +73,8 @@ class _FavoritePlacesListState extends State<FavoritePlacesList> with RouteAware
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
           child: Text('Favorite Places:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         ),
         Expanded(

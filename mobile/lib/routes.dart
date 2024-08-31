@@ -10,7 +10,6 @@ import 'package:mobile/screens/auth/forgot_password_screen.dart';
 import 'package:mobile/screens/auth/login_screen.dart';
 import 'package:mobile/screens/auth/signup_step1_screen.dart';
 import 'package:mobile/screens/auth/signup_step2_screen.dart';
-import 'package:mobile/screens/ble_test_screen.dart';
 import 'package:mobile/screens/bottom_menu.dart';
 import 'package:mobile/screens/activity/activity_screen.dart';
 import 'package:mobile/screens/devices/BLE_connection_screen.dart';
