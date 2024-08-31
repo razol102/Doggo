@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile/common_widgets/breed_selector.dart';
 import 'package:mobile/common_widgets/date_selector.dart';
 import 'package:mobile/common_widgets/gender_selector.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:mobile/services/preferences_service.dart';
-import 'package:intl/intl.dart';
 import 'package:mobile/services/validation_methods.dart';
 
 import '../../common_widgets/round_textfield.dart';
@@ -13,9 +13,9 @@ import '../../utils/app_colors.dart';
 class DogDataScreen extends StatefulWidget {
   static const String routeName = "/DogDataScreen";
 
-  final bool editMode; // Add this parameter to control the edit mode
+  final bool editMode;
 
-  const DogDataScreen({super.key, this.editMode = false});
+  const DogDataScreen({Key? key, this.editMode = false}) : super(key: key);
 
   @override
   _DogDataScreenState createState() => _DogDataScreenState();
@@ -29,7 +29,6 @@ class _DogDataScreenState extends State<DogDataScreen> {
   DateTime? _dogDateOfBirth;
   String _dogHeight = 'Loading...';
   String _dogWeight = 'Loading...';
-
 
   String? _nameError;
   String? _breedError;
@@ -73,7 +72,6 @@ class _DogDataScreenState extends State<DogDataScreen> {
           _dogHeight = '${dogInfo['height']} cm';
           _dogWeight = '${dogInfo['weight']} kg';
 
-
           _nameController.text = _dogName;
           _breedController.text = _dogBreed;
           _genderController.text = _dogGender;
@@ -91,7 +89,6 @@ class _DogDataScreenState extends State<DogDataScreen> {
         _dogDateOfBirth = null;
         _dogHeight = 'Error loading data';
         _dogWeight = 'Error loading data';
-
       });
     }
   }
@@ -115,13 +112,13 @@ class _DogDataScreenState extends State<DogDataScreen> {
       final int? dogId = await PreferencesService.getDogId();
       if (dogId != null) {
         await HttpService.updateDogProfile(
-          dogId,
-          _nameController.text,
-          _selectedBreed!,
-          _selectedGender!,
-          DateFormat('yyyy-MM-dd').parse(_dateOfBirthController.text).toString(),
-          double.parse(_weightController.text),
-          int.parse(_heightController.text)
+            dogId,
+            _nameController.text,
+            _selectedBreed!,
+            _selectedGender!,
+            DateFormat('yyyy-MM-dd').parse(_dateOfBirthController.text).toString(),
+            double.parse(_weightController.text),
+            int.parse(_heightController.text)
         );
         await _fetchDogData();
         setState(() {
@@ -228,7 +225,7 @@ class _DogDataScreenState extends State<DogDataScreen> {
                   hintText: _dogBreed.isEmpty ? "Loading..." : _dogBreed,
                   icon: "assets/icons/breed_icon.png",
                   textInputType: TextInputType.text,
-                  readOnly: !_isEditing,
+                  readOnly: true,
                   errorText: _breedError,
                 ),
                 const SizedBox(height: 15),
@@ -250,15 +247,8 @@ class _DogDataScreenState extends State<DogDataScreen> {
                   errorText: _genderError,
                 ),
                 const SizedBox(height: 15),
-                RoundTextField(
-                  textEditingController: _dateOfBirthController,
-                  hintText: _dogDateOfBirth == null
-                      ? "Loading..."
-                      : DateFormat('yyyy-MM-dd').format(_dogDateOfBirth!),
-                  icon: "assets/icons/calendar_icon.png",
-                  textInputType: TextInputType.datetime,
-                  readOnly: true,
-                  errorText: _dateOfBirthError,
+                DateSelector(
+                  birthdateController: _dateOfBirthController,
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
@@ -278,8 +268,6 @@ class _DogDataScreenState extends State<DogDataScreen> {
                   readOnly: !_isEditing,
                   errorText: _heightError,
                 ),
-                const SizedBox(height: 15),
-
               ],
             ),
           ),

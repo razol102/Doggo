@@ -178,7 +178,7 @@ class _MapScreenState extends State<MapScreen> {
                     onMorePressed: () => _showAllCategories(context),
                   ),
                   Expanded(
-                    child: FavoritePlacesList(favoritePlaces: _favoritePlaces),
+                    child: FavoritePlacesList(),
                   ),
                 ],
               ),

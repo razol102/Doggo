@@ -4,12 +4,12 @@ import 'package:latlong2/latlong.dart';
 import 'package:mobile/utils/app_colors.dart';
 import 'package:mobile/screens/map/widgets/map_view.dart';
 
-class SafeZoneMapView extends StatelessWidget {
+class FavoritePlaceMapView extends StatelessWidget {
   final MapView mapView;
   final LatLng? selectedPosition;
   final Function(LatLng) onPositionChanged;
 
-  const SafeZoneMapView({
+  const FavoritePlaceMapView({
     Key? key,
     required this.mapView,
     required this.selectedPosition,
