@@ -3,10 +3,10 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mobile/utils/app_colors.dart';
-import 'map_view.dart';
-import 'category_buttons.dart';
-import 'all_categories_modal.dart';
-import 'favorite_places_list.dart';
+import 'package:mobile/screens/map/widgets/map_view.dart';
+import 'widgets/category_buttons.dart';
+import 'widgets/all_categories_modal.dart';
+import 'widgets/favorite_places_list.dart';
 import '../../services/http_service.dart';
 
 class MapScreen extends StatefulWidget {
@@ -135,6 +135,10 @@ class _MapScreenState extends State<MapScreen> {
         return Colors.purple;
       case 'hotels':
         return Colors.teal;
+      case 'beaches':
+        return Colors.lightBlueAccent;
+      case 'pet stores':
+        return Colors.pink;
       default:
         return Colors.red;
     }

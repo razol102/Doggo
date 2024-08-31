@@ -3,8 +3,7 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import '../../utils/app_colors.dart';
+import 'package:mobile/utils/app_colors.dart';
 
 class PlaceSearchBar extends StatelessWidget {
   final Function(LatLng, String) onSearch;

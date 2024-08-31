@@ -10,6 +10,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/main.dart';
 import '../../common_widgets/round_button.dart';
+import '../activity/start_new_activity.dart';
+import '../activity/widgets/activity_circles_widget.dart';
 import '../devices/BLE_connection_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   final BleService _bleService = BleService();
   bool _isConnectedToBle = false;
   String? _dogName;
+  int? dogId;
   late List<Map<String, dynamic>> activitiesArr = [];
 
   @override
@@ -53,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   void _initialize() {
     _checkBleConnectionStatus();
     _fetchDogInfo();
-    _fetchDogLatestActivities();
+    _fetchDog3LatestActivities();
   }
 
   void _checkBleConnectionStatus() async {
@@ -64,9 +67,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   }
 
   void _fetchDogInfo() async {
-    final dogId = await PreferencesService.getDogId();
+    dogId = await PreferencesService.getDogId();
     if (dogId != null) {
-      final dogInfo = await HttpService.getDogInfo(dogId);
+      final dogInfo = await HttpService.getDogInfo(dogId!);
       final dogName = dogInfo['name'];
       setState(() {
         _dogName = dogName;
@@ -74,10 +77,11 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     }
   }
 
-  void _fetchDogLatestActivities() async {
+  void _fetchDog3LatestActivities() async {
+    print('fetch');
     final dogId = await PreferencesService.getDogId();
     if (dogId != null) {
-      final activities = await HttpService.getAllOutdoorActivities(dogId);
+      final activities = await HttpService.getAllOutdoorActivities(dogId, 3, 0); // request for the latest 3 activities
       if (activities != null) {
         setState(() {
           activitiesArr = activities;
@@ -86,9 +90,47 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     }
   }
 
-  void _addNewActivity() {
-
+  void _showActivityCirclesDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.transparent,
+          contentPadding: EdgeInsets.zero,
+          content: Container(
+            width: 300.0,
+            height: 180.0,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: AppColors.primaryG, // Assuming AppColors.primaryG is a List<Color>
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20.0), // Optional: rounded corners
+            ),
+            child: Center(
+              child: ActivityCirclesWidget(
+                onActivitySelected: (String activityType) {
+                  Navigator.of(context).pop(); // Close the dialog
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => StartNewActivityScreen(
+                        activityType: activityType,
+                        dogId: dogId!,
+                        currentActivityId: null, // No current activity in progress
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
+
 
   List<int> showingTooltipOnSpots = [21];
 
@@ -283,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                 RoundButton(
                     title: "Add New Activity",
                     onPressed: () {
-                      _addNewActivity();
+                      _showActivityCirclesDialog(context);
                     },
                     backgroundColor: AppColors.primaryColor2,
                     titleColor: AppColors.whiteColor),
@@ -295,18 +337,26 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                 SizedBox(
                   height: media.width * 0.05,
                 ),
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    const Text(
                       "Latest Outdoor Activities",
                       style: TextStyle(
-                          color: AppColors.blackColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700),
+                        color: AppColors.blackColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.refresh),
+                      color: AppColors.primaryColor1,
+                      onPressed: _fetchDog3LatestActivities,
+                      tooltip: 'Refresh Activities',
                     ),
                   ],
                 ),
+
                 activitiesArr.isEmpty ?
                     const Center(child: Text("No Activities Available."),)
                     :
@@ -314,14 +364,14 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                     padding: EdgeInsets.zero,
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: 3, //show 3 latest activities
+                    itemCount: activitiesArr.length,
                     itemBuilder: (context, index) {
                       var wObj = activitiesArr[index];
                       return InkWell(
                           onTap: () {
                             //Navigator.pushNamed(context, FinishWorkoutScreen.routeName);
                           },
-                          child: OutdoorActivityRow(wObj: wObj));
+                          child: OutdoorActivityRow(wObj: wObj, dogId: dogId,));
                     }),
                 SizedBox(
                   height: media.width * 0.1,

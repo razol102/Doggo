@@ -28,6 +28,8 @@ class AllCategoriesModal extends StatelessWidget {
                 _categoryTile('Restaurants', Icons.restaurant, Colors.orange, context),
                 _categoryTile('Beauty Salons', Icons.spa, Colors.purple, context),
                 _categoryTile('Hotels', Icons.hotel, Colors.teal, context),
+                _categoryTile('Beaches', Icons.beach_access, Colors.lightBlueAccent, context),
+                _categoryTile('Pet Stores', Icons.store, Colors.pink, context)
               ],
             ),
           ),

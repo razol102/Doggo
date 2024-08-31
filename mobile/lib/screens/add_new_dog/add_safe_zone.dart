@@ -4,11 +4,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:mobile/screens/add_new_dog/configure_collar_screen.dart';
 import 'package:mobile/utils/app_colors.dart';
-import 'package:mobile/screens/map/map_view.dart';
+import 'package:mobile/screens/map/widgets/map_view.dart';
 import 'package:mobile/common_widgets/round_gradient_button.dart';
-import 'package:mobile/screens/map/safe_zone_map_view.dart';
-
-import '../../services/http_service.dart';
+import 'package:mobile/screens/map/widgets/safe_zone_map_view.dart';
+import 'package:mobile/services/http_service.dart';
 
 class AddSafeZoneScreen extends StatefulWidget {
   final int dogId;
