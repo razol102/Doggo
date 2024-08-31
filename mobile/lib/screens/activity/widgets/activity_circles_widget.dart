@@ -4,7 +4,7 @@ import 'package:mobile/utils/app_colors.dart';
 class ActivityCirclesWidget extends StatefulWidget {
   final Function(String activityType) onActivitySelected;
 
-  ActivityCirclesWidget({required this.onActivitySelected});
+  const ActivityCirclesWidget({Key? key, required this.onActivitySelected}) : super(key: key);
 
   @override
   _ActivityCirclesWidgetState createState() => _ActivityCirclesWidgetState();
@@ -45,7 +45,7 @@ class _ActivityCirclesWidgetState extends State<ActivityCirclesWidget> {
           child: Column(
             children: [
               SizedBox(
-                height: 100, // Adjust height as needed
+                height: 120, // Adjust height as needed
                 child: PageView.builder(
                   controller: _pageController,
                   itemCount: (activities.length / 3).ceil(), // Number of pages
@@ -61,14 +61,12 @@ class _ActivityCirclesWidgetState extends State<ActivityCirclesWidget> {
                           .skip(pageIndex * 3)
                           .take(3)
                           .map((activity) => GestureDetector(
-                        onTap: () => widget
-                            .onActivitySelected(activity["activity_type"]!),
+                        onTap: () => widget.onActivitySelected(activity["activity_type"]!),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             CircleAvatar(
-                              backgroundImage:
-                              AssetImage(activity["image"]!),
+                              backgroundImage: AssetImage(activity["image"]!),
                               radius: 35.0,
                               backgroundColor: Colors.grey.shade200,
                             ),
@@ -88,7 +86,7 @@ class _ActivityCirclesWidgetState extends State<ActivityCirclesWidget> {
                   },
                 ),
               ),
-              const SizedBox(height: 2.0),
+              const SizedBox(height: 8.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(

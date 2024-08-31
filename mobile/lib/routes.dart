@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile/screens/add_new_dog/add_new_dog_screen.dart';
-import 'package:mobile/screens/add_new_dog/add_safe_zone.dart';
 import 'package:mobile/screens/add_new_dog/configure_collar_screen.dart';
 import 'package:mobile/screens/all_about_us/dog_data_screen.dart';
 import 'package:mobile/screens/all_about_us/personal_data_screen.dart';
@@ -11,7 +10,6 @@ import 'package:mobile/screens/auth/forgot_password_screen.dart';
 import 'package:mobile/screens/auth/login_screen.dart';
 import 'package:mobile/screens/auth/signup_step1_screen.dart';
 import 'package:mobile/screens/auth/signup_step2_screen.dart';
-import 'package:mobile/screens/ble_test_screen.dart';
 import 'package:mobile/screens/bottom_menu.dart';
 import 'package:mobile/screens/activity/activity_screen.dart';
 import 'package:mobile/screens/devices/BLE_connection_screen.dart';
@@ -23,6 +21,7 @@ import 'package:mobile/screens/map/map_screen.dart';
 import 'package:mobile/screens/other/contact_us_screen.dart';
 import 'package:mobile/screens/other/faq_screen.dart';
 import 'package:mobile/screens/profile/profile_screen.dart';
+import 'package:mobile/screens/social_network/social_network_screen.dart';
 import 'package:mobile/screens/welcome_screen.dart';
 
 final Map<String, WidgetBuilder> routes = {
@@ -56,9 +55,10 @@ final Map<String, WidgetBuilder> routes = {
   //home
   HomeScreen.routeName: (context) => const HomeScreen(),
   //activity
-  // ActivityScreen.routeName: (context) => const ActivityScreen(),
   ActivityScreen.routeName: (context) => ActivityScreen(),
   //map
+  //social network
+  SocialNetworkScreen.routeName: (context) => SocialNetworkScreen(),
   MapScreen.routeName: (context) => const MapScreen(),
   //ble connection
   BleConnectionScreen.routeName: (context) => BleConnectionScreen(),

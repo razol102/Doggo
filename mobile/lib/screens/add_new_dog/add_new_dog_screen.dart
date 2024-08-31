@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/common_widgets/breed_selector.dart';
 import 'package:mobile/common_widgets/gender_selector.dart';
-import 'package:mobile/screens/add_new_dog/add_safe_zone.dart';
+import 'package:mobile/screens/map/set_favorite_place.dart';
 import 'package:mobile/services/http_service.dart';
 import '../../common_widgets/round_gradient_button.dart';
 import '../../common_widgets/round_textfield.dart';
@@ -118,13 +118,14 @@ class _AddNewDogScreenState extends State<AddNewDogScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AddSafeZoneScreen(dogId: dogId),
+                          //builder: (context) => AddSafeZoneScreen(dogId: dogId),
+                          builder: (context) => SetFavoritePlace(dogId: dogId, placeType: 'home', inCompleteRegister: true,),
                         ),
                       );
                     } else {
                       // Show SnackBar with error message
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           content: Text('Failed to add the dog. Please try again.'),
                         ),
                       );

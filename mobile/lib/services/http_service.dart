@@ -263,6 +263,21 @@ class HttpService {
     }
   }
 
+  static Future<Map<String,dynamic>?> getFavoritePlaceByType(int dogId, String placeType) async {
+    final url = Uri.parse('$baseUrl/api/favorite_places/by_type?dog_id=${dogId.toString()}&place_type=$placeType');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if(response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else if(response.statusCode == 204) {
+      return null;
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
   //--------------------------------------collar data--------------------------------------
   static Future<void> sendStepCountToBackend(String dogId, int stepCount) async {
     final url = Uri.parse('$baseUrl/api/dog/fitness?dog_id=$dogId&steps=$stepCount');
@@ -498,8 +513,8 @@ class HttpService {
   }
 
   //--------------------------------------outdoor activities--------------------------------------
-  static Future<List<Map<String, dynamic>>?> getAllOutdoorActivities(int dogId) async {
-    final url = Uri.parse('$baseUrl/api/dog/activities/all?dog_id=$dogId');
+  static Future<List<Map<String, dynamic>>?> getOutdoorActivities(int dogId, int limit, int offset) async {
+    final url = Uri.parse('$baseUrl/api/dog/activities/all?dog_id=$dogId&limit=$limit&offset=$offset');
     final response = await http.get(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -512,6 +527,23 @@ class HttpService {
       return null;
     } else {
       print('Failed to get dog activities: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<Map<String,dynamic>> getOutdoorActivityInfo(int activityId) async {
+    print('in');
+    final url = Uri.parse('$baseUrl/api/dog/activities?activity_id=$activityId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      print(jsonDecode(response.body));
+      return jsonDecode(response.body);
+    } else {
+      print('Failed to fetch activity $activityId info');
       throw Exception(jsonDecode(response.body)['error']);
     }
   }

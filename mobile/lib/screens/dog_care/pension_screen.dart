@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:intl/intl.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:mobile/services/preferences_service.dart';
 import 'package:mobile/utils/app_colors.dart';
-import '../../common_widgets/round_textfield.dart';
-import 'package:mobile/screens/map/map_view.dart';
+import 'package:mobile/common_widgets/round_textfield.dart';
+import 'package:mobile/screens/map/widgets/map_view.dart';
 import 'package:geolocator/geolocator.dart';
 
 class PensionScreen extends StatefulWidget {
@@ -25,8 +24,6 @@ class _PensionScreenState extends State<PensionScreen> {
   String _pensionName = 'Loading...';
   double? _pensionLatitude;
   double? _pensionLongitude;
-  DateTime? _pensionStartDate;
-  DateTime? _pensionEndDate;
   late MapController _mapController;
 
   String? _nameError;
@@ -218,7 +215,7 @@ class _PensionScreenState extends State<PensionScreen> {
               children: [
                 Image.asset(
                   "assets/images/pension_background.png",
-                  width: media.width * 0.75,
+                  width: media.width * 0.5,
                 ),
                 const SizedBox(height: 15),
                 const Text(
@@ -230,17 +227,8 @@ class _PensionScreenState extends State<PensionScreen> {
                   ),
                 ),
                 const SizedBox(height: 25),
-                RoundTextField(
-                  textEditingController: _nameController,
-                  hintText: _pensionName.isEmpty ? "Loading..." : _pensionName,
-                  icon: "assets/icons/name_icon.png",
-                  textInputType: TextInputType.text,
-                  readOnly: !_isEditing,
-                  errorText: _nameError,
-                ),
-                const SizedBox(height: 15),
                 Container(
-                  height: 200,
+                  height: 290,
                   margin: const EdgeInsets.symmetric(vertical: 15),
                   decoration: BoxDecoration(
                     border: Border.all(color: AppColors.grayColor),
@@ -284,6 +272,15 @@ class _PensionScreenState extends State<PensionScreen> {
                       style: const TextStyle(color: Colors.red, fontSize: 12),
                     ),
                   ),
+                const SizedBox(height: 15),
+                RoundTextField(
+                  textEditingController: _nameController,
+                  hintText: _pensionName.isEmpty ? "Loading..." : _pensionName,
+                  icon: "assets/icons/name_icon.png",
+                  textInputType: TextInputType.text,
+                  readOnly: !_isEditing,
+                  errorText: _nameError,
+                ),
                 const SizedBox(height: 15),
               ],
             ),

@@ -3,6 +3,7 @@ import 'package:mobile/services/http_service.dart';
 import 'package:mobile/services/preferences_service.dart';
 import '../../common_widgets/round_textfield.dart';
 import '../../utils/app_colors.dart';
+import 'package:intl/intl.dart';
 
 class DoggoCollarScreen extends StatefulWidget {
   static String routeName = "/DoggoCollarScreen";
@@ -17,6 +18,7 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
   String _collarId = 'loading...';
   String _batteryLevel = 'loading...';
   String _connectionStatus = 'loading...';
+  String _lastUpdateTime = 'Never';
 
   @override
   void initState() {
@@ -41,46 +43,49 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
         String collarId = (await HttpService.getCollarId(dogId.toString()));
         setState(() {
           _collarId = collarId;
+          _updateLastUpdateTime();
         });
       } else {
         print('Dog ID is null');
         setState(() {
           _collarId = 'Error retrieving collar ID';
+          _updateLastUpdateTime();
         });
       }
     } catch (e) {
       print(e);
       setState(() {
         _collarId = 'Error retrieving collar ID';
+        _updateLastUpdateTime();
       });
     }
   }
 
   Future<void> _initializeBatteryLevel() async {
     try {
-      // Wait for collarId to be set before attempting to fetch the battery level
       if (_collarId != 'loading...' && _collarId != 'Error retrieving collar ID') {
         int? batteryLevel = await HttpService.getBatteryLevel(_collarId);
         setState(() {
           _batteryLevel = batteryLevel.toString();
+          _updateLastUpdateTime();
         });
       }
     } catch (e) {
       print(e);
       setState(() {
         _batteryLevel = 'Error retrieving collar battery level';
+        _updateLastUpdateTime();
       });
     }
   }
 
   Future<void> _initializeConnectionStatus() async {
     try {
-      // Wait for collarId to be set before attempting to fetch the connection status
       if (_collarId != 'loading...' && _collarId != 'Error retrieving collar ID') {
         final connectionStatus = await HttpService.getConnectionStatus(_collarId);
 
         String connectionMessage;
-        if(connectionStatus['ble_connected']! as bool) {
+        if (connectionStatus['ble_connected']! as bool) {
           connectionMessage = "connected by bluetooth";
         } else if (connectionStatus['wifi_connected']! as bool) {
           connectionMessage = "connected by wifi";
@@ -90,14 +95,26 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
 
         setState(() {
           _connectionStatus = connectionMessage;
+          _updateLastUpdateTime();
         });
       }
     } catch (e) {
       print(e);
       setState(() {
         _connectionStatus = 'Error retrieving collar connection status';
+        _updateLastUpdateTime();
       });
     }
+  }
+
+  void _updateLastUpdateTime() {
+    setState(() {
+      _lastUpdateTime = DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now());
+    });
+  }
+
+  void _refreshData() {
+    _initializeCollarInfo();
   }
 
   @override
@@ -111,6 +128,13 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         backgroundColor: AppColors.whiteColor,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _refreshData,
+            tooltip: 'Refresh Data',
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -137,7 +161,7 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
-                  hintText: _batteryLevel == 'loading...' ?  _batteryLevel : "$_batteryLevel%",
+                  hintText: _batteryLevel == 'loading...' ? _batteryLevel : "$_batteryLevel%",
                   icon: "assets/icons/battery_icon.png",
                   textInputType: TextInputType.text,
                   readOnly: true,
@@ -148,6 +172,14 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
                   icon: "assets/icons/connection_status_icon.png",
                   textInputType: TextInputType.text,
                   readOnly: true,
+                ),
+                const SizedBox(height: 25),
+                Text(
+                  'Last update: $_lastUpdateTime',
+                  style: TextStyle(
+                    color: AppColors.blackColor,
+                    fontSize: 11,
+                  ),
                 ),
               ],
             ),
