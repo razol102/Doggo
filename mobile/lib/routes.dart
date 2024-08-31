@@ -21,6 +21,7 @@ import 'package:mobile/screens/map/map_screen.dart';
 import 'package:mobile/screens/other/contact_us_screen.dart';
 import 'package:mobile/screens/other/faq_screen.dart';
 import 'package:mobile/screens/profile/profile_screen.dart';
+import 'package:mobile/screens/social_network/social_network_screen.dart';
 import 'package:mobile/screens/welcome_screen.dart';
 
 final Map<String, WidgetBuilder> routes = {
@@ -54,9 +55,10 @@ final Map<String, WidgetBuilder> routes = {
   //home
   HomeScreen.routeName: (context) => const HomeScreen(),
   //activity
-  // ActivityScreen.routeName: (context) => const ActivityScreen(),
   ActivityScreen.routeName: (context) => ActivityScreen(),
   //map
+  //social network
+  SocialNetworkScreen.routeName: (context) => SocialNetworkScreen(),
   MapScreen.routeName: (context) => const MapScreen(),
   //ble connection
   BleConnectionScreen.routeName: (context) => BleConnectionScreen(),

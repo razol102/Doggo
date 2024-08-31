@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'activity/activity_screen.dart';
 import 'map/map_screen.dart';
-
+import 'package:mobile/screens/social_network/social_network_screen.dart';
 class BottomMenu extends StatefulWidget {
   static String routeName = "/BottomMenu";
 
@@ -21,13 +21,11 @@ class _BottomMenuState extends State<BottomMenu> {
   int selectTab = 0;
 
   final List<Widget> _widgetOptions = <Widget>[
-    //const HomeScreenOld(),
     const HomeScreen(),
     const UserProfileScreen(),
-    // const ActivityScreen(),
     ActivityScreen(),
     const MapScreen(),
-    //const socialMediaScreen(),
+     SocialNetworkScreen(),
   ];
 
   @override
