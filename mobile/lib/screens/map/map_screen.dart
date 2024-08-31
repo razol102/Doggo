@@ -183,7 +183,7 @@ class _MapScreenState extends State<MapScreen> {
                     onMorePressed: () => _showAllCategories(context),
                   ),
                   Expanded(
-                    child: FavoritePlacesList(dogId: dogId!,),
+                    child: dogId != null ? FavoritePlacesList(dogId: dogId!,) : SizedBox(),
                   ),
                 ],
               ),
