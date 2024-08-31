@@ -1,6 +1,6 @@
 from flask import Flask
 from src.routes import init_routes
-from src.utils.tasks import run_task_threads
+from src.utils.tasks import run_tasks_thread
 
 app = Flask(__name__)
 

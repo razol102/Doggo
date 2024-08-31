@@ -5,7 +5,7 @@ from flask import jsonify
 
 from src.utils.config import load_database_config
 from src.utils.constants import *
-from src.utils.conversion_tables import get_converted_steps_and_distance, get_burned_calories, \
+from src.utils.conversion_tables import get_burned_calories, \
     get_converted_steps, get_converted_distance
 from src.utils.exceptions import *
 from src.utils.logger import logger
@@ -52,14 +52,14 @@ def update_fitness(cursor, dog_id, embedded_steps):
     """
 
     today_date = date.today()
-    dog_weight = get_dog_weight(cursor, dog_id)
+    dog_weight, dog_height = get_dog_weight_and_height(cursor, dog_id)
 
     fixed_steps = fix_steps_before_update(cursor, dog_id, embedded_steps)
     save_last_steps(cursor, dog_id, embedded_steps)
     steps_to_db = get_converted_steps(dog_weight, fixed_steps)
 
     if steps_to_db != 0:
-        distance_to_db = get_converted_distance(dog_weight, steps_to_db)
+        distance_to_db = get_converted_distance(dog_weight, dog_height, steps_to_db)
         calories_to_db = get_burned_calories(dog_weight, distance_to_db)
         cursor.execute(update_fitness_query, (steps_to_db, distance_to_db, calories_to_db, dog_id, today_date))
         update_dog_activity(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db)
@@ -71,13 +71,13 @@ def create_fitness(cursor, dog_id, embedded_steps):
                                 VALUES (%s, %s, %s, %s, %s); """
 
     today_date = date.today()
-    dog_weight = get_dog_weight(cursor, dog_id)
+    dog_weight, dog_height = get_dog_weight_and_height(cursor, dog_id)
 
     fixed_steps = fix_steps_before_create(cursor, dog_id, embedded_steps)
     save_last_steps(cursor, dog_id, embedded_steps)
 
     steps_to_db = get_converted_steps(dog_weight, fixed_steps)
-    distance_to_db = get_converted_distance(dog_weight, steps_to_db)
+    distance_to_db = get_converted_distance(dog_weight, dog_height, steps_to_db)
     calories_to_db = get_burned_calories(dog_weight, distance_to_db)
 
     cursor.execute(create_fitness_query, (dog_id, today_date, distance_to_db, steps_to_db, calories_to_db))
@@ -173,16 +173,16 @@ def check_collar_attachment(cursor, collar_id):
         raise ValueError("Collar is attached to a dog already.")
 
 
-def get_dog_weight(cursor, dog_id):
+def get_dog_weight_and_height(cursor, dog_id):
     get_dog_weight_query = f"""
-        SELECT {WEIGHT_COLUMN}
+        SELECT {WEIGHT_COLUMN}, {HEIGHT_COLUMN}
         FROM {DOGS_TABLE}
         WHERE {DOG_ID_COLUMN} = %s;
     """
 
     cursor.execute(get_dog_weight_query, (dog_id, ))
 
-    return cursor.fetchone()[0]
+    return cursor.fetchone()
 
 
 def update_dog_activity(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db):

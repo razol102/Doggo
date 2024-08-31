@@ -85,8 +85,8 @@ def add_dog_activity():
     add_dog_activity_query = f"""
                             INSERT INTO {ACTIVITIES_TABLE} 
                             ({DOG_ID_COLUMN}, activity_type, start_time)
-                            VALUES (%s, %s, %s);
-                            RETURNING activity_id
+                            VALUES (%s, %s, %s)
+                            RETURNING activity_id;
                             """
 
     try:

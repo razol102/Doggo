@@ -21,8 +21,29 @@ def get_all_favorite_places():
     if not dict_response:
         return "", HTTP_204_STATUS_NO_CONTENT
 
-
     return dict_response, HTTP_200_OK
+
+
+@favorite_places_routes.route("/api/favorite_places/by_type", methods=['GET'])
+def get_all_favorite_place_by_type():
+    dog_id = request.args.get('dog_id')
+    place_type = request.args.get('place_type')
+    get_dog_favorite_places_query = f"""SELECT * 
+                                    FROM {FAVORITE_PLACES_TABLE} 
+                                    WHERE dog_id = %s AND place_type = %s;"""
+    try:
+        db = load_database_config()
+        with psycopg2.connect(**db) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(get_dog_favorite_places_query, (dog_id, place_type))
+                dict_res = get_dict_for_response(cursor)
+    except(Exception, psycopg2.DatabaseError) as error:
+        return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
+
+    if dict_res is None:
+        return "Favorite place not found", HTTP_204_STATUS_NO_CONTENT
+
+    return jsonify(dict_res), HTTP_200_OK
 
 
 @favorite_places_routes.route("/api/favorite_places", methods=['PUT'])
