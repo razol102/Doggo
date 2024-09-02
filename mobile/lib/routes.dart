@@ -16,7 +16,6 @@ import 'package:mobile/screens/devices/BLE_connection_screen.dart';
 import 'package:mobile/screens/devices/doggo_collar_screen.dart';
 import 'package:mobile/screens/dog_care/food_nutrition_screen.dart';
 import 'package:mobile/screens/dog_care/medical_screen.dart';
-import 'package:mobile/screens/dog_care/pension_screen.dart';
 import 'package:mobile/screens/home/home_screen.dart';
 import 'package:mobile/screens/map/map_screen.dart';
 import 'package:mobile/screens/map/pension_vet_map_screen.dart';

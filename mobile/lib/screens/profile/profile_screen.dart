@@ -6,7 +6,6 @@ import 'package:mobile/screens/all_about_us/personal_data_screen.dart';
 import 'package:mobile/screens/devices/doggo_collar_screen.dart';
 import 'package:mobile/screens/dog_care/food_nutrition_screen.dart';
 import 'package:mobile/screens/dog_care/medical_screen.dart';
-import 'package:mobile/screens/dog_care/pension_screen.dart';
 import 'package:mobile/screens/other/contact_us_screen.dart';
 import 'package:mobile/screens/other/faq_screen.dart';
 import 'package:mobile/screens/welcome_screen.dart';
