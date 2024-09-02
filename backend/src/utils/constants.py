@@ -12,6 +12,7 @@ VACCINATIONS_TABLE = "vaccinations"
 MEDICAL_RECORDS_TABLE = "medical_records"
 PLACES_TABLE = "places"
 GOALS_TABLE = "goals"
+GOAL_TEMPLATES_TABLE = "goal_templates"
 ACTIVITIES_TABLE = "activities"
 FAVORITE_PLACES_TABLE = "favorite_places"
 NOTIFICATIONS_TABLE = "notifications"
@@ -29,6 +30,7 @@ ACTIVITY_ID_COLUMN = "activity_id"
 MEDICAL_RECORD_ID_COLUMN = "record_id"
 WEIGHT_COLUMN = "weight"
 HEIGHT_COLUMN = "height"
+GOAL_ID_COLUMN = "goal_id"
 
 # http status codes
 HTTP_200_OK = 200
@@ -41,3 +43,4 @@ HTTP_404_NOT_FOUND = 404
 COLLAR_FITNESS_COUNT_LIMIT = 65535
 BATTERY_THRESHOLD = 10
 CONNECTED_TO_MOBILE = True
+DECEMBER = 12

@@ -1,3 +1,4 @@
+from calendar import monthrange
 from datetime import date, timedelta, datetime
 import time
 import psycopg2
@@ -343,3 +344,22 @@ def delete_user_dogs(cursor, user_id):
         cursor.execute(delete_dog_query, (dog_id,))
 
 
+def set_goals_data_by_category(goal):
+    if goal['category'] == "steps" or goal['category'] == "calories_burned":
+        goal['current_value'] = int(goal['current_value'])
+        goal['target_value'] = int(goal['target_value'])
+    else:
+        goal['current_value'] = round(goal['current_value'], 2)
+        goal['target_value'] = round(goal['target_value'], 2)
+
+
+def get_day_record_map(cursor, month, year):
+    records = cursor.fetchall()
+    total_days_in_month = monthrange(int(year), int(month))[1]
+    day_record_map = {day: False for day in range(1, total_days_in_month + 1)}
+
+    for record in records:
+        day = int(record[0])  # Extract the day number from the result
+        day_record_map[day] = True
+
+    return day_record_map

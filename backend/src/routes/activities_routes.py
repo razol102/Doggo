@@ -31,29 +31,29 @@ def get_dog_activities_list():
             with connection.cursor() as cursor:
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
                 cursor.execute(get_dog_activities_query, (dog_id, limit, offset))
-                list_of_dicts = get_list_of_dicts_for_response(cursor)
+                list_of_activity_dicts = get_list_of_dicts_for_response(cursor)
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    if not list_of_dicts:
+    if not list_of_activity_dicts: # List is empty --> no activities
         return "", HTTP_204_STATUS_NO_CONTENT
     else:
-        for dictionary in list_of_dicts:
-            dictionary['distance'] = round(dictionary['distance'], 2)
-            dictionary['calories_burned'] = int(dictionary['calories_burned'])
+        for activity_dict in list_of_activity_dicts:
+            activity_dict['distance'] = round(activity_dict['distance'], 2)
+            activity_dict['calories_burned'] = int(activity_dict['calories_burned'])
 
-    return list_of_dicts, HTTP_200_OK
+    return list_of_activity_dicts, HTTP_200_OK
 
 
 @activities_routes.route("/api/dog/activities", methods=['GET'])
 def get_dog_activity_log():
     activity_id = request.args.get("activity_id")
-    get_dog_activity_query = """
+    get_dog_activity_query = f"""
     SELECT start_time, end_time,         
     distance, steps, calories_burned,
     TO_CHAR(duration, 'HH24:MI:SS') AS duration
-    FROM activities
-    WHERE activity_id = %s;
+    FROM {ACTIVITIES_TABLE}
+    WHERE {ACTIVITY_ID_COLUMN} = %s;
     """
 
     try:
@@ -63,17 +63,17 @@ def get_dog_activity_log():
             with connection.cursor() as cursor:
                 check_if_exists(cursor, ACTIVITIES_TABLE, ACTIVITY_ID_COLUMN, activity_id)
                 cursor.execute(get_dog_activity_query, (activity_id,))
-                dict_res = get_dict_for_response(cursor)
+                activity_res = get_dict_for_response(cursor)
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    if dict_res['duration'] is None:
-        dict_res['duration'] = 0
+    if activity_res['duration'] is None:
+        activity_res['duration'] = 0
 
-    dict_res['distance'] = round(dict_res['distance'], 2)
-    dict_res['calories_burned'] = int(dict_res['calories_burned'])
+    activity_res['distance'] = round(activity_res['distance'], 2)
+    activity_res['calories_burned'] = int(activity_res['calories_burned'])
 
-    return dict_res, HTTP_200_OK
+    return activity_res, HTTP_200_OK
 
 
 @activities_routes.route("/api/dog/activities", methods=['POST'])
@@ -88,7 +88,6 @@ def add_dog_activity():
                             VALUES (%s, %s, %s)
                             RETURNING activity_id;
                             """
-
     try:
         db = load_database_config()
 
@@ -142,7 +141,7 @@ def end_dog_activity():
 @activities_routes.route("/api/dog/activities", methods=['DELETE'])
 def delete_dog_activity():
     activity_id = request.args.get("activity_id")
-    delete_activities_query = f"DELETE FROM {ACTIVITIES_TABLE} WHERE {ACTIVITY_ID_COLUMN} = %s;"
+    delete_activity_query = f"DELETE FROM {ACTIVITIES_TABLE} WHERE {ACTIVITY_ID_COLUMN} = %s;"
 
     try:
         db = load_database_config()
@@ -150,7 +149,7 @@ def delete_dog_activity():
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, ACTIVITIES_TABLE, ACTIVITY_ID_COLUMN, activity_id)
-                cursor.execute(delete_activities_query, (activity_id,))
+                cursor.execute(delete_activity_query, (activity_id,))
                 connection.commit()
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST

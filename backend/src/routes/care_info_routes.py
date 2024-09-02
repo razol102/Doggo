@@ -7,39 +7,6 @@ from src.utils.helpers import *
 care_info_routes = Blueprint('care_info_routes', __name__)
 
 
-@care_info_routes.route('/api/dog/care_info', methods=['PUT'])
-def add_dog_care_info():
-    data = request.json
-    db = load_database_config()
-    dog_id = data.get("dog_id")
-
-    update_dog_care_info_query = """ UPDATE {0}
-                               SET vet_name = %(vet_name)s, vet_phone = %(vet_phone)s, vet_latitude = %(vet_latitude)s,
-                               vet_longitude = %(vet_longitude)s, pension_name = %(pension_name)s,
-                               pension_latitude = %(pension_latitude)s, pension_longitude = %(pension_longitude)s
-                               WHERE {1} = %(dog_id)s
-                               ; """.format(CARE_INFO_TABLE, DOG_ID_COLUMN)
-
-    create_dog_care_info_query = """ INSERT INTO {0} (dog_id, vet_name, vet_phone, pension_name)
-                                   VALUES (%(dog_id)s, %(vet_name)s, %(vet_phone)s, %(pension_name)s
-                                   ); """.format(CARE_INFO_TABLE)
-    try:
-        with psycopg2.connect(**db) as connection:
-            with connection.cursor() as cursor:
-                check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
-                if does_exist(cursor, CARE_INFO_TABLE, DOG_ID_COLUMN, dog_id):
-                    cursor.execute(update_dog_care_info_query, data)
-                    msg = "Dog care info record was updated"
-                else:
-                    cursor.execute(create_dog_care_info_query, data)
-                    msg = "Dog care info record was created"
-                connection.commit()
-    except(Exception, psycopg2.DatabaseError) as error:
-        return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
-
-    return jsonify({"message": msg}), HTTP_200_OK
-
-
 @care_info_routes.route('/api/dog/vet', methods=['PUT'])
 def add_dog_vet():
     data = request.json
@@ -98,13 +65,14 @@ def add_dog_pension():
     db = load_database_config()
     dog_id = data.get("dog_id")
     update_dog_pension_query = f""" UPDATE {CARE_INFO_TABLE}
-                                   SET pension_name = %(pension_name)s, pension_latitude = %(pension_latitude)s, 
-                                   pension_longitude = %(pension_longitude)s
+                                   SET pension_name = %(pension_name)s, pension_phone = %(pension_phone)s,
+                                   pension_latitude = %(pension_latitude)s, pension_longitude = %(pension_longitude)s
                                    WHERE {DOG_ID_COLUMN} = %(dog_id)s; """
 
     create_dog_pension_query = f""" INSERT INTO {CARE_INFO_TABLE} 
-                                        (dog_id, pension_name, pension_latitude, pension_longitude)
-                                       VALUES (%(dog_id)s, %(pension_name)s, %(pension_longitude)s, %(pension_latitude)s); 
+                                    (dog_id, pension_name, pension_phone, pension_latitude, pension_longitude)
+                                    VALUES (%(dog_id)s, %(pension_name)s, %(pension_phone)s, 
+                                    %(pension_longitude)s, %(pension_latitude)s); 
                                     """
 
     try:
@@ -127,7 +95,7 @@ def add_dog_pension():
 @care_info_routes.route('/api/dog/pension', methods=['GET'])
 def get_dog_pension():
     dog_id = request.args.get('dog_id')
-    get_pension_query = f""" SELECT pension_name, pension_latitude, pension_longitude
+    get_pension_query = f""" SELECT pension_name, pension_phone, pension_latitude, pension_longitude
                                  FROM {CARE_INFO_TABLE} WHERE {DOG_ID_COLUMN} = %s; """
     db = load_database_config()
 

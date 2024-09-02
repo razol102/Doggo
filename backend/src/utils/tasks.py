@@ -23,8 +23,8 @@ def start_tasks():
             with psycopg2.connect(**db) as connection:
                 with connection.cursor() as cursor:
                     while True:
-                        check_and_end_activities(cursor)
                         check_collars_connection(cursor)
+                        check_and_end_activities(cursor)
                         connection.commit()
                         time.sleep(10)
         except (Exception, ValueError, psycopg2.DatabaseError) as error:
@@ -35,7 +35,6 @@ def start_tasks():
 def check_and_end_activities(cursor):
     get_active_activities_query = f"""SELECT {ACTIVITY_ID_COLUMN}, start_time
                           FROM {ACTIVITIES_TABLE} WHERE end_time IS NULL;"""
-
     cursor.execute(get_active_activities_query)
     active_activities = cursor.fetchall()
     end_activities_by_time_threshold(cursor, active_activities)
@@ -75,8 +74,8 @@ def check_collars_connection(cursor):
     collar_ids = get_all_collar_ids(cursor)
 
     for collar_id in collar_ids:
-        cursor.execute(delta_query, (collar_id,))
-        result = cursor.fetchone()[0]
+        cursor.execute(delta_query, ("1211",))
+        result = cursor.fetchone()
 
         # If result is None --> the server never received steps from the current collar
         if result is None or result[0] >= COLLAR_LAST_UPDATE_TIME_THRESHOLD:
@@ -97,3 +96,7 @@ def disconnect_collar(cursor, collar_id):
                               SET wifi_connected = FALSE, ble_connected = FALSE
                               WHERE {COLLAR_ID_COLUMN} = %s; """
     cursor.execute(disconnect_collar_query, (collar_id, ))
+
+
+# def check_and_end_activities(cursor):
+
