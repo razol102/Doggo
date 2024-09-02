@@ -8,18 +8,18 @@
 // import 'package:mobile/screens/map/widgets/map_view.dart';
 // import 'package:geolocator/geolocator.dart';
 //
-// class PensionScreen extends StatefulWidget {
-//   static const String routeName = "/PensionScreen";
+// class VetInfoScreen extends StatefulWidget {
+//   static const String routeName = "/VetInfoScreen";
 //
 //   final bool editMode;
 //
-//   const PensionScreen({super.key, this.editMode = false});
+//   const VetInfoScreen({super.key, this.editMode = false});
 //
 //   @override
-//   _PensionScreenState createState() => _PensionScreenState();
+//   _VetInfoScreenState createState() => _VetInfoScreenState();
 // }
 //
-// class _PensionScreenState extends State<PensionScreen> {
+// class _VetInfoScreenState extends State<VetInfoScreen> {
 //   late bool _isEditing;
 //   String _pensionName = 'Loading...';
 //   double? _pensionLatitude;

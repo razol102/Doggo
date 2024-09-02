@@ -6,19 +6,20 @@ import 'package:mobile/screens/add_new_dog/configure_collar_screen.dart';
 import 'package:mobile/utils/app_colors.dart';
 import 'package:mobile/screens/map/widgets/map_view.dart';
 import 'package:mobile/common_widgets/round_gradient_button.dart';
-import 'package:mobile/screens/map/widgets/favorite_place_map_view.dart';
 import 'package:mobile/services/http_service.dart';
 
 class SetFavoritePlace extends StatefulWidget {
   final int dogId;
   final String placeType;
   final bool inCompleteRegister;
+  final bool editMode;
 
   const SetFavoritePlace({
     Key? key,
     required this.dogId,
     required this.placeType,
     this.inCompleteRegister = false,
+    this.editMode = true
   }) : super(key: key);
 
   static String routeName = "/SetFavoritePlaceScreen";
@@ -28,23 +29,24 @@ class SetFavoritePlace extends StatefulWidget {
 }
 
 class _SetFavoritePlaceState extends State<SetFavoritePlace> {
+  late bool _isEditing;
   final MapController _mapController = MapController();
   LatLng _currentPosition = const LatLng(32.0853, 34.7818); // Default position in Tel Aviv
 
   LatLng? _selectedPosition;
   final TextEditingController _placeNameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _latitudeController = TextEditingController();
-  final TextEditingController _longitudeController = TextEditingController();
+  // final TextEditingController _latitudeController = TextEditingController();
+  // final TextEditingController _longitudeController = TextEditingController();
+
+  List<Marker> _markers = [];
 
   Future<void> _updateUserLocation() async {
     try {
       Position position = await Geolocator.getCurrentPosition();
       setState(() {
         _currentPosition = LatLng(position.latitude, position.longitude);
-        if (_selectedPosition == null) {
-          _selectedPosition = _currentPosition;
-        }
+        _selectedPosition ??= _currentPosition;
         _mapController.move(_selectedPosition!, 18.0);
       });
     } catch (e) {
@@ -64,13 +66,11 @@ class _SetFavoritePlaceState extends State<SetFavoritePlace> {
             place['place_latitude'] ?? _currentPosition.latitude,
             place['place_longitude'] ?? _currentPosition.longitude,
           );
-          _latitudeController.text = _selectedPosition!.latitude.toString();
-          _longitudeController.text = _selectedPosition!.longitude.toString();
 
           // Move map to the selected position immediately
-          print("moving to: ${place['place_latitude']}, ${place['place_longitude']}");
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _mapController.move(_selectedPosition!, 18.0);
+            _updateMarkers();  // Add marker after moving the map
           });
         });
       }
@@ -82,6 +82,7 @@ class _SetFavoritePlaceState extends State<SetFavoritePlace> {
   @override
   void initState() {
     super.initState();
+    _isEditing = widget.editMode;
     _fetchFavoritePlace(); // Fetch and populate the favorite place data
     _updateUserLocation();
   }
@@ -89,8 +90,6 @@ class _SetFavoritePlaceState extends State<SetFavoritePlace> {
   void _updateSelectedPosition(LatLng position) {
     setState(() {
       _selectedPosition = position;
-      _latitudeController.text = position.latitude.toString();
-      _longitudeController.text = position.longitude.toString();
     });
   }
 
@@ -136,6 +135,27 @@ class _SetFavoritePlaceState extends State<SetFavoritePlace> {
     }
   }
 
+  void _updateMarkers() {
+      _markers = [
+        Marker(
+          point: _selectedPosition ?? _currentPosition,
+          child: Icon(Icons.location_pin, color: Colors.red, size: 40),
+          width: 40,
+          height: 40,
+        ),
+      ];
+      _mapController.move(_selectedPosition ?? _currentPosition, 18.0);
+  }
+
+  void _onMapTap(LatLng latLng) {
+    if (_isEditing) {
+      setState(() {
+        _selectedPosition = latLng;
+        _updateMarkers();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -158,7 +178,7 @@ class _SetFavoritePlaceState extends State<SetFavoritePlace> {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  "Drag the marker to define your dog's ${widget.placeType}",
+                  "Tap the map to define your dog's ${widget.placeType}",
                   style: const TextStyle(
                     color: AppColors.grayColor,
                     fontSize: 12,
@@ -175,18 +195,24 @@ class _SetFavoritePlaceState extends State<SetFavoritePlace> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(15),
-                    child: FavoritePlaceMapView(
-                      mapView: MapView(
-                        mapController: _mapController,
-                        markers: [],
-                        currentPosition: _currentPosition,
-                        onUpdateLocation: _updateUserLocation,
-                        onSearch: _onSearch,
-                        onClearMarkers: () {},
-                        showClearMarkersButton: false,
-                      ),
-                      selectedPosition: _selectedPosition,
-                      onPositionChanged: _updateSelectedPosition,
+                    child: MapView(
+                      mapController: _mapController,
+                      markers: _markers,
+                      currentPosition: _currentPosition,
+                      onUpdateLocation: () {
+                        _mapController.move(_currentPosition, 14.0);
+                      },
+                      onSearch: _onSearch,
+                      onClearMarkers: () {
+                        if (_isEditing) {
+                          setState(() {
+                            _markers.clear();
+                          });
+                        }
+                      },
+                      showClearMarkersButton: _isEditing,
+                      showSearchBar: _isEditing,
+                      onTap: _onMapTap,
                     ),
                   ),
                 ),

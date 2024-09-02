@@ -10,7 +10,7 @@ class ValidationMethods {
   }
 
 
-  static   String? validatePhoneNumber(String? value) {
+  static String? validatePhoneNumber(String? value) {
     if (value == null || value.isEmpty) {
       return 'Phone number cannot be empty';
     }
