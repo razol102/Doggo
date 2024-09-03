@@ -241,6 +241,7 @@ class HttpService {
   //--------------------------------------favorite places--------------------------------------
   static Future<void> setFavoritePlace(String dogId, String placeName, double placeLatitude, double placeLongitude, String address, String placeType) async {
     final url = Uri.parse('$baseUrl/api/favorite_places');
+    print('$placeLatitude, $placeLongitude');
 
     final response = await http.put(
       url,
@@ -410,15 +411,16 @@ class HttpService {
     }
   }
 
-  static Future<void> addUpdatePension(int dogId, String pensionName, double pensionLatitude, double pensionLongitude) async{
+  static Future<void> addUpdatePension(int dogId, String pensionName, String pensionPhone, double pensionLatitude, double pensionLongitude) async{
     final url = Uri.parse('$baseUrl/api/dog/pension');
-    print('in http service update pension: ${dogId.toString()}, $pensionName, $pensionLatitude, $pensionLongitude');
+    print('in http service update pension: ${dogId.toString()}, $pensionName, $pensionPhone, $pensionLatitude, $pensionLongitude');
     final response = await http.put(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
         'dog_id': dogId.toString(),
         'pension_name': pensionName,
+        'pension_phone': pensionPhone,
         "pension_latitude": pensionLatitude,
         "pension_longitude": pensionLongitude,
         })
@@ -471,6 +473,75 @@ class HttpService {
     }
   }
 
+  //--------------------------------------medical records--------------------------------------
+  static Future<Map<String, dynamic>> getMonthlyMedicalRecords(int dogId, int year, int month) async {
+    final url = Uri.parse('$baseUrl/api/dog/medical_records/days?dog_id=$dogId&month=$month&year=$year');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      print(jsonDecode(response.body));
+      return  jsonDecode(response.body);
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<List<dynamic>> getDailyMedicalRecords(int dogId, String formattedDate) async {
+    final url = Uri.parse('$baseUrl/api/dog/medical_records/by_date?dog_id=$dogId&date=$formattedDate');
+    print('$baseUrl/api/dog/medical_records/by_date?dog_id=101&date=$formattedDate');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return  jsonDecode(response.body);
+    } else if (response.statusCode == 204) {
+      return [];
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<void> createNewMedicalRecord(int dogId, String vetName, String address, String dateTime, String description) async {
+    final url = Uri.parse('$baseUrl/api/dog/medical_records');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 201) { // successfully added
+      return;
+    } else {
+      print('Failed to create new activity: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<void> updateMedicalRecord(int recordId, String vetName, String address, String dateTime, String description) async {
+    final url = Uri.parse('$baseUrl/api/medical_records');
+    final response = await http.put(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'record_id': recordId,
+          'vet_name': vetName,
+          'address': address,
+          'record_datetime': dateTime,
+          'description': description
+        })
+    );
+
+    if (response.statusCode == 200) {
+      return;
+    } else {
+      print('Failed to update medical record $recordId: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
   //--------------------------------------nutrition--------------------------------------
   static Future<Map<String,dynamic>?> getNutritionData(int dogId) async {
     final url = Uri.parse('$baseUrl/api/dog/nutrition?dog_id=$dogId');

@@ -5,18 +5,19 @@ import 'package:mobile/screens/all_about_us/dog_data_screen.dart';
 import 'package:mobile/screens/all_about_us/personal_data_screen.dart';
 import 'package:mobile/screens/devices/doggo_collar_screen.dart';
 import 'package:mobile/screens/dog_care/food_nutrition_screen.dart';
-import 'package:mobile/screens/dog_care/pension_screen.dart';
+import 'package:mobile/screens/dog_care/medical_screen.dart';
 import 'package:mobile/screens/other/contact_us_screen.dart';
 import 'package:mobile/screens/other/faq_screen.dart';
 import 'package:mobile/screens/welcome_screen.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:mobile/utils/app_colors.dart';
-import 'package:mobile/screens/profile/widgets/setting_row.dart';
+import 'package:mobile/common_widgets/setting_row.dart';
 import 'package:mobile/common_widgets/title_subtitle_cell.dart';
 import 'package:flutter/material.dart';
 
 import '../../../common_widgets/round_button.dart';
 import '../../services/preferences_service.dart';
+import '../map/pension_vet_map_screen.dart';
 
 class UserProfileScreen extends StatefulWidget {
   static String routeName = "/UserProfileScreen";
@@ -85,13 +86,20 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
         Navigator.pushNamed(context, FoodNutritionScreen.routeName);
         break;
       case '3':
-      // Navigate to Medical Records settings
-        Navigator.pushNamed(context, '/medical_records');
+      // Navigate to Medical settings
+        Navigator.pushNamed(context, MedicalScreen.routeName);
         break;
       case '4':
       // Navigate to Pension Info settings
-        Navigator.pushNamed(context, PensionScreen.routeName);
-        break;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const PensionVetMapScreen(
+              type: 'pension',
+            ),
+          ),
+        );
+        break;        break;
       case '5':
       // Navigate to Personal Data settings or related screen
         Navigator.pushNamed(context, PersonalDataScreen.routeName);
