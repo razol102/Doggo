@@ -98,5 +98,9 @@ def disconnect_collar(cursor, collar_id):
     cursor.execute(disconnect_collar_query, (collar_id, ))
 
 
-# def check_and_end_activities(cursor):
-
+# def check_and_end_goals(cursor):
+#     get_active_activities_query = f"""SELECT {GOAL_ID_COLUMN}, end_date
+#                           FROM {GOALS_TABLE} WHERE end_time IS NULL;"""
+#     cursor.execute(get_active_activities_query)
+#     active_activities = cursor.fetchall()
+#     end_activities_by_time_threshold(cursor, active_activities)
