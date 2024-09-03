@@ -22,14 +22,14 @@ def get_dog_vaccinations_list():
             with connection.cursor() as cursor:
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
                 cursor.execute(get_dog_vaccinations_query, (dog_id,))
-                response = get_list_of_dicts_for_response(cursor)
+                list_of_dicts = get_list_of_dicts_for_response(cursor)
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    if not response:
+    if not list_of_dicts:
         return "", HTTP_204_STATUS_NO_CONTENT
 
-    return response, HTTP_200_OK
+    return jsonify(list_of_dicts), HTTP_200_OK
 
 
 @vaccinations_routes.route("/api/dog/vaccinations", methods=['POST'])
@@ -64,7 +64,7 @@ def add_dog_vaccination():
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    return {"vaccination_id": new_vaccination_id}, HTTP_201_CREATED
+    return jsonify({"vaccination_id": new_vaccination_id}), HTTP_201_CREATED
 
 
 @vaccinations_routes.route("/api/dog/vaccinations", methods=['PUT'])

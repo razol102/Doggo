@@ -42,7 +42,7 @@ def get_dog_activities_list():
             activity_dict['distance'] = round(activity_dict['distance'], 2)
             activity_dict['calories_burned'] = int(activity_dict['calories_burned'])
 
-    return list_of_activity_dicts, HTTP_200_OK
+    return jsonify(list_of_activity_dicts), HTTP_200_OK
 
 
 @activities_routes.route("/api/dog/activities", methods=['GET'])
@@ -73,7 +73,7 @@ def get_dog_activity_log():
     activity_res['distance'] = round(activity_res['distance'], 2)
     activity_res['calories_burned'] = int(activity_res['calories_burned'])
 
-    return activity_res, HTTP_200_OK
+    return jsonify(activity_res), HTTP_200_OK
 
 
 @activities_routes.route("/api/dog/activities", methods=['POST'])

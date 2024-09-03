@@ -21,7 +21,7 @@ def get_all_favorite_places():
     if not dict_response:
         return "", HTTP_204_STATUS_NO_CONTENT
 
-    return dict_response, HTTP_200_OK
+    return jsonify(dict_response), HTTP_200_OK
 
 
 @favorite_places_routes.route("/api/favorite_places/by_type", methods=['GET'])
