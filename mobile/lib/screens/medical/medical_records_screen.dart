@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 
 import 'package:mobile/utils/app_colors.dart';
 
+import 'add_update_medical_record_screen.dart';
+
 class MedicalRecordsScreen extends StatefulWidget {
   static const String routeName = "/MedicalRecordsScreen";
 
@@ -44,14 +46,8 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
   }
 
   String _formatTime(String dateTimeStr) {
-    DateTime dateTime = DateFormat('EEE, dd MMM yyyy HH:mm:ss').parse(dateTimeStr, true);
-    return DateFormat('HH:mm').format(dateTime.toLocal());
-  }
-
-  void _resetDailyRecords() {
-    setState(() {
-      _dailyRecords = [];
-    });
+    DateTime dateTime = DateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", 'en_US').parse(dateTimeStr, true).toLocal();
+    return DateFormat('HH:mm').format(dateTime);
   }
 
   void _showRecordDetails(Map<String, dynamic> record) {
@@ -65,15 +61,15 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('Address: ${record['address']}'),
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               Text('Time: ${_formatTime(record['record_datetime'])}'),
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               Text('Description: ${record['description']}'),
             ],
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Close'),
+              child: const Text('Close'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -83,6 +79,58 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
       },
     );
   }
+  Future<void> _addNewRecord() async {
+    final dogId = await PreferencesService.getDogId();
+    if (dogId != null) {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AddUpdateMedicalRecordScreen(
+            date: _selectedDay ?? DateTime.now(),
+            dogId: dogId.toString(),
+            isUpdate: false,
+          ),
+        ),
+      );
+      if (result == true) {
+        _loadDailyRecords(_selectedDay ?? DateTime.now());
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error: Unable to retrieve dog ID')),
+      );
+    }
+  }
+
+  Future<void> _editRecord(Map<String, dynamic> record) async {
+    final dogId = await PreferencesService.getDogId();
+    if (dogId != null) {
+      DateTime recordDateTime = DateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", 'en_US').parse(record['record_datetime'], true).toLocal();
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AddUpdateMedicalRecordScreen(
+            date: recordDateTime,
+            dogId: dogId.toString(),
+            isUpdate: true,
+            recordId: record['record_id'],
+          ),
+        ),
+      );
+      if (result == true) {
+        _loadDailyRecords(_selectedDay ?? DateTime.now());
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error: Unable to retrieve dog ID')),
+      );
+    }
+  }
+  void _removeRecord(Map<String, dynamic> record) async {
+    await HttpService.deleteMedicalRecord(record['record_id']);
+    _loadDailyRecords(_selectedDay!); // Refresh the daily records list
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -178,8 +226,19 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                 },
               ),
             ),
-            Divider(),
-            const SizedBox(height: 16.0),
+            const Divider(),
+            const SizedBox(height: 8.0),
+            _selectedDay != null ? Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      _addNewRecord();
+                    },
+                    icon: const Icon(Icons.add, color: Colors.green,)),
+              ],
+            ) :
+            const SizedBox(),
             Expanded(
               child: _dailyRecords.isNotEmpty
                   ? ListView.builder(
@@ -189,8 +248,24 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
                   final time = _formatTime(record['record_datetime']);
                   return ListTile(
                     title: Text(record['vet_name']),
-                    subtitle: Text(record['address']),
-                    trailing: Text(time),
+                    subtitle: Text(time),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit, color: AppColors.primaryColor1),
+                          onPressed: () {
+                            _editRecord(record);
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () {
+                            _removeRecord(record);
+                          },
+                        ),
+                      ],
+                    ),
                     onTap: () {
                       _showRecordDetails(record);
                     },

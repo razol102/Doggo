@@ -279,6 +279,7 @@ class HttpService {
       throw Exception(jsonDecode(response.body)['error']);
     }
   }
+
   //--------------------------------------collar data--------------------------------------
   static Future<void> sendStepCountToBackend(String dogId, int stepCount) async {
     final url = Uri.parse('$baseUrl/api/dog/fitness?dog_id=$dogId&steps=$stepCount');
@@ -491,7 +492,6 @@ class HttpService {
 
   static Future<List<dynamic>> getDailyMedicalRecords(int dogId, String formattedDate) async {
     final url = Uri.parse('$baseUrl/api/dog/medical_records/by_date?dog_id=$dogId&date=$formattedDate');
-    print('$baseUrl/api/dog/medical_records/by_date?dog_id=101&date=$formattedDate');
     final response = await http.get(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -506,42 +506,73 @@ class HttpService {
     }
   }
 
-  static Future<void> createNewMedicalRecord(int dogId, String vetName, String address, String dateTime, String description) async {
+  static Future<void> addMedicalRecord(String dogId, Map<String, dynamic> recordData) async {
+
     final url = Uri.parse('$baseUrl/api/dog/medical_records');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'dog_id': dogId,
+        ...recordData,
+      }),
     );
 
-    if (response.statusCode == 201) { // successfully added
-      return;
+    if (response.statusCode == 201) {
+      print('New record created');
     } else {
-      print('Failed to create new activity: ${response.statusCode}');
+      print('Failed to create new record: ${response.statusCode}');
       throw Exception(jsonDecode(response.body)['error']);
     }
   }
 
-  static Future<void> updateMedicalRecord(int recordId, String vetName, String address, String dateTime, String description) async {
-    final url = Uri.parse('$baseUrl/api/medical_records');
+  static Future<void> updateMedicalRecord(int recordId, Map<String, dynamic> recordData) async {
+    final url = Uri.parse('$baseUrl/api/dog/medical_records');
     final response = await http.put(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'record_id': recordId,
-          'vet_name': vetName,
-          'address': address,
-          'record_datetime': dateTime,
-          'description': description
-        })
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'record_id': recordId,
+        ...recordData,
+      }),
     );
 
     if (response.statusCode == 200) {
-      return;
+      print('Record updated successfully');
     } else {
       print('Failed to update medical record $recordId: ${response.statusCode}');
       throw Exception(jsonDecode(response.body)['error']);
     }
   }
+  static Future<void> deleteMedicalRecord(int recordId) async {
+    final url = Uri.parse('$baseUrl/api/dog/medical_records?record_id=${recordId.toString()}');
+    final response = await http.delete(
+        url,
+        headers: {'Content-Type': 'application/json'}
+    );
+
+    if (response.statusCode == 200) {
+      return;
+    } else {
+      print('Failed to delete medical record $recordId: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<Map<String, dynamic>> getMedicalRecord(int recordId) async {
+    final url = Uri.parse('$baseUrl/api/dog/medical_records?record_id=$recordId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return  jsonDecode(response.body);
+    } else {
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
   //--------------------------------------nutrition--------------------------------------
   static Future<Map<String,dynamic>?> getNutritionData(int dogId) async {
     final url = Uri.parse('$baseUrl/api/dog/nutrition?dog_id=$dogId');
@@ -634,15 +665,15 @@ class HttpService {
     }
   }
 
-  static Future<void> endActivity(int activity_id) async {
-    final url = Uri.parse('$baseUrl/api/dog/activities/end?activity_id=${activity_id.toString()}');
+  static Future<void> endActivity(int activityId) async {
+    final url = Uri.parse('$baseUrl/api/dog/activities/end?activity_id=${activityId.toString()}');
     final response = await http.put(
         url,
       headers: {'Content-Type': 'application/json'},
     );
 
     if (response.statusCode == 200) {
-      print('End activity: $activity_id');
+      print('End activity: $activityId');
     } else {
       print('Failed to create new activity: ${response.statusCode}');
       throw Exception(jsonDecode(response.body)['error']);

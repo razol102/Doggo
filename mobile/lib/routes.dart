@@ -19,6 +19,7 @@ import 'package:mobile/screens/dog_care/medical_screen.dart';
 import 'package:mobile/screens/home/home_screen.dart';
 import 'package:mobile/screens/map/map_screen.dart';
 import 'package:mobile/screens/map/pension_vet_map_screen.dart';
+import 'package:mobile/screens/medical/add_update_medical_record_screen.dart';
 import 'package:mobile/screens/medical/medical_records_screen.dart';
 import 'package:mobile/screens/other/contact_us_screen.dart';
 import 'package:mobile/screens/other/faq_screen.dart';
@@ -54,6 +55,7 @@ final Map<String, WidgetBuilder> routes = {
   MedicalScreen.routeName: (context) => const MedicalScreen(),
   //medical records
   MedicalRecordsScreen.routeName: (context) => MedicalRecordsScreen(),
+  AddUpdateMedicalRecordScreen.routeName: (context) => AddUpdateMedicalRecordScreen(date: DateTime.now(), dogId: '',),
   //faq
   FaqScreen.routeName : (context) => FaqScreen(),
   //contact us
