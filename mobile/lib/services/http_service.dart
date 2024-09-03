@@ -544,6 +544,7 @@ class HttpService {
       throw Exception(jsonDecode(response.body)['error']);
     }
   }
+
   static Future<void> deleteMedicalRecord(int recordId) async {
     final url = Uri.parse('$baseUrl/api/dog/medical_records?record_id=${recordId.toString()}');
     final response = await http.delete(
@@ -642,7 +643,6 @@ class HttpService {
     );
 
     if (response.statusCode == 200) {
-      print(jsonDecode(response.body));
       return jsonDecode(response.body);
     } else {
       print('Failed to fetch activity $activityId info');
@@ -695,6 +695,62 @@ class HttpService {
     // }
     return 2000;
   }
+
+  static Future<void> createGoal(int dogId, int targetValue, String frequency, String category) async {
+    final url = Uri.parse('$baseUrl/api/dog/goals/add');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'dog_id': dogId,
+        'target_value': targetValue,
+        'frequency': frequency,
+        'category': category
+      })
+    );
+
+    if (response.statusCode == 200) {
+      print('goal created');
+      return;
+    } else {
+      print('Failed to create goal: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<Map<String, dynamic>> getGoalInfo(int goalId) async {
+    final url = Uri.parse('$baseUrl/api/dog/goals?goal_id=$goalId');
+    final response = await http.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      print('Failed to get goal info: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>?> getGoalsList(int dogId, int limit, int offset) async {
+    final url = Uri.parse('$baseUrl/api/dog/goals/all?dog_id=$dogId&limit=$limit&offset=$offset');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> decodedData = jsonDecode(response.body);
+      return decodedData.cast<Map<String, dynamic>>();
+    } else if(response.statusCode == 204) {
+      return null;
+    } else {
+      print('Failed to get dog goals: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
   //--------------------------------------test--------------------------------------
   static Future<Map<String, dynamic>> getRoot() async {
     final url = Uri.parse('$baseUrl/');
