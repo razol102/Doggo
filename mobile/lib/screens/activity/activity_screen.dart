@@ -452,8 +452,11 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:mobile/screens/activity/start_new_activity.dart';
+import 'package:mobile/screens/activity/widgets/activities_list.dart';
 import 'package:mobile/screens/activity/widgets/activity_circles_widget.dart';
 import '../../common_widgets/round_button.dart';
+import '../../main.dart';
+import '../../services/http_service.dart';
 import '../../services/preferences_service.dart';
 import '../../utils/app_colors.dart';
 import 'activities_history.dart';
@@ -465,13 +468,32 @@ class ActivityScreen extends StatefulWidget {
   _ActivityScreenState createState() => _ActivityScreenState();
 }
 
-class _ActivityScreenState extends State<ActivityScreen> {
+class _ActivityScreenState extends State<ActivityScreen> with RouteAware{
   int? _dogId;
+  late List<Map<String, dynamic>> goalsArr = [];
 
   @override
   void initState() {
     super.initState();
     _loadDogId();
+    _fetchDog3LatestGoals();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute);
+  }
+
+  @override
+  void didPopNext() {
+    _fetchDog3LatestGoals();
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
   }
 
   Future<void> _loadDogId() async {
@@ -496,6 +518,19 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
+  void _fetchDog3LatestGoals() async {
+    final dogId = await PreferencesService.getDogId();
+    if (dogId != null) {
+      final goals = await HttpService.getGoalsList(dogId, 3, 0); // request for the latest 3 activities
+      if (goals != null) {
+        setState(() {
+          goalsArr = goals;
+        });
+      }
+    }
+  }
+
+  @override
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -514,7 +549,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
               fontWeight: FontWeight.w700),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView( // Add this to enable scrolling
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -568,7 +603,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ActivitiesHistoryScreen(dogId: _dogId!),
+                        builder: (context) => ActivitiesHistoryScreen(dogId: _dogId!, type: 'activity',),
                       ),
                     );
                   } else {
@@ -581,6 +616,50 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 backgroundColor: AppColors.primaryColor2,
                 titleColor: AppColors.whiteColor),
             const Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Latest Goals",
+                  style: TextStyle(
+                    color: AppColors.blackColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  color: AppColors.primaryColor1,
+                  onPressed: () {
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => GoalsHistoryScreen(dogId: dogId!),
+                    //   ),
+                    // );
+                  },
+                  tooltip: 'Create Goal',
+                ),
+                SizedBox(width: media.width * 0.35),
+                IconButton(
+                  icon: Icon(Icons.open_in_new),
+                  color: AppColors.primaryColor1,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ActivitiesHistoryScreen(dogId: _dogId!, type: 'goal',),
+                      ),
+                    );
+                  },
+                  tooltip: 'Open Goals History',
+                ),
+              ],
+            ),
+            ActivitiesList(activitiesArr: goalsArr, dogId: _dogId, type: 'goal',),
+            SizedBox(
+              height: media.width * 0.1,
+            ),
           ],
         ),
       ),

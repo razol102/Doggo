@@ -6,7 +6,6 @@ import 'package:mobile/services/ble_service.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:mobile/services/preferences_service.dart';
 import 'package:mobile/utils/app_colors.dart';
-import 'package:mobile/common_widgets/outdoor_activity_row.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/main.dart';
@@ -359,16 +358,15 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ActivitiesHistoryScreen(dogId: dogId!),
+                            builder: (context) => ActivitiesHistoryScreen(dogId: dogId!, type: 'activity',),
                           ),
                         );
                       },
                       tooltip: 'Open Activities History',
                     ),
-
                   ],
                 ),
-                ActivitiesList(activitiesArr: activitiesArr, dogId: dogId),
+                ActivitiesList(activitiesArr: activitiesArr, dogId: dogId, type: 'activity',),
                 SizedBox(
                   height: media.width * 0.1,
                 ),
