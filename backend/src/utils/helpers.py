@@ -64,6 +64,7 @@ def update_fitness(cursor, dog_id, embedded_steps):
         calories_to_db = get_burned_calories(dog_weight, distance_to_db)
         cursor.execute(update_fitness_query, (steps_to_db, distance_to_db, calories_to_db, dog_id, today_date))
         update_dog_activity(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db)
+        update_dog_goals(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db)
 
 
 def create_fitness(cursor, dog_id, embedded_steps):
@@ -83,6 +84,63 @@ def create_fitness(cursor, dog_id, embedded_steps):
 
     cursor.execute(create_fitness_query, (dog_id, today_date, distance_to_db, steps_to_db, calories_to_db))
     update_dog_activity(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db)
+    update_dog_goals(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db)
+
+
+def update_dog_goals(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db):
+    update_steps_goals(cursor, dog_id, steps_to_db)
+    update_distance_goals(cursor, dog_id, distance_to_db)
+    update_calories_goals(cursor, dog_id, calories_to_db)
+    finish_completed_goals(cursor, dog_id)
+
+
+def update_steps_goals(cursor, dog_id, steps_to_db):
+    update_steps_goals_query = f"""
+    UPDATE {GOALS_TABLE}
+    SET current_value = CASE
+        WHEN current_value + %s > target_value THEN target_value
+        ELSE current_value + %s
+    END
+    WHERE {DOG_ID_COLUMN} = %s AND category = 'steps' AND done = FALSE;
+    """
+
+    cursor.execute(update_steps_goals_query, (steps_to_db, steps_to_db, dog_id))
+
+
+def update_distance_goals(cursor, dog_id, distance_to_db):
+    update_distance_goals_query = f"""
+    UPDATE {GOALS_TABLE}
+    SET current_value = CASE
+        WHEN current_value + %s > target_value THEN target_value
+        ELSE current_value + %s
+    END
+    WHERE {DOG_ID_COLUMN} = %s AND category = 'distance' AND done = FALSE;
+    """
+
+    cursor.execute(update_distance_goals_query, (distance_to_db, distance_to_db, dog_id))
+
+
+def update_calories_goals(cursor, dog_id, calories_to_db):
+    update_calories_goals_query = f"""
+    UPDATE {GOALS_TABLE}
+    SET current_value = CASE
+        WHEN current_value + %s > target_value THEN target_value
+        ELSE current_value + %s
+    END
+    WHERE {DOG_ID_COLUMN} = %s AND category = 'calories_burned' AND done = FALSE;
+    """
+
+    cursor.execute(update_calories_goals_query, (calories_to_db, calories_to_db, dog_id))
+
+
+def finish_completed_goals(cursor, dog_id):
+    finish_completed_goals_query = f"""
+    UPDATE {GOALS_TABLE}
+    SET done = TRUE, is_finished = TRUE
+    WHERE {DOG_ID_COLUMN} = %s AND target_value = current_value;
+    """
+
+    cursor.execute(finish_completed_goals_query, (dog_id, ))
 
 
 def update_battery_level(cursor, collar_id, new_level):
@@ -215,60 +273,67 @@ def check_for_active_activity(cursor, dog_id):
 
 
 def remove_dog_from_data_tables(cursor, dog_id):
-    remove_dog_from_activities_table(cursor, dog_id)
-    remove_dog_from_care_info_table(cursor, dog_id)
-    remove_dog_from_fitness_table(cursor, dog_id)
-    remove_dog_from_goals_table(cursor, dog_id)
-    remove_dog_from_medical_records_table(cursor, dog_id)
-    remove_dog_from_nutrition_table(cursor, dog_id)
-    remove_dog_from_vaccinations_table(cursor, dog_id)
-    remove_dog_from_users_dogs_table(cursor, dog_id)
-    remove_dog_from_favorites_table(cursor, dog_id)
+    remove_dog_from_table(cursor, dog_id, ACTIVITIES_TABLE)
+    remove_dog_from_table(cursor, dog_id, CARE_INFO_TABLE)
+    remove_dog_from_table(cursor, dog_id, FITNESS_TABLE)
+    remove_dog_from_table(cursor, dog_id, GOALS_TABLE)
+    remove_dog_from_table(cursor, dog_id, MEDICAL_RECORDS_TABLE)
+    remove_dog_from_table(cursor, dog_id, NUTRITION_TABLE)
+    remove_dog_from_table(cursor, dog_id, VACCINATIONS_TABLE)
+    remove_dog_from_table(cursor, dog_id, FAVORITE_PLACES_TABLE)
+    remove_dog_from_table(cursor, dog_id, GOAL_TEMPLATES_TABLE)
+    remove_dog_from_table(cursor, dog_id, USERS_DOGS_TABLE)
 
 
-def remove_dog_from_activities_table(cursor, dog_id):
-    delete_activities_query = f"DELETE FROM {ACTIVITIES_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+def remove_dog_from_table(cursor, dog_id, table):
+    delete_activities_query = f"DELETE FROM {table} WHERE {DOG_ID_COLUMN} = %s"
     cursor.execute(delete_activities_query, (dog_id,))
 
+# def remove_dog_from_activities_table(cursor, dog_id):
+#     delete_activities_query = f"DELETE FROM {ACTIVITIES_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+#     cursor.execute(delete_activities_query, (dog_id,))
+#
+#
+# def remove_dog_from_care_info_table(cursor, dog_id):
+#     delete_care_info_query = f"DELETE FROM {CARE_INFO_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+#     cursor.execute(delete_care_info_query, (dog_id,))
+#
+#
+# def remove_dog_from_fitness_table(cursor, dog_id):
+#     delete_fitness_query = f"DELETE FROM {FITNESS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+#     cursor.execute(delete_fitness_query, (dog_id,))
+#
+#
+# def remove_dog_from_goals_table(cursor, dog_id):
+#     delete_goals_query = f"DELETE FROM {GOALS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+#     cursor.execute(delete_goals_query, (dog_id,))
+#
+#
+# def remove_dog_from_medical_records_table(cursor, dog_id):
+#     delete_medical_records_query = f"DELETE FROM {MEDICAL_RECORDS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+#     cursor.execute(delete_medical_records_query, (dog_id,))
+#
+#
+# def remove_dog_from_nutrition_table(cursor, dog_id):
+#     delete_nutrition_query = f"DELETE FROM {NUTRITION_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+#     cursor.execute(delete_nutrition_query, (dog_id,))
+#
+#
+# def remove_dog_from_vaccinations_table(cursor, dog_id):
+#     delete_vaccinations_query = f"DELETE FROM {VACCINATIONS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+#     cursor.execute(delete_vaccinations_query, (dog_id,))
+#
+#
+# def remove_dog_from_users_dogs_table(cursor, dog_id):
+#     delete_users_dogs_query = f"DELETE FROM {USERS_DOGS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+#     cursor.execute(delete_users_dogs_query, (dog_id,))
+#
+#
+# def remove_dog_from_favorites_table(cursor, dog_id):
+#     delete_favorites_query = f"DELETE FROM {FAVORITE_PLACES_TABLE} WHERE {DOG_ID_COLUMN} = %s"
+#     cursor.execute(delete_favorites_query, (dog_id,))
 
-def remove_dog_from_care_info_table(cursor, dog_id):
-    delete_care_info_query = f"DELETE FROM {CARE_INFO_TABLE} WHERE {DOG_ID_COLUMN} = %s"
-    cursor.execute(delete_care_info_query, (dog_id,))
 
-
-def remove_dog_from_fitness_table(cursor, dog_id):
-    delete_fitness_query = f"DELETE FROM {FITNESS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
-    cursor.execute(delete_fitness_query, (dog_id,))
-
-
-def remove_dog_from_goals_table(cursor, dog_id):
-    delete_goals_query = f"DELETE FROM {GOALS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
-    cursor.execute(delete_goals_query, (dog_id,))
-
-
-def remove_dog_from_medical_records_table(cursor, dog_id):
-    delete_medical_records_query = f"DELETE FROM {MEDICAL_RECORDS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
-    cursor.execute(delete_medical_records_query, (dog_id,))
-
-
-def remove_dog_from_nutrition_table(cursor, dog_id):
-    delete_nutrition_query = f"DELETE FROM {NUTRITION_TABLE} WHERE {DOG_ID_COLUMN} = %s"
-    cursor.execute(delete_nutrition_query, (dog_id,))
-
-
-def remove_dog_from_vaccinations_table(cursor, dog_id):
-    delete_vaccinations_query = f"DELETE FROM {VACCINATIONS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
-    cursor.execute(delete_vaccinations_query, (dog_id,))
-
-
-def remove_dog_from_users_dogs_table(cursor, dog_id):
-    delete_users_dogs_query = f"DELETE FROM {USERS_DOGS_TABLE} WHERE {DOG_ID_COLUMN} = %s"
-    cursor.execute(delete_users_dogs_query, (dog_id,))
-
-
-def remove_dog_from_favorites_table(cursor, dog_id):
-    delete_favorites_query = f"DELETE FROM {FAVORITE_PLACES_TABLE} WHERE {DOG_ID_COLUMN} = %s"
-    cursor.execute(delete_favorites_query, (dog_id,))
 
 
 def fix_steps_before_create(cursor, dog_id, new_steps):
@@ -345,12 +410,12 @@ def delete_user_dogs(cursor, user_id):
 
 
 def set_goals_data_by_category(goal):
-    if goal['category'] == "steps" or goal['category'] == "calories_burned":
-        goal['current_value'] = int(goal['current_value'])
-        goal['target_value'] = int(goal['target_value'])
+    if goal["category"] != "distance":
+        goal["current_value"] = int(goal["current_value"])
+        goal["target_value"] = int(goal["target_value"])
     else:
-        goal['current_value'] = round(goal['current_value'], 2)
-        goal['target_value'] = round(goal['target_value'], 2)
+        goal["current_value"] = round(goal["current_value"], 2)
+        goal["target_value"] = round(goal["target_value"], 2)
 
 
 def get_day_record_map(cursor, month, year):
@@ -365,21 +430,30 @@ def get_day_record_map(cursor, month, year):
     return day_record_map
 
 
-def create_goal(cursor, template_data):
+def create_goal(cursor, template_data, template_id):
+    # check if the current is already even or higher than the target.
+    # sum days from last week/month (according to frequency)
+    frequency = template_data['frequency']
+    # if category = 'frequency'
+    today_fitness = 0
     get_current_fitness_query = f"""
         SELECT {template_data['category']} FROM {FITNESS_TABLE}
         WHERE {DOG_ID_COLUMN} = %s AND {FITNESS_DATE_COLUMN} = CURRENT_DATE
         """
     insert_goal_query = f"""
-        INSERT INTO {GOALS_TABLE} (dog_id, end_date, current_value, target_value, category)
-        VALUES (%s, %s, %s, %s, %s);
+        INSERT INTO {GOALS_TABLE} (dog_id, end_date, current_value, target_value, category, template_id)
+        VALUES (%s, %s, %s, %s, %s, %s);
         """
 
     goal_end_date = get_end_date_by_frequency(template_data['frequency'])
     cursor.execute(get_current_fitness_query, (template_data['dog_id'], ))
-    today_fitness = cursor.fetchone()[0]
+    query_res = cursor.fetchone()
+
+    if query_res is not None:
+        today_fitness = query_res[0]
+
     cursor.execute(insert_goal_query, (template_data['dog_id'], goal_end_date, today_fitness,
-                                       template_data['target_value'], template_data['category']))
+                                       template_data['target_value'], template_data['category'], template_id))
 
 
 def get_end_date_by_frequency(frequency):
@@ -401,3 +475,28 @@ def get_end_date_by_frequency(frequency):
 
     return end_date
 
+
+def delete_goal_template(cursor, template_id):
+    delete_template_query = f"DELETE FROM {GOAL_TEMPLATES_TABLE} WHERE {TEMPLATE_ID_COLUMN} = %s;"
+
+    delete_active_goal_query = f"""
+        DELETE FROM {GOALS_TABLE} 
+        WHERE {TEMPLATE_ID_COLUMN} = %s AND is_finished = FALSE;
+        """
+
+    cursor.execute(delete_template_query, (template_id,))
+    cursor.execute(delete_active_goal_query, (template_id,))
+
+
+def delete_previous_template_if_exists(cursor, frequency, category):
+    # Deleting an existing template with the same frequency and category to avoid duplication
+    get_same_goal_template_query = f"""
+            SELECT {TEMPLATE_ID_COLUMN}
+            FROM {GOAL_TEMPLATES_TABLE}
+            WHERE frequency = %s AND category = %s;
+            """
+    cursor.execute(get_same_goal_template_query, (frequency, category))
+    query_res = cursor.fetchone()
+
+    if query_res is not None:
+        delete_goal_template(cursor, query_res[0])
