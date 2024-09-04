@@ -137,9 +137,15 @@ def get_dog_bcs():
                 cursor.execute(get_dog_properties_query, (dog_id,))
                 weight, height, breed = cursor.fetchone()
                 cursor.execute(get_dog_fitness_properties_query, (dog_id, today_date))
-                steps, calories_burned = cursor.fetchone()
+                query_res = cursor.fetchone()
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
+
+    if query_res is None:
+        steps = 0
+        calories_burned = 0
+    else:
+        steps, calories_burned = query_res
 
     bcs = calculate_bcs(steps, weight, height, breed, calories_burned)
 

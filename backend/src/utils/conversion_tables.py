@@ -196,7 +196,15 @@ def calculate_ideal_weight(breed, height_cm=None):
         "Dachshund": (4, 6),
         "Husky": (16, 27),
         "Boxer": (25, 32),
-        "Doberman Pinscher": (26, 41)
+        "Doberman Pinscher": (26, 41),
+        "Poodle": (20, 32),
+        "Rottweiler": (35, 60),
+        "Yorkshire Terrier": (2, 3),
+        "Shih Tzu": (4, 7),
+        "Siberian Husky": (16, 27),
+        "Great Dane": (45, 90),
+        "Chihuahua": (2, 3),
+        "Border Collie": (12, 20)
     }
 
     if breed in breed_weights:

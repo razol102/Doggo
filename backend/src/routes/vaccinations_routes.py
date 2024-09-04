@@ -9,19 +9,26 @@ vaccinations_routes = Blueprint('vaccinations_routes', __name__)
 
 @vaccinations_routes.route("/api/dog/vaccinations", methods=['GET'])
 def get_dog_vaccinations_list():
-    dog_id = request.args.get('dog_id')
-    db = load_database_config()
+    dog_id = request.args.get("dog_id")
+    limit = request.args.get("limit", type=int)  # Number of activities to retrieve
+    offset = request.args.get("offset", type=int)  # Number of activities to skip
+    vaccination_type = request.args.get("vaccination_type")
+    print(vaccination_type)
     get_dog_vaccinations_query = f"""
     SELECT vaccination_id, vaccination_date, vaccination_type, dosage, vet_name, next_vaccination, notes
     FROM {VACCINATIONS_TABLE}
-    WHERE {DOG_ID_COLUMN} = %s;
-"""
+    WHERE {DOG_ID_COLUMN} = %s AND (%s = 'all' OR vaccination_type = %s)
+    ORDER BY vaccination_date DESC
+    LIMIT %s OFFSET %s;
+    """
 
     try:
+        db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
-                cursor.execute(get_dog_vaccinations_query, (dog_id,))
+                cursor.execute(get_dog_vaccinations_query, (dog_id, vaccination_type, vaccination_type, limit, offset))
                 list_of_dicts = get_list_of_dicts_for_response(cursor)
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST

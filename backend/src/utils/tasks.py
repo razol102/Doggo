@@ -32,6 +32,40 @@ def start_tasks():
             time.sleep(10)  # Wait before retrying the entire process
 
 
+######## Task 1 ########
+def check_collars_connection(cursor):
+    delta_query = f""" SELECT NOW() - last_update AS time_delta
+                      FROM {COLLARS_TABLE}
+                      WHERE collar_id = %s; """
+
+    collar_ids = get_all_collar_ids(cursor)
+
+    for collar_id in collar_ids:
+        cursor.execute(delta_query, ("1211",))
+        result = cursor.fetchone()
+
+        # If result is None --> the server never received steps from the current collar
+        if result is None or result[0] >= COLLAR_LAST_UPDATE_TIME_THRESHOLD:
+            disconnect_collar(cursor, collar_id)
+
+
+def get_all_collar_ids(cursor):
+    get_collar_ids_query = f"""SELECT {COLLAR_ID_COLUMN}
+                            FROM {COLLARS_TABLE};"""
+    cursor.execute(get_collar_ids_query)
+    collar_ids = cursor.fetchone()
+
+    return collar_ids
+
+
+def disconnect_collar(cursor, collar_id):
+    disconnect_collar_query = f""" UPDATE {COLLARS_TABLE}
+                              SET wifi_connected = FALSE, ble_connected = FALSE
+                              WHERE {COLLAR_ID_COLUMN} = %s; """
+    cursor.execute(disconnect_collar_query, (collar_id, ))
+
+
+######## Task 2 ########
 def check_and_end_activities(cursor):
     get_active_activities_query = f"""SELECT {ACTIVITY_ID_COLUMN}, start_time
                           FROM {ACTIVITIES_TABLE} WHERE end_time IS NULL;"""
@@ -65,37 +99,6 @@ def format_timedelta(delta):
     # Return as formatted string
     return f"{hours:02}:{minutes:02}:{seconds:02}"
 
-
-def check_collars_connection(cursor):
-    delta_query = f""" SELECT NOW() - last_update AS time_delta
-                      FROM {COLLARS_TABLE}
-                      WHERE collar_id = %s; """
-
-    collar_ids = get_all_collar_ids(cursor)
-
-    for collar_id in collar_ids:
-        cursor.execute(delta_query, ("1211",))
-        result = cursor.fetchone()
-
-        # If result is None --> the server never received steps from the current collar
-        if result is None or result[0] >= COLLAR_LAST_UPDATE_TIME_THRESHOLD:
-            disconnect_collar(cursor, collar_id)
-
-
-def get_all_collar_ids(cursor):
-    get_collar_ids_query = f"""SELECT {COLLAR_ID_COLUMN}
-                            FROM {COLLARS_TABLE};"""
-    cursor.execute(get_collar_ids_query)
-    collar_ids = cursor.fetchone()
-
-    return collar_ids
-
-
-def disconnect_collar(cursor, collar_id):
-    disconnect_collar_query = f""" UPDATE {COLLARS_TABLE}
-                              SET wifi_connected = FALSE, ble_connected = FALSE
-                              WHERE {COLLAR_ID_COLUMN} = %s; """
-    cursor.execute(disconnect_collar_query, (collar_id, ))
 
 
 # def check_and_end_goals(cursor):
