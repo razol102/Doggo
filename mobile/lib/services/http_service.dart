@@ -681,19 +681,18 @@ class HttpService {
   }
   //--------------------------------------goals--------------------------------------
   static Future<int> getDailyStepsGoal(int dogId) async { //TODO: check after backend implementation
-    // final url = Uri.parse('$baseUrl/api/dog/dailyStepsGoal?dog_id=$dogId');
-    // final response = await http.get(
-    //   url,
-    //   headers: {'Content-Type': 'application/json'},
-    // );
-    //
-    // if (response.statusCode == 200) {
-    //   return jsonDecode(response.body)['daily_steps_goal'];
-    // } else {
-    //   print('Failed to get dog daily steps goal: ${response.statusCode}');
-    //   throw Exception(jsonDecode(response.body)['error']);
-    // }
-    return 2000;
+    final url = Uri.parse('$baseUrl/api/dog/dailyStepsGoal?dog_id=$dogId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body)['daily_steps_goal'];
+    } else {
+      print('Failed to get dog daily steps goal: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
   }
 
   static Future<void> createGoal(int dogId, int targetValue, String frequency, String category) async {
@@ -709,7 +708,7 @@ class HttpService {
       })
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       print('goal created');
       return;
     } else {
@@ -747,6 +746,69 @@ class HttpService {
       return null;
     } else {
       print('Failed to get dog goals: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>?> getGoalsTemplatesList(int dogId) async {
+    final url = Uri.parse('$baseUrl/api/dog/goal_templates/all?dog_id=$dogId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> decodedData = jsonDecode(response.body);
+      return decodedData.cast<Map<String, dynamic>>();
+    } else if(response.statusCode == 204) {
+      return null;
+    } else {
+      print('Failed to get dog goals: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<Map<String, dynamic>> getGoalTemplateInfo(int templateId) async {
+    final url = Uri.parse('$baseUrl/api/dog/goal_templates?template_id=$templateId');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      print('Failed to get goal template info: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<void> updateGoalTemplate(int templateId) async {
+    final url = Uri.parse('$baseUrl/api/dog/goals?template_id=$templateId');
+    final response = await  http.put(
+        url,
+        headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      print('goal template $templateId was updated');
+    } else {
+      print('failed to update goal template $templateId : ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<void> deleteGoalTemplate(int templateId) async {
+    final url = Uri.parse('$baseUrl/api/dog/goal_templates?template_id=$templateId');
+    final response = await http.delete(
+        url,
+        headers: {'Content-Type': 'application/json'}
+    );
+
+    if (response.statusCode == 200) {
+      return;
+    } else {
+      print('Failed to delete goal template $templateId: ${response.statusCode}');
       throw Exception(jsonDecode(response.body)['error']);
     }
   }

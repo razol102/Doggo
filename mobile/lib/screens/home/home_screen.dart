@@ -1,4 +1,4 @@
-import 'package:mobile/screens/activity/widgets/activities_list.dart';
+import 'package:mobile/screens/activity/widgets/activities_goals_list.dart';
 import 'package:mobile/screens/home/widgets/BCS_pie_chart.dart';
 import 'package:mobile/screens/home/widgets/dog_activity_status.dart';
 import 'package:mobile/screens/home/widgets/workout_progress_line_chart.dart';
@@ -10,7 +10,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/main.dart';
 import '../../common_widgets/round_button.dart';
-import '../activity/activities_history.dart';
+import '../activity/activities_goals_history.dart';
 import '../activity/start_new_activity.dart';
 import '../activity/widgets/activity_circles_widget.dart';
 import '../devices/BLE_connection_screen.dart';
@@ -358,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ActivitiesHistoryScreen(dogId: dogId!, type: 'activity',),
+                            builder: (context) => ActivitiesGoalsHistoryScreen(dogId: dogId!, type: 'activity',),
                           ),
                         );
                       },
@@ -366,7 +366,7 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                     ),
                   ],
                 ),
-                ActivitiesList(activitiesArr: activitiesArr, dogId: dogId, type: 'activity',),
+                ActivitiesGoalsList(ItemsArr: activitiesArr, dogId: dogId, type: 'activity',),
                 SizedBox(
                   height: media.width * 0.1,
                 ),
