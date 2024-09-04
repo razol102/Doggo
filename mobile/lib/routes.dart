@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mobile/screens/add_new_dog/add_new_dog_screen.dart';
-import 'package:mobile/screens/add_new_dog/configure_collar_screen.dart';
 import 'package:mobile/screens/all_about_us/dog_data_screen.dart';
 import 'package:mobile/screens/all_about_us/personal_data_screen.dart';
 import 'package:mobile/screens/auth/forgot_password_screen.dart';
@@ -18,7 +17,7 @@ import 'package:mobile/screens/dog_care/food_nutrition_screen.dart';
 import 'package:mobile/screens/dog_care/medical_screen.dart';
 import 'package:mobile/screens/home/home_screen.dart';
 import 'package:mobile/screens/map/map_screen.dart';
-import 'package:mobile/screens/map/pension_vet_map_screen.dart';
+import 'package:mobile/screens/medical/add_update_medical_record_screen.dart';
 import 'package:mobile/screens/medical/medical_records_screen.dart';
 import 'package:mobile/screens/other/contact_us_screen.dart';
 import 'package:mobile/screens/other/faq_screen.dart';
@@ -48,12 +47,11 @@ final Map<String, WidgetBuilder> routes = {
   PersonalDataScreen.routeName: (context) => const PersonalDataScreen(),
   //food nutrition
   FoodNutritionScreen.routeName: (context) => const FoodNutritionScreen(),
-  //pension
-  // PensionScreen.routeName: (context) => const PensionScreen(),
   //medical
   MedicalScreen.routeName: (context) => const MedicalScreen(),
   //medical records
   MedicalRecordsScreen.routeName: (context) => MedicalRecordsScreen(),
+  AddUpdateMedicalRecordScreen.routeName: (context) => AddUpdateMedicalRecordScreen(date: DateTime.now(), dogId: '',),
   //faq
   FaqScreen.routeName : (context) => FaqScreen(),
   //contact us
@@ -62,13 +60,10 @@ final Map<String, WidgetBuilder> routes = {
   HomeScreen.routeName: (context) => const HomeScreen(),
   //activity
   ActivityScreen.routeName: (context) => ActivityScreen(),
-  //map
   //social network
   SocialNetworkScreen.routeName: (context) => SocialNetworkScreen(),
   MapScreen.routeName: (context) => const MapScreen(),
   //ble connection
   BleConnectionScreen.routeName: (context) => BleConnectionScreen(),
-  //configure collar
 
-  // add screens here
 };
