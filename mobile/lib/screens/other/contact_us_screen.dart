@@ -33,7 +33,7 @@ class ContactUsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 35),
               const Text(
-                "Meet the Nesher Team",
+                "Meet Nesher Team",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColors.blackColor,

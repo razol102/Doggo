@@ -405,10 +405,16 @@ class OutdoorActivityGoalRow extends StatelessWidget {
                       : type == "goal"
                       ? "${item["category"].toString().toUpperCase()} GOAL"
                       : "Goal",
-                  style: const TextStyle(
+                  style: type == "activity" && (item["end_time"] == null) ?
+                  const TextStyle(
+                    color: Colors.green,
+                    fontSize: 12,
+                  ) :
+                  const TextStyle(
                     color: AppColors.blackColor,
                     fontSize: 12,
-                  ),
+                  )
+                  ,
                 ),
                 const SizedBox(height: 4),
                 if (type == "activity") ...[
@@ -440,8 +446,16 @@ class OutdoorActivityGoalRow extends StatelessWidget {
                       fontSize: 10,
                     ),
                   ),
+                  item["is_finished"] ?
                   Text(
-                    "Target Value: ${item["target_value"].toString()}  | Current Value: ${item["current_value"].toString()}",
+                    "Target Value: ${item["target_value"].toString()} | Current Value: ${item["current_value"].toString()}",
+                    style: const TextStyle(
+                      color: AppColors.grayColor,
+                      fontSize: 10,
+                    ),
+                  ) :
+                  Text(
+                    "Target Value: ${item["target_value"].toString()}",
                     style: const TextStyle(
                       color: AppColors.grayColor,
                       fontSize: 10,

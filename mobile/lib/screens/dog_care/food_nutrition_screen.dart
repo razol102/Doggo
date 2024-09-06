@@ -163,7 +163,7 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                 ),
                 const SizedBox(height: 15),
                 const Text(
-                  "Dog Profile Info",
+                  "Dog Nutrition Info",
                   style: TextStyle(
                     color: AppColors.blackColor,
                     fontSize: 20,

@@ -107,7 +107,8 @@ class _DogActivityStatusState extends State<DogActivityStatus>
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
-                  image: AssetImage("assets/images/dog_profile.png"),
+                  image: AssetImage("assets/images/nala_profile.png"),
+                  // image: AssetImage("assets/images/dog_profile.png"),
                   fit: BoxFit.cover,
                 ),
               ),

@@ -266,11 +266,11 @@ class _PensionVetMapScreenState extends State<PensionVetMapScreen> {
                 _screenType == "pension" ?
                 Image.asset(
                   "assets/images/pension_background.png",
-                  width: media.width * 0.5,
+                  width: media.width * 0.4,
                 ) :
                 Image.asset(
                   "assets/images/vet_background.png",
-                  width: media.width * 0.5,
+                  width: media.width * 0.4,
                 ) ,
                 const SizedBox(height: 5),
                 _screenType == "pension" ?
@@ -290,7 +290,7 @@ class _PensionVetMapScreenState extends State<PensionVetMapScreen> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 8),
                 Container(
                   height: 290,
                   margin: const EdgeInsets.symmetric(vertical: 15),
@@ -336,7 +336,7 @@ class _PensionVetMapScreenState extends State<PensionVetMapScreen> {
                       style: const TextStyle(color: Colors.red, fontSize: 12),
                     ),
                   ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 10),
                 RoundTextField(
                   textEditingController: _nameController,
                   hintText: _name.isEmpty ? "Loading..." : _name,

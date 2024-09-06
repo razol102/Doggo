@@ -39,7 +39,11 @@ class _ConfigureCollarScreenState extends State<ConfigureCollarScreen> {
       }
 
     } catch (e) {
-      print('Failed to configure collar: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to configure collar: $e'),
+        ),
+      );
     }
   }
 

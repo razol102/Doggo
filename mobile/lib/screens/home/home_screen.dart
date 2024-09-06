@@ -295,25 +295,27 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
             ),
             const SizedBox(width: 8), // Space between the icon and the title
             Icon(Icons.battery_3_bar), // TODO: change by battery level
+            const SizedBox(width: 50,)
           ],
         ),
-        actions: [
-          InkWell(
-              onTap: () {
-                // Navigator.pushNamed(context, NotificationScreen.routeName);
-              },
-              child: IconButton(
-                icon: Image.asset(
-                  "assets/icons/notification_icon.png",
-                  width: 24, // Set width here
-                  height: 24, // Set height here
-                  fit: BoxFit.contain,
-                ),
-                onPressed: () {
-                  // Navigator.pushNamed(context, NotificationsScreen.routeName);
-                },
-              )
-          ),],),
+        // actions: [
+        //   InkWell(
+        //       onTap: () {
+        //         // Navigator.pushNamed(context, NotificationScreen.routeName);
+        //       },
+        //       // child: IconButton(
+        //       //   icon: Image.asset(
+        //       //     "assets/icons/notification_icon.png",
+        //       //     width: 24, // Set width here
+        //       //     height: 24, // Set height here
+        //       //     fit: BoxFit.contain,
+        //       //   ),
+        //       //   onPressed: () {
+        //       //     // Navigator.pushNamed(context, NotificationsScreen.routeName);
+        //       //   },
+        //       // )
+        //   ),],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -334,12 +336,12 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
                     titleColor: AppColors.whiteColor),
                 const Divider(),
                 SizedBox(height: media.width * 0.05),
-                BcsPieChart(),
+                BcsPieChart(dogId: dogId!,),
                 SizedBox(height: media.width * 0.05),
-                WorkoutProgressLineChart(),
-                SizedBox(
-                  height: media.width * 0.05,
-                ),
+                // WorkoutProgressLineChart(),
+                // SizedBox(
+                //   height: media.width * 0.05,
+                // ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

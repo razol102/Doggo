@@ -3,18 +3,18 @@ import 'package:mobile/utils/app_colors.dart';
 
 class BreedSelector extends StatelessWidget {
   final List<String> dogBreeds = [
-    "Labrador Retriever",
-    "German Shepherd",
-    "Golden Retriever",
+    // "Labrador Retriever",
+    // "German Shepherd",
+    // "Golden Retriever",
     "Bulldog",
     "Beagle",
     "Poodle",
     "Rottweiler",
-    "Yorkshire Terrier",
+    // "Yorkshire Terrier",
     "Dachshund",
     "Boxer",
     "Shih Tzu",
-    "Doberman Pinscher",
+    // "Doberman Pinscher",
     "Siberian Husky",
     "Great Dane",
     "Chihuahua",

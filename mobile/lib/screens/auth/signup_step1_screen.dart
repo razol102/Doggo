@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:mobile/screens/auth/login_screen.dart';
+import 'package:mobile/services/validation_methods.dart';
 import 'signup_step2_screen.dart';
 import '../../common_widgets/round_button.dart';
 import '../../utils/app_colors.dart';
@@ -22,6 +23,15 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
   final TextEditingController _birthdateController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final PhoneNumber _initialPhoneNumber = PhoneNumber(isoCode: 'IL'); // Set initial phone number to +972
+  String? _fullNameError;
+  String? _phoneError;
+
+  void _validateInputs() {
+    setState(() {
+      _fullNameError = ValidationMethods.validateNotEmpty(_fullNameController.text, 'Full Name');
+      _phoneError = ValidationMethods.validatePhoneNumber(_phoneController.text);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +85,7 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                               icon: 'assets/icons/profile_icon.png',
                               textInputType: TextInputType.name,
                               isObscureText: false,
+                              errorText: _fullNameError,
                             ),
                             SizedBox(height: constraints.maxHeight * 0.02),
                             DateSelector(birthdateController: _birthdateController),
@@ -95,9 +106,10 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                                 ),
                                 ignoreBlank: false,
                                 autoValidateMode: AutovalidateMode.disabled,
-                                inputDecoration: const InputDecoration(
+                                inputDecoration: InputDecoration(
                                   border: InputBorder.none,
                                   hintText: 'Phone',
+                                  errorText: _phoneError,
                                 ),
                                 initialValue: _initialPhoneNumber,
                               ),
@@ -106,7 +118,8 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                             RoundButton(
                               title: "Next",
                               onPressed: () {
-                                if (_formKey.currentState!.validate()) {
+                                _validateInputs();
+                                if (_fullNameError == null && _phoneError == null) {
                                   Navigator.pushNamed(
                                     context,
                                     SignUpStep2Screen.routeName,
@@ -122,83 +135,84 @@ class _SignUpStep1ScreenState extends State<SignUpStep1Screen> {
                               titleColor: AppColors.secondaryColor1,
                             ),
                             SizedBox(height: constraints.maxHeight * 0.04),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    height: 1,
-                                    color: AppColors.grayColor.withOpacity(0.5),
-                                  ),
-                                ),
-                                const Text(
-                                  "  Or  ",
-                                  style: TextStyle(
-                                    color: AppColors.grayColor,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    height: 1,
-                                    color: AppColors.grayColor.withOpacity(0.5),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    // Handle Google login
-                                  },
-                                  child: Container(
-                                    width: 50,
-                                    height: 50,
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(14),
-                                      border: Border.all(
-                                        color: AppColors.secondaryColor1.withOpacity(0.5),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Image.asset(
-                                      "assets/icons/google_icon.png",
-                                      width: 20,
-                                      height: 20,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 30),
-                                GestureDetector(
-                                  onTap: () {
-                                    // Handle Facebook login
-                                  },
-                                  child: Container(
-                                    width: 50,
-                                    height: 50,
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(14),
-                                      border: Border.all(
-                                        color: AppColors.secondaryColor1.withOpacity(0.5),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Image.asset(
-                                      "assets/icons/facebook_icon.png",
-                                      width: 20,
-                                      height: 20,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                            // Google & Facebook sign up
+                            // Row(
+                            //   children: [
+                            //     Expanded(
+                            //       child: Container(
+                            //         height: 1,
+                            //         color: AppColors.grayColor.withOpacity(0.5),
+                            //       ),
+                            //     ),
+                            //     const Text(
+                            //       "  Or  ",
+                            //       style: TextStyle(
+                            //         color: AppColors.grayColor,
+                            //         fontSize: 12,
+                            //         fontWeight: FontWeight.w400,
+                            //       ),
+                            //     ),
+                            //     Expanded(
+                            //       child: Container(
+                            //         height: 1,
+                            //         color: AppColors.grayColor.withOpacity(0.5),
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
+                            // const SizedBox(height: 20),
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.center,
+                            //   children: [
+                            //     GestureDetector(
+                            //       onTap: () {
+                            //         // Handle Google login
+                            //       },
+                            //       child: Container(
+                            //         width: 50,
+                            //         height: 50,
+                            //         alignment: Alignment.center,
+                            //         decoration: BoxDecoration(
+                            //           color: Colors.white,
+                            //           borderRadius: BorderRadius.circular(14),
+                            //           border: Border.all(
+                            //             color: AppColors.secondaryColor1.withOpacity(0.5),
+                            //             width: 1,
+                            //           ),
+                            //         ),
+                            //         child: Image.asset(
+                            //           "assets/icons/google_icon.png",
+                            //           width: 20,
+                            //           height: 20,
+                            //         ),
+                            //       ),
+                            //     ),
+                            //     const SizedBox(width: 30),
+                            //     GestureDetector(
+                            //       onTap: () {
+                            //         // Handle Facebook login
+                            //       },
+                            //       child: Container(
+                            //         width: 50,
+                            //         height: 50,
+                            //         alignment: Alignment.center,
+                            //         decoration: BoxDecoration(
+                            //           color: Colors.white,
+                            //           borderRadius: BorderRadius.circular(14),
+                            //           border: Border.all(
+                            //             color: AppColors.secondaryColor1.withOpacity(0.5),
+                            //             width: 1,
+                            //           ),
+                            //         ),
+                            //         child: Image.asset(
+                            //           "assets/icons/facebook_icon.png",
+                            //           width: 20,
+                            //           height: 20,
+                            //         ),
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
                             const SizedBox(height: 20),
                             TextButton(
                               onPressed: () {

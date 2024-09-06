@@ -813,6 +813,9 @@ class HttpService {
     }
   }
 
+  //--------------------------------------bcs--------------------------------------
+
+
   //--------------------------------------test--------------------------------------
   static Future<Map<String, dynamic>> getRoot() async {
     final url = Uri.parse('$baseUrl/');

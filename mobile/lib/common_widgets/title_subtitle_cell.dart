@@ -14,7 +14,7 @@ class TitleSubtitleCell extends StatelessWidget {
     super.key,
     required this.title,
     required this.subtitle,
-    this.icon, // Initialize icon parameter
+    this.icon,
     required this.boxHeight,
     required this.boxWidth,
     required this.titleFontSize,

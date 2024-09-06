@@ -40,11 +40,11 @@ class _BottomMenuState extends State<BottomMenu> {
           });
         },
         child: SizedBox(
-          width: 70,
-          height: 70,
+          width: 60,
+          height: 60,
           child: Container(
-              width: 65,
-              height: 65,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
                   gradient: LinearGradient(colors: AppColors.primaryG),
                   borderRadius: BorderRadius.circular(35),
@@ -57,7 +57,7 @@ class _BottomMenuState extends State<BottomMenu> {
                   ]),
               child: const Icon(Icons.home_rounded,
                   color: AppColors.whiteColor,
-                  size: 40)
+                  size: 38)
           ),
         ),
       ),

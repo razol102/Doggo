@@ -192,7 +192,7 @@ class _DogDataScreenState extends State<DogDataScreen> {
                   "assets/images/dog_profile.png",
                   width: media.width * 0.5,
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 5),
                 const Text(
                   "Dog Profile Info",
                   style: TextStyle(
@@ -201,7 +201,7 @@ class _DogDataScreenState extends State<DogDataScreen> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 15),
                 RoundTextField(
                   textEditingController: _nameController,
                   hintText: _dogName.isEmpty ? "Loading..." : _dogName,

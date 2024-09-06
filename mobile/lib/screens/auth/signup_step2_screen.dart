@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/screens/add_new_dog/add_new_dog_screen.dart';
+import 'package:mobile/services/validation_methods.dart';
 import '../../common_widgets/round_button.dart';
 import '../../services/http_service.dart';
 import '../../services/preferences_service.dart';
@@ -24,6 +25,21 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
   // To store data passed from the previous screen
   Map<String, dynamic>? _signupData;
 
+  // Error message state variables
+  String? _emailError;
+  String? _passwordError;
+  String? _confirmPasswordError;
+
+  void _validateInputs() {
+    setState(() {
+      _emailError = ValidationMethods.validateEmail(_emailController.text);
+      _passwordError = ValidationMethods.validatePassword(_passwordController.text);
+      _confirmPasswordError = _passwordController.text != _confirmPasswordController.text
+          ? 'Passwords do not match'
+          : null;
+    });
+  }
+
   Future<void> _register(String fullName, String birthdate, String phoneNumber, String email, String password) async {
     try {
       final response = await HttpService.registerUser(email, password, fullName, birthdate, phoneNumber);
@@ -36,6 +52,7 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -97,6 +114,7 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
                               icon: 'assets/icons/message_icon.png',
                               textInputType: TextInputType.emailAddress,
                               isObscureText: false,
+                              errorText: _emailError,
                             ),
                             SizedBox(height: constraints.maxHeight * 0.02),
                             RoundTextField(
@@ -105,6 +123,7 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
                               icon: 'assets/icons/lock_icon.png',
                               textInputType: TextInputType.text,
                               isObscureText: true,
+                              errorText: _passwordError,
                             ),
                             SizedBox(height: constraints.maxHeight * 0.02),
                             RoundTextField(
@@ -113,20 +132,14 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
                               icon: 'assets/icons/lock_icon.png',
                               textInputType: TextInputType.text,
                               isObscureText: true,
+                              errorText: _confirmPasswordError,
                             ),
                             SizedBox(height: constraints.maxHeight * 0.04),
                             RoundButton(
                               title: "Register",
                               onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  // Ensure passwords match
-                                  if (_passwordController.text != _confirmPasswordController.text) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text("Passwords do not match")),
-                                    );
-                                    return;
-                                  }
-
+                                _validateInputs();
+                                if (_emailError == null && _passwordError == null && _confirmPasswordError == null) {
                                   // Use the retrieved data
                                   final fullName = _signupData?['fullName'];
                                   final birthdate = _signupData?['birthdate'];
@@ -135,7 +148,6 @@ class _SignUpStep2ScreenState extends State<SignUpStep2Screen> {
                                   final password = _passwordController.text;
 
                                   _register(fullName, birthdate, phoneNumber, email, password);
-                                  // After successful registration, navigate to add new dog screen
                                 }
                               },
                               backgroundColor: AppColors.whiteColor,
