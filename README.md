@@ -13,7 +13,7 @@ For more details please read the project proposal file.
 
 # Technologies Used
 
-# Technologies Used
+# Getting Started
 
 # Project Builders
 
