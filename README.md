@@ -7,4 +7,18 @@ Doggo comes with a compact attachment that easily fits onto your dog's collar or
 
 For more details please read the project proposal file.
 
-![Doggo Loggo](https://github.com/shir-tz/Doggo/assets/118129728/0c293920-eedc-4512-b293-33709fe0d378)
+# Overview
+
+# Key Features
+
+# Technologies Used
+
+# Technologies Used
+
+# Project Builders
+
+Doggo was built by the following individuals:
+
+Shir Tzfania
+Nizan Naor
+Raz Olewsky
