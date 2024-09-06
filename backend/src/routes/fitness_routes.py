@@ -3,7 +3,7 @@ import psycopg2
 from flask import request, Blueprint, jsonify
 
 from src.utils.config import load_database_config
-from src.utils.conversion_tables import calculate_bcs
+from src.utils.conversion_tables import estimate_bcs
 from src.utils.helpers import *
 from src.utils.logger import logger
 
@@ -113,19 +113,11 @@ def get_dog_fitness():
 @fitness_routes.route('/api/dog/bcs', methods=['GET'])
 def get_dog_bcs():
     dog_id = request.args.get('dog_id')
-    today_date = date.today().strftime('%Y-%m-%d')
 
     get_dog_properties_query =   f"""
                                     SELECT weight, height, breed
                                     FROM {DOGS_TABLE} 
                                     WHERE {DOG_ID_COLUMN} = %s;
-                                    """
-
-    get_dog_fitness_properties_query =   f"""
-                                    SELECT steps, calories_burned
-                                    FROM {FITNESS_TABLE} 
-                                    WHERE {DOG_ID_COLUMN} = %s
-                                    AND fitness_date = %s;
                                     """
 
     try:
@@ -136,17 +128,9 @@ def get_dog_bcs():
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
                 cursor.execute(get_dog_properties_query, (dog_id,))
                 weight, height, breed = cursor.fetchone()
-                cursor.execute(get_dog_fitness_properties_query, (dog_id, today_date))
-                query_res = cursor.fetchone()
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
 
-    if query_res is None:
-        steps = 0
-        calories_burned = 0
-    else:
-        steps, calories_burned = query_res
-
-    bcs = calculate_bcs(steps, weight, height, breed, calories_burned)
+    bcs = estimate_bcs(weight, height)
 
     return jsonify(bcs), HTTP_200_OK

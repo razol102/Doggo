@@ -54,13 +54,14 @@ def update_fitness(cursor, dog_id, embedded_steps):
 
     today_date = date.today()
     dog_weight, dog_height = get_dog_weight_and_height(cursor, dog_id)
+    # dog_weight, dog_breed = get_dog_weight_and_breed(cursor, dog_id)
 
     fixed_steps = fix_steps_before_update(cursor, dog_id, embedded_steps)
     save_last_steps(cursor, dog_id, embedded_steps)
     steps_to_db = get_converted_steps(dog_weight, fixed_steps)
 
     if steps_to_db != 0:
-        distance_to_db = get_calculated_distance(dog_weight, dog_height, steps_to_db)
+        distance_to_db = get_calculated_distance(steps_to_db, dog_weight)
         calories_to_db = get_burned_calories(dog_weight, distance_to_db)
         cursor.execute(update_fitness_query, (steps_to_db, distance_to_db, calories_to_db, dog_id, today_date))
         update_dog_activity(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db)
@@ -79,7 +80,7 @@ def create_fitness(cursor, dog_id, embedded_steps):
     save_last_steps(cursor, dog_id, embedded_steps)
 
     steps_to_db = get_converted_steps(dog_weight, fixed_steps)
-    distance_to_db = get_calculated_distance(dog_weight, dog_height, steps_to_db)
+    distance_to_db = get_calculated_distance(steps_to_db, dog_weight)
     calories_to_db = get_burned_calories(dog_weight, distance_to_db)
 
     cursor.execute(create_fitness_query, (dog_id, today_date, distance_to_db, steps_to_db, calories_to_db))
@@ -238,6 +239,18 @@ def get_dog_weight_and_height(cursor, dog_id):
         FROM {DOGS_TABLE}
         WHERE {DOG_ID_COLUMN} = %s;
     """
+
+    cursor.execute(get_dog_weight_query, (dog_id, ))
+
+    return cursor.fetchone()
+
+
+def get_dog_weight_and_breed(cursor, dog_id):
+    get_dog_weight_query = f"""
+        SELECT {WEIGHT_COLUMN}, breed
+        FROM {DOGS_TABLE}
+        WHERE {DOG_ID_COLUMN} = %s;
+        """
 
     cursor.execute(get_dog_weight_query, (dog_id, ))
 

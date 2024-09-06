@@ -1,4 +1,44 @@
 from src.utils.logger import logger
+from enum import Enum, auto
+
+
+# For BCS calculation
+class ConditionCategory(Enum):
+    EMACIATED = auto()
+    VERY_THIN = auto()
+    THIN = auto()
+    IDEAL = auto()
+    OVERWEIGHT = auto()
+    OBESE = auto()
+    VERY_OBESE = auto()
+    SEVERELY_OBESE = auto()
+    EXTREMELY_OBESE = auto()
+
+
+class BCSValue(Enum):
+    EMACIATED = 1
+    VERY_THIN = 2
+    THIN = 3
+    IDEAL = 4
+    OVERWEIGHT = 5
+    OBESE = 6
+    VERY_OBESE = 7
+    SEVERELY_OBESE = 8
+    EXTREMELY_OBESE = 9
+
+
+THRESHOLDS = {
+    ConditionCategory.EMACIATED: 0.4,
+    ConditionCategory.VERY_THIN: 0.5,
+    ConditionCategory.THIN: 0.6,
+    ConditionCategory.IDEAL: 0.7,
+    ConditionCategory.OVERWEIGHT: 0.8,
+    ConditionCategory.OBESE: 0.9,
+    ConditionCategory.VERY_OBESE: 1.0,
+    ConditionCategory.SEVERELY_OBESE: 1.1,
+    ConditionCategory.EXTREMELY_OBESE: 1.2
+}
+
 
 # Steps length ranges in cm
 TOY_DOG_STEP_LENGTH = (25, 35)
@@ -23,37 +63,25 @@ EXTRA_LARGE_DOG_FACTOR = (1.3, 1.6)
 
 METABOLIC_SCALING_EXPONENT = 0.75
 HOURS_IN_A_DAY = 24
-AVERAGE_ACTIVITY_FACTOR = 1.6       # Average activity level
-AVERAGE_WALKING_TIME_MINUTES = 60   # Average duration of the walk in minutes
-AVERAGE_STEPS_PER_MINUTES = 130
+AVERAGE_WEIGHT = 30  # Average weight in kg
+AVERAGE_HEIGHT = 50  # Average height in cm
 
 
-def get_dog_ranges(weight):
-    if TOY_DOG_WEIGHT[0] <= weight <= TOY_DOG_WEIGHT[1]:
-        return TOY_DOG_WEIGHT, TOY_DOG_STEP_LENGTH, TOY_DOG_FACTOR
-    elif SMALL_DOG_WEIGHT[0] <= weight <= SMALL_DOG_WEIGHT[1]:
-        return SMALL_DOG_WEIGHT, SMALL_DOG_STEP_LENGTH, SMALL_DOG_FACTOR
-    elif MEDIUM_DOG_WEIGHT[0] <= weight <= MEDIUM_DOG_WEIGHT[1]:
-        return MEDIUM_DOG_WEIGHT, MEDIUM_DOG_STEP_LENGTH, MEDIUM_DOG_FACTOR
-    elif LARGE_DOG_WEIGHT[0] <= weight <= LARGE_DOG_WEIGHT[1]:
-        return LARGE_DOG_WEIGHT, LARGE_DOG_STEP_LENGTH, LARGE_DOG_FACTOR
-    else:
-        return EXTRA_LARGE_DOG_WEIGHT, EXTRA_LARGE_DOG_STEP_LENGTH, EXTRA_LARGE_DOG_FACTOR
+HEIGHT_RANGES = {
+    'TOY_DOG': (0, 25),         # Up to 25 cm
+    'SMALL_DOG': (25, 35),      # 25 to 35 cm
+    'MEDIUM_DOG': (35, 50),     # 35 to 50 cm
+    'LARGE_DOG': (50, 70),      # 50 to 70 cm
+    'EXTRA_LARGE_DOG': (70, 100)  # More than 70 cm
+}
 
-
-def get_dog_step_length_range(weight):
-    if TOY_DOG_WEIGHT[0] <= weight <= TOY_DOG_WEIGHT[1]:
-        return TOY_DOG_STEP_LENGTH
-    elif SMALL_DOG_WEIGHT[0] <= weight <= SMALL_DOG_WEIGHT[1]:
-        return SMALL_DOG_STEP_LENGTH
-    elif MEDIUM_DOG_WEIGHT[0] <= weight <= MEDIUM_DOG_WEIGHT[1]:
-        return MEDIUM_DOG_STEP_LENGTH
-    elif LARGE_DOG_WEIGHT[0] <= weight <= LARGE_DOG_WEIGHT[1]:
-        return LARGE_DOG_STEP_LENGTH
-    elif EXTRA_LARGE_DOG_WEIGHT[0] <= weight <= EXTRA_LARGE_DOG_WEIGHT[1]:
-        return EXTRA_LARGE_DOG_STEP_LENGTH
-    else:
-        return MEDIUM_DOG_FACTOR, MEDIUM_DOG_WEIGHT, MEDIUM_DOG_STEP_LENGTH
+STEP_LENGTH_RANGES = {
+    'TOY_DOG': (25, 35),
+    'SMALL_DOG': (35, 45),
+    'MEDIUM_DOG': (45, 55),
+    'LARGE_DOG': (55, 65),
+    'EXTRA_LARGE_DOG': (65, 80)
+}
 
 
 def get_dog_weight_range(weight):
@@ -86,19 +114,6 @@ def get_dog_factor_range(weight):
         return MEDIUM_DOG_FACTOR
 
 
-def get_step_length_range(height):
-    if height < 30:  # Height less than 30 cm
-        return TOY_DOG_STEP_LENGTH
-    elif 30 <= height < 40:     # Height between 30 cm and 40 cm
-        return SMALL_DOG_STEP_LENGTH
-    elif 40 <= height < 60:     # Height between 40 cm and 60 cm
-        return MEDIUM_DOG_STEP_LENGTH
-    elif 60 <= height < 80:     # Height between 60 cm and 80 cm
-        return LARGE_DOG_STEP_LENGTH
-    else:                       # Height 80 cm or more
-        return EXTRA_LARGE_DOG_STEP_LENGTH
-
-
 def get_position_in_range(weight, weight_range):
     start, end = weight_range
     return (weight - start) / (end - start)
@@ -111,10 +126,6 @@ def number_in_range(fraction, range_tuple):
     return start + fraction * (end - start)
 
 
-def estimate_step_length(height, factor):
-    return height * factor
-
-
 def get_converted_steps(weight, steps_to_convert):
     factor_range = get_dog_factor_range(weight)
     weight_range = get_dog_weight_range(weight)
@@ -124,12 +135,10 @@ def get_converted_steps(weight, steps_to_convert):
     return converted_steps
 
 
-def get_calculated_distance(weight, height, steps):
-    weight_range, step_length_range, factor_range = get_dog_ranges(weight)
-    fraction = get_position_in_range(weight, weight_range)
-    factor = number_in_range(fraction, factor_range)
-    step_length_cm = height * factor
-    distance_cm = steps * step_length_cm
+def get_calculated_distance(steps, height):
+    size_category = determine_size_category_by_height(height)
+    average_step_length_cm = calculate_average_step_length(size_category)
+    distance_cm = steps * average_step_length_cm
     distance_km = distance_cm / 100000  # Convert cm to km
 
     return distance_km
@@ -167,77 +176,41 @@ def get_burned_calories(weight, distance):
     # tdee = bmr + calories_burned_exercise
 
 
-def calculate_bcs(steps, weight, height, breed, calories_burned):
-    weight_deviation = get_weight_deviation(weight, height, breed)
-    caloric_deviation = get_caloric_deviation(weight, calories_burned)
-    activity_level = get_activity_level(steps)
+def estimate_bcs(weight, height):
+    height_m = height / 100
 
-    bcs = 5 + 2 * weight_deviation - 1.5 * caloric_deviation - 1 * (1 - activity_level)
+    # Example formula (for demonstration purposes only)
+    bcs = (weight / (height_m ** 2)) * 0.1  # This is a placeholder
+
+    # Ensure BCS is within a reasonable range, for instance between 1 and 9
     bcs = max(1, min(bcs, 9))
 
-    return round(bcs, 2)
+    return bcs
 
 
-def get_weight_deviation(weight, height, breed):
-    weight_ideal = calculate_ideal_weight(breed, height)
-    weight_deviation = (weight - weight_ideal) / weight_ideal
-
-    return weight_deviation
-
-
-def calculate_ideal_weight(breed, height_cm=None):
-    breed_weights = {
-        "Labrador Retriever": (25, 36),  # min and max weights in kg
-        "German Shepherd": (22, 40),
-        "Beagle": (9, 11),
-        "Golden Retriever": (25, 34),
-        "Bulldog": (18, 25),
-        "Collie": (18, 30),
-        "Dachshund": (4, 6),
-        "Husky": (16, 27),
-        "Boxer": (25, 32),
-        "Doberman Pinscher": (26, 41),
-        "Poodle": (20, 32),
-        "Rottweiler": (35, 60),
-        "Yorkshire Terrier": (2, 3),
-        "Shih Tzu": (4, 7),
-        "Siberian Husky": (16, 27),
-        "Great Dane": (45, 90),
-        "Chihuahua": (2, 3),
-        "Border Collie": (12, 20)
-    }
-
-    if breed in breed_weights:
-        min_weight, max_weight = breed_weights[breed]
-        return (min_weight + max_weight) / 2  # Midpoint of the weight range
-
-    elif height_cm is not None:
-        # General formula for height-based estimation (for medium to large breeds)
-        return (height_cm - 100) / 2
-
-    else:
-        raise ValueError("Breed not recognized and no height provided")
+    # weight_to_height_ratio = weight / height
+    #
+    # # If the ratio is above the highest threshold, return morbidly obese
+    # bcs = BCSValue.EXTREMELY_OBESE.value
+    # print(weight_to_height_ratio)
+    # # Determine BCS based on thresholds
+    # for category, threshold in THRESHOLDS.items():
+    #     if weight_to_height_ratio < threshold:
+    #         bcs = BCSValue[category.name].value
+    #         break
+    #
+    # return bcs
 
 
-def get_caloric_deviation(weight, calories_burned):
-    calculate_maintenance = calculate_maintenance_calories(weight)
-    caloric_deviation = (calories_burned - calculate_maintenance) / calculate_maintenance
+def calculate_average_step_length(size_category):
+    step_length_range = STEP_LENGTH_RANGES[size_category]
+    average_step_length_cm = (step_length_range[0] + step_length_range[1]) / 2
 
-    return caloric_deviation
-
-
-def calculate_maintenance_calories(weight):
-    # Step 1: Calculate the Resting Energy Requirement (RER)
-    rer = 70 * (weight ** 0.75)
-
-    # Step 2: Adjust RER based on how active the dog is to find out the total calories needed
-    # MER : Maintenance Energy Requirement
-    mer = rer * AVERAGE_ACTIVITY_FACTOR
-
-    return mer
+    return average_step_length_cm
 
 
-def get_activity_level(steps):
-    recommended_steps = AVERAGE_WALKING_TIME_MINUTES * AVERAGE_STEPS_PER_MINUTES
+def determine_size_category_by_height(height_cm):
+    for category, (min_height, max_height) in HEIGHT_RANGES.items():
+        if min_height <= height_cm <= max_height:
+            return category
 
-    return steps / recommended_steps

@@ -66,7 +66,7 @@ def get_dog_goals_list():
 
     get_dog_goals_query = f"""
                         SELECT goal_id, start_date, end_date, category, 
-                        current_value, target_value, done 
+                        current_value, target_value, done, is_finished
                         FROM {GOALS_TABLE} 
                         WHERE {DOG_ID_COLUMN} = %s
                         ORDER BY start_date DESC
@@ -99,7 +99,7 @@ def get_dog_goal_log():
                         SELECT 
                         start_date, end_date,         
                         current_value, target_value,
-                        category, done
+                        category, done, is_finished
                         FROM {GOALS_TABLE}
                         WHERE {GOAL_ID_COLUMN} = %s;
                         """
