@@ -40,13 +40,6 @@ THRESHOLDS = {
 }
 
 
-# Steps length ranges in cm
-TOY_DOG_STEP_LENGTH = (25, 35)
-SMALL_DOG_STEP_LENGTH = (35, 45)
-MEDIUM_DOG_STEP_LENGTH = (45, 55)
-LARGE_DOG_STEP_LENGTH = (55, 65)
-EXTRA_LARGE_DOG_STEP_LENGTH = (65, 80)
-
 # Weight ranges
 TOY_DOG_WEIGHT = (2, 5)
 SMALL_DOG_WEIGHT = (5, 10)
@@ -75,6 +68,7 @@ HEIGHT_RANGES = {
     'EXTRA_LARGE_DOG': (70, 100)  # More than 70 cm
 }
 
+# Steps length ranges in cm
 STEP_LENGTH_RANGES = {
     'TOY_DOG': (25, 35),
     'SMALL_DOG': (35, 45),
