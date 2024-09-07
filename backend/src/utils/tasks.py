@@ -9,6 +9,7 @@ from src.utils.logger import logger
 
 ACTIVITY_TIME_THRESHOLD = timedelta(hours=5)
 COLLAR_LAST_UPDATE_TIME_THRESHOLD = timedelta(hours=5)
+LAST_STEPS_FILE_PATH = "last_date.txt"
 
 
 def run_tasks_thread():
@@ -25,6 +26,7 @@ def start_tasks():
                     while True:
                         check_collars_connection(cursor)
                         check_and_end_activities(cursor)
+                        check_and_end_goals(cursor)
                         connection.commit()
                         time.sleep(10)
         except (Exception, ValueError, psycopg2.DatabaseError) as error:
@@ -41,11 +43,11 @@ def check_collars_connection(cursor):
     collar_ids = get_all_collar_ids(cursor)
 
     for collar_id in collar_ids:
-        cursor.execute(delta_query, ("1211",))
+        cursor.execute(delta_query, (collar_id[0],))
         result = cursor.fetchone()
 
         # If result is None --> the server never received steps from the current collar
-        if result is None or result[0] >= COLLAR_LAST_UPDATE_TIME_THRESHOLD:
+        if result[0] is None or result[0] >= COLLAR_LAST_UPDATE_TIME_THRESHOLD:
             disconnect_collar(cursor, collar_id)
 
 
@@ -53,7 +55,7 @@ def get_all_collar_ids(cursor):
     get_collar_ids_query = f"""SELECT {COLLAR_ID_COLUMN}
                             FROM {COLLARS_TABLE};"""
     cursor.execute(get_collar_ids_query)
-    collar_ids = cursor.fetchone()
+    collar_ids = cursor.fetchall()
 
     return collar_ids
 
@@ -100,10 +102,32 @@ def format_timedelta(delta):
     return f"{hours:02}:{minutes:02}:{seconds:02}"
 
 
+def check_and_end_goals(cursor):
+    finish_goals_query = f"""SELECT {GOAL_ID_COLUMN}, end_date
+                          FROM {GOALS_TABLE} WHERE is_finished = FALSE
+                          ;"""
+    cursor.execute(finish_goals_query)
+    unfinished_goals = cursor.fetchall()
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    last_date = load_dates_from_file()
+    if current_date != last_date:
+        save_date_to_file(current_date)
+        # end_activities_by_time_threshold(cursor, active_activities)
 
-# def check_and_end_goals(cursor):
-#     get_active_activities_query = f"""SELECT {GOAL_ID_COLUMN}, end_date
-#                           FROM {GOALS_TABLE} WHERE end_time IS NULL;"""
-#     cursor.execute(get_active_activities_query)
-#     active_activities = cursor.fetchall()
-#     end_activities_by_time_threshold(cursor, active_activities)
+
+def save_date_to_file(current_date):
+    with open(LAST_STEPS_FILE_PATH, 'w') as file:
+        file.write(current_date)
+
+
+def load_dates_from_file():
+    try:
+        with open(LAST_STEPS_FILE_PATH, 'r') as file:
+            date = file.readline().strip()
+        return date
+    except FileNotFoundError:
+        print(f"File not found: last_date.txt")
+        return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None

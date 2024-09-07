@@ -197,30 +197,14 @@ def get_list_of_dicts_for_response(cursor):
     return list_of_dicts
 
 
-def calculate_calories(cursor, dog_id, distance):
-    get_weight_query = """
-                       SELECT weight
-                       FROM {0}
-                       WHERE {1} = dog_id;    
-                       """.format(DOGS_TABLE, DOG_ID_COLUMN)
-
-    cursor.execute(get_weight_query, (dog_id, ))
-    weight = cursor.fetchone()[0]
-    # burn_rate = get_caloric_burn_rate(velocity)
-    burn_rate = 1.0 # Moderate walk (average)
-    return weight * distance * burn_rate
-
-
-def update_collar_connection(cursor, collar_id, is_connected_to_mobile):
+def update_collar_connection(cursor, collar_id, connection):
     # If connected to mobile --> ble = True
     # else (connected to collar) --> wifi = True
 
-    update_connection_query = """ UPDATE {0}
-                                  SET wifi_connected = %s, ble_connected = %s
-                                  WHERE collar_id = %s; """.format(COLLARS_TABLE)
-
-    check_if_exists(cursor, COLLARS_TABLE, COLLAR_ID_COLUMN, collar_id)
-    cursor.execute(update_connection_query, (not is_connected_to_mobile, is_connected_to_mobile, collar_id))
+    update_connection_query = f""" UPDATE {COLLARS_TABLE}
+                                  SET wifi_connected = %s, ble_connected = %s, last_update = NOW()
+                                  WHERE collar_id = %s; """
+    cursor.execute(update_connection_query, (not connection, connection, collar_id))
 
 
 def check_collar_attachment(cursor, collar_id):

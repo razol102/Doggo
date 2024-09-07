@@ -85,7 +85,7 @@ void loop() {
       break;
   }
 
-  delay(100);
+//  delay(100);
 }
 
 void attemptBLEConnection() {
@@ -164,11 +164,24 @@ void checkWiFiConnection() {
 }
 
 void handleWiFiConnection() {
+
+  static unsigned long lastTransmissionTime = 0;
+  //const unsigned long transmissionInterval = 10000; // 10 sec --- only for project performance 
+  const unsigned long transmissionInterval = 5000; // 5 sec
+
   if (WiFi.status() == WL_CONNECTED) {
-    sendDataViaHTTP(getBatteryLevel(), stepCount, collarID);
+    if (detectStep()) {
+      stepCount++;
+    }
+    
+    unsigned long currentTime = millis();
+    if (currentTime - lastTransmissionTime >= transmissionInterval) {
+      sendDataViaHTTP(getBatteryLevel(), stepCount, collarID);
+      lastTransmissionTime = currentTime;
+    }
   } else {
     Serial.println("Wi-Fi connection lost");
-    WiFi.disconnect();  // Disconnect from any existing WiFi connection
+    WiFi.disconnect();
     WiFi.end();
     currentState = DISCONNECTED;
   }
@@ -223,6 +236,13 @@ void sendDataViaHTTP(int battery, int steps, uint32_t collarID) {
     client.println("Content-Length: " + String(putData.length()));
     client.println();
     client.println(putData);
+
+    Serial.println("sent to backend: ");
+    Serial.println(steps);
+    Serial.println("steps ");
+    Serial.println(battery);
+    Serial.println("% battery level |");
+
   } else {
     Serial.println("Connection to server failed.");
   }
