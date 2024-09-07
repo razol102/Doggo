@@ -115,7 +115,7 @@ def get_dog_bcs():
     dog_id = request.args.get('dog_id')
 
     get_dog_properties_query =   f"""
-                                    SELECT weight, height, breed
+                                    SELECT weight, gender, breed
                                     FROM {DOGS_TABLE} 
                                     WHERE {DOG_ID_COLUMN} = %s;
                                     """
@@ -127,10 +127,10 @@ def get_dog_bcs():
             with connection.cursor() as cursor:
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
                 cursor.execute(get_dog_properties_query, (dog_id,))
-                weight, height, breed = cursor.fetchone()
+                weight, gender, breed = cursor.fetchone()
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
 
-    bcs = estimate_bcs(weight, height)
+    bcs = estimate_bcs(weight, gender, breed)
 
     return jsonify(bcs), HTTP_200_OK

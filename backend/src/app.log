@@ -1,0 +1,165 @@
+2024-09-07 21:25:44,320 - src.utils.logger - ERROR - Error with tasks thread: Error reading configuration file: No section: 'postgresql'
+2024-09-07 21:25:44,449 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 21:25:44,449 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 21:25:44,501 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 21:25:45,827 - src.utils.logger - ERROR - Error with tasks thread: Error reading configuration file: No section: 'postgresql'
+2024-09-07 21:25:45,897 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 21:25:45,904 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 21:25:54,323 - src.utils.logger - ERROR - Error with tasks thread: Error reading configuration file: No section: 'postgresql'
+2024-09-07 21:25:55,829 - src.utils.logger - ERROR - Error with tasks thread: Error reading configuration file: No section: 'postgresql'
+2024-09-07 21:26:04,324 - src.utils.logger - ERROR - Error with tasks thread: Error reading configuration file: No section: 'postgresql'
+2024-09-07 21:26:05,831 - src.utils.logger - ERROR - Error with tasks thread: Error reading configuration file: No section: 'postgresql'
+2024-09-07 21:26:13,068 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 21:26:13,068 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 21:26:13,104 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 21:26:14,418 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 21:26:14,424 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 21:27:25,641 - werkzeug - INFO - 127.0.0.1 - - [07/Sep/2024 21:27:25] "GET /api/dog/bcs?dog_id=101 HTTP/1.1" 200 -
+2024-09-07 21:28:12,336 - werkzeug - INFO - 127.0.0.1 - - [07/Sep/2024 21:28:12] "GET /api/dog/bcs?dog_id=28 HTTP/1.1" 200 -
+2024-09-07 21:50:47,148 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 21:50:47,148 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 21:50:47,171 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 21:50:47,692 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 21:50:47,694 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 21:51:05,176 - werkzeug - INFO - 127.0.0.1 - - [07/Sep/2024 21:51:05] "GET /api/dog/bcs?dog_id=28 HTTP/1.1" 200 -
+2024-09-07 21:52:21,924 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 21:52:21,924 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 21:52:21,938 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 21:52:22,437 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 21:52:22,440 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 21:52:39,102 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 21:52:39,102 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 21:52:39,115 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 21:52:39,623 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 21:52:39,625 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 21:52:49,654 - werkzeug - INFO - 127.0.0.1 - - [07/Sep/2024 21:52:49] "GET /api/dog/bcs?dog_id=28 HTTP/1.1" 200 -
+2024-09-07 21:52:57,745 - werkzeug - INFO - 127.0.0.1 - - [07/Sep/2024 21:52:57] "GET /api/dog/bcs?dog_id=28 HTTP/1.1" 200 -
+2024-09-07 21:53:20,641 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 21:53:20,642 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 21:53:20,657 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 21:53:21,165 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 21:53:21,167 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 21:53:26,518 - werkzeug - INFO - 127.0.0.1 - - [07/Sep/2024 21:53:26] "GET /api/dog/bcs?dog_id=28 HTTP/1.1" 200 -
+2024-09-07 21:54:04,879 - werkzeug - INFO -  * Detected change in 'C:\\Users\\raz12\\anaconda3\\Lib\\logging\\__init__.py', reloading
+2024-09-07 21:54:04,879 - werkzeug - INFO -  * Detected change in 'C:\\Users\\raz12\\anaconda3\\Lib\\encodings\\cp1252.py', reloading
+2024-09-07 21:54:04,879 - werkzeug - INFO -  * Detected change in 'C:\\Users\\raz12\\anaconda3\\Lib\\site-packages\\werkzeug\\_internal.py', reloading
+2024-09-07 21:54:04,880 - werkzeug - INFO -  * Detected change in 'C:\\Users\\raz12\\anaconda3\\Lib\\site-packages\\werkzeug\\_reloader.py', reloading
+2024-09-07 21:54:04,880 - werkzeug - INFO -  * Detected change in 'C:\\Users\\raz12\\anaconda3\\Lib\\site-packages\\watchdog\\events.py', reloading
+2024-09-07 21:54:04,880 - werkzeug - INFO -  * Detected change in 'C:\\Users\\raz12\\anaconda3\\Lib\\site-packages\\watchdog\\observers\\api.py', reloading
+2024-09-07 21:54:10,698 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 21:54:10,698 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 21:54:10,714 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 21:54:11,232 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 21:54:11,234 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 21:54:15,533 - werkzeug - INFO - 127.0.0.1 - - [07/Sep/2024 21:54:15] "GET /api/dog/bcs?dog_id=28 HTTP/1.1" 200 -
+2024-09-07 21:54:56,889 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 21:54:56,890 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 21:54:56,908 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 21:54:57,547 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 21:54:57,549 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 21:55:08,489 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 21:55:08,489 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 21:55:08,503 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 21:55:08,995 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 21:55:08,997 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 21:55:25,295 - werkzeug - INFO - 127.0.0.1 - - [07/Sep/2024 21:55:25] "GET /api/dog/bcs?dog_id=28 HTTP/1.1" 200 -
+2024-09-07 22:06:21,529 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 22:06:21,530 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 22:06:21,543 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 22:06:22,096 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 22:06:22,098 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 22:06:28,611 - werkzeug - INFO - 127.0.0.1 - - [07/Sep/2024 22:06:28] "GET /api/dog/bcs?dog_id=28 HTTP/1.1" 200 -
+2024-09-07 22:07:03,998 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 22:07:03,998 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 22:07:04,013 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 22:07:04,574 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 22:07:04,577 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 22:07:13,402 - werkzeug - INFO -  * Detected change in 'C:\\Users\\raz12\\anaconda3\\Lib\\site-packages\\flask\\app.py', reloading
+2024-09-07 22:07:13,408 - werkzeug - INFO - 127.0.0.1 - - [07/Sep/2024 22:07:13] "[35m[1mGET /api/dog/bcs?dog_id=28 HTTP/1.1[0m" 500 -
+2024-09-07 22:07:42,984 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 22:07:42,984 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 22:07:43,004 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 22:07:43,530 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 22:07:43,532 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 22:07:51,391 - werkzeug - INFO - 127.0.0.1 - - [07/Sep/2024 22:07:51] "[35m[1mGET /api/dog/bcs?dog_id=28 HTTP/1.1[0m" 500 -
+2024-09-07 22:08:33,622 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 22:08:33,622 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 22:08:33,636 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 22:08:34,161 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 22:08:34,163 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 22:08:44,740 - werkzeug - INFO - 127.0.0.1 - - [07/Sep/2024 22:08:44] "[35m[1mGET /api/dog/bcs?dog_id=28 HTTP/1.1[0m" 500 -
+2024-09-07 22:09:57,449 - werkzeug - INFO -  * Detected change in 'C:\\Users\\raz12\\anaconda3\\Lib\\site-packages\\flask\\blueprints.py', reloading
+2024-09-07 22:09:57,463 - werkzeug - INFO -  * Detected change in 'C:\\Users\\raz12\\anaconda3\\Lib\\site-packages\\flask\\sansio\\blueprints.py', reloading
+2024-09-07 22:09:57,487 - werkzeug - INFO -  * Detected change in 'C:\\Users\\raz12\\anaconda3\\Lib\\site-packages\\flask\\sansio\\scaffold.py', reloading
+2024-09-07 22:10:34,202 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 22:10:34,202 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 22:10:34,219 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 22:10:34,798 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 22:10:34,801 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 22:10:42,265 - werkzeug - INFO - 127.0.0.1 - - [07/Sep/2024 22:10:42] "GET /api/dog/bcs?dog_id=28 HTTP/1.1" 200 -
+2024-09-07 22:14:10,668 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 22:14:10,668 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 22:14:10,681 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 22:14:11,188 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 22:14:11,190 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 22:14:15,795 - werkzeug - INFO - 127.0.0.1 - - [07/Sep/2024 22:14:15] "GET /api/dog/bcs?dog_id=28 HTTP/1.1" 200 -
+2024-09-07 22:16:42,534 - src.utils.logger - ERROR - Error with tasks thread: deadlock detected
+DETAIL:  Process 23295 waits for ShareLock on transaction 74044; blocked by process 23363.
+Process 23363 waits for ShareLock on transaction 74042; blocked by process 23295.
+HINT:  See server log for query details.
+CONTEXT:  while updating tuple (0,5) in relation "collars"
+
+2024-09-07 22:17:13,284 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.162.3.176:5000
+2024-09-07 22:17:13,286 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-09-07 22:17:13,300 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2024-09-07 22:17:13,790 - werkzeug - WARNING -  * Debugger is active!
+2024-09-07 22:17:13,792 - werkzeug - INFO -  * Debugger PIN: 191-357-689
+2024-09-07 22:17:26,011 - werkzeug - INFO - 127.0.0.1 - - [07/Sep/2024 22:17:26] "GET /api/dog/bcs?dog_id=28 HTTP/1.1" 200 -
