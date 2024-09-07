@@ -5,6 +5,7 @@ import psycopg2
 
 from src.utils.config import load_database_config
 from src.utils.constants import *
+from src.utils.helpers import get_beginning_next_month
 from src.utils.logger import logger
 
 ACTIVITY_TIME_THRESHOLD = timedelta(hours=5)
@@ -26,7 +27,7 @@ def start_tasks():
                     while True:
                         check_collars_connection(cursor)
                         check_and_end_activities(cursor)
-                        check_and_end_goals(cursor)
+                        finish_and_set_goals(cursor)
                         connection.commit()
                         time.sleep(10)
         except (Exception, ValueError, psycopg2.DatabaseError) as error:
@@ -102,17 +103,15 @@ def format_timedelta(delta):
     return f"{hours:02}:{minutes:02}:{seconds:02}"
 
 
-def check_and_end_goals(cursor):
-    finish_goals_query = f"""SELECT {GOAL_ID_COLUMN}, end_date
-                          FROM {GOALS_TABLE} WHERE is_finished = FALSE
-                          ;"""
-    cursor.execute(finish_goals_query)
-    unfinished_goals = cursor.fetchall()
-    current_date = datetime.now().strftime('%Y-%m-%d')
-    last_date = load_dates_from_file()
-    if current_date != last_date:
-        save_date_to_file(current_date)
-        # end_activities_by_time_threshold(cursor, active_activities)
+def finish_and_set_goals(cursor):
+    current_date_str = datetime.now().strftime('%Y-%m-%d')
+    last_date_str = load_dates_from_file()
+
+    if current_date_str != last_date_str:
+        current_date = datetime.strptime(current_date_str, '%Y-%m-%d').date()
+        finish_goals(cursor, current_date)
+        set_goals(cursor, current_date)
+        save_date_to_file(current_date_str)
 
 
 def save_date_to_file(current_date):
@@ -131,3 +130,49 @@ def load_dates_from_file():
     except Exception as e:
         print(f"An error occurred: {e}")
         return None
+
+
+def finish_goals(cursor, current_date):
+    finish_goals_query = f"""
+            UPDATE {GOALS_TABLE}
+            SET is_finished = TRUE
+            WHERE is_finished = FALSE AND end_date = %s;
+            """
+    cursor.execute(finish_goals_query, (current_date, ))
+
+
+def set_goals(cursor, current_date):
+    # tomorrow_date = current_date + timedelta(days=1)
+    # set_goals_by_frequency(cursor, tomorrow_date, DAILY_FREQUENCY)
+    next_sunday_date = current_date + timedelta(days=7)
+    set_goals_by_frequency(cursor, next_sunday_date, WEEKLY_FREQUENCY)
+    next_beginning_month_date = get_beginning_next_month(current_date)
+    set_goals_by_frequency(cursor, next_beginning_month_date, MONTHLY_FREQUENCY)
+
+    # if current_date.weekday() == SUNDAY:
+    #     next_sunday_date = current_date + timedelta(days=7)
+    #     set_goals_by_frequency(cursor, next_sunday_date, DAILY_FREQUENCY)
+    #
+    # if current_date.day == FIRST_OF_MONTH:
+    #     next_beginning_month_date = get_beginning_next_month(current_date)
+    #     set_goals_by_frequency(cursor, next_beginning_month_date, DAILY_FREQUENCY)
+
+
+def set_goals_by_frequency(cursor, current_date, template_frequency):
+    get_goal_template_query = f"""
+        SELECT {TEMPLATE_ID_COLUMN}, {DOG_ID_COLUMN}, target_value, category 
+        FROM {GOAL_TEMPLATES_TABLE}
+        WHERE frequency = %s;
+        """
+    create_goal_query = f"""
+        INSERT INTO {GOALS_TABLE} (template_id, dog_id, target_value, category, end_date)
+        VALUES (%s, %s, %s, %s, %s);
+        """
+
+    cursor.execute(get_goal_template_query, (template_frequency,))
+    goal_templates = cursor.fetchall()
+
+    for template in goal_templates:
+        template = template + (current_date,)
+        cursor.execute(create_goal_query, template)
+

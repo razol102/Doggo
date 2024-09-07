@@ -1,4 +1,3 @@
-from src.utils.logger import logger
 from enum import Enum, auto
 
 
@@ -90,7 +89,7 @@ def get_dog_weight_range(weight):
     elif EXTRA_LARGE_DOG_WEIGHT[0] <= weight <= EXTRA_LARGE_DOG_WEIGHT[1]:
         return EXTRA_LARGE_DOG_WEIGHT
     else:
-        return MEDIUM_DOG_FACTOR, MEDIUM_DOG_WEIGHT, MEDIUM_DOG_STEP_LENGTH
+        return MEDIUM_DOG_WEIGHT
 
 
 def get_dog_factor_range(weight):
@@ -153,47 +152,58 @@ def get_burned_calories(weight, distance):
     return calories_burned
 
 
-    # # Constants
-    # CALORIES_PER_KG_PER_KM = 1.0  # Approximate calories burned per kg per km
-    #
-    # # 1. Calculate BMR (Basal Metabolic Rate) - Simplified formula
-    # bmr = 70 * (weight ** 0.75)
-    #
-    # # 2. Calculate calories burned during exercise
-    # # Assuming average distance is provided in kilometers
-    # calories_burned_exercise = weight * distance * CALORIES_PER_KG_PER_KM
-    #
-    # # 3. Total Daily Energy Expenditure (TDEE)
-    # # if distance <= 0.05:
-    # #     tdee = 0
-    # # else:
-    # tdee = bmr + calories_burned_exercise
+breed_standards = {
+    'labrador': {'male': (27, 36), 'female': (25, 32)},
+    'german shepherd': {'male': (30, 40), 'female': (22, 32)},
+    'beagle': {'male': (10, 11), 'female': (9, 10)},
+    'border collie': {'male': (14, 20), 'female': (12, 19)},
+    'labrador retriever': {'male': (29, 36), 'female': (25, 32)},
+    'golden retriever': {'male': (30, 34), 'female': (25, 29)},
+    'bulldog': {'male': (23, 25), 'female': (18, 23)},
+    'poodle': {'male': (20, 32), 'female': (18, 30)},
+    'rottweiler': {'male': (50, 60), 'female': (35, 48)},
+    'yorkshire terrier': {'male': (2, 4), 'female': (2, 4)},
+    'dachshund': {'male': (7, 15), 'female': (7, 15)},
+    'boxer': {'male': (30, 36), 'female': (25, 30)},
+    'shih tzu': {'male': (4, 7), 'female': (4, 7)},
+    'doberman pinscher': {'male': (40, 45), 'female': (32, 35)},
+    'siberian husky': {'male': (20, 27), 'female': (16, 23)},
+    'great dane': {'male': (54, 90), 'female': (45, 59)},
+    'chihuahua': {'male': (1.5, 3), 'female': (1.5, 3)},
+    'collie': {'male': (20, 29), 'female': (18, 25)},
+    'husky': {'male': (20, 27), 'female': (16, 23)},
+    # Add more breeds as necessary...
+}
 
 
-def estimate_bcs(weight, height):
-    height_m = height / 100
+def estimate_bcs(weight, gender, breed):
+    breed = breed.lower()
+    gender = gender.lower()
 
-    # Example formula (for demonstration purposes only)
-    bcs = (weight / (height_m ** 2)) * 0.1  # This is a placeholder
+    # Check if breed is available in the standard data
+    if breed not in breed_standards:
+        raise ValueError(f"Breed '{breed}' is not available in the database.")
 
-    # Ensure BCS is within a reasonable range, for instance between 1 and 9
-    bcs = max(1, min(bcs, 9))
+    # Get the ideal weight range for the breed and gender
+    breed_info = breed_standards[breed]
+    if gender not in breed_info:
+        raise ValueError(f"Gender '{gender}' not available for breed '{breed}'.")
 
-    return bcs
+    ideal_weight_range = breed_info[gender]
+    ideal_min_weight, ideal_max_weight = ideal_weight_range
 
+    # Estimate BCS based on how far the current weight deviates from the ideal range
+    if weight < ideal_min_weight:
+        bcs = 1 + (ideal_min_weight - weight) / ideal_min_weight * 4  # Underweight
+    elif weight > ideal_max_weight:
+        bcs = 5 + (weight - ideal_max_weight) / ideal_max_weight * 4  # Overweight
+    else:
+        bcs = 5  # Ideal weight
 
-    # weight_to_height_ratio = weight / height
-    #
-    # # If the ratio is above the highest threshold, return morbidly obese
-    # bcs = BCSValue.EXTREMELY_OBESE.value
-    # print(weight_to_height_ratio)
-    # # Determine BCS based on thresholds
-    # for category, threshold in THRESHOLDS.items():
-    #     if weight_to_height_ratio < threshold:
-    #         bcs = BCSValue[category.name].value
-    #         break
-    #
-    # return bcs
+    # Ensure BCS is between 1 and 9
+    bcs = max(1, min(9, bcs))
+
+    return round(bcs)
 
 
 def calculate_average_step_length(size_category):
@@ -207,4 +217,3 @@ def determine_size_category_by_height(height_cm):
     for category, (min_height, max_height) in HEIGHT_RANGES.items():
         if min_height <= height_cm <= max_height:
             return category
-

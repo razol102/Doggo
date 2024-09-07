@@ -460,15 +460,12 @@ def get_end_date_by_frequency(frequency):
     if frequency == "daily":
         end_date = today + timedelta(days=1)
     elif frequency == "weekly":
-        if today.weekday() == 6:  # If today is Sunday (Sunday is day 6)
+        if today.weekday() == SUNDAY:  # If today is Sunday (Sunday is day 6)
             end_date = today + timedelta(7)  # Set end_date to next Sunday
         else:
             end_date = today + timedelta(6 - today.weekday())  # Set to the upcoming Sunday
     elif frequency == "monthly":
-        if today.month == DECEMBER:
-            end_date = today.replace(day=1, month=1, year=today.year + 1)
-        else:
-            end_date = today.replace(day=1, month=today.month + 1)
+        end_date = get_beginning_next_month(today)
 
     return end_date
 
@@ -497,3 +494,12 @@ def delete_previous_template_if_exists(cursor, frequency, category):
 
     if query_res is not None:
         delete_goal_template(cursor, query_res[0])
+
+
+def get_beginning_next_month(current_date):
+    if current_date.month == DECEMBER:
+        beginning_next_month = current_date.replace(day=1, month=1, year=current_date.year + 1)
+    else:
+        beginning_next_month = current_date.replace(day=1, month=current_date.month + 1)
+
+    return beginning_next_month
