@@ -34,7 +34,7 @@ class _ActivityCirclesWidgetState extends State<ActivityCirclesWidget> {
             color: Colors.white,
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
                 color: Colors.black12,
                 blurRadius: 4,
@@ -73,7 +73,7 @@ class _ActivityCirclesWidgetState extends State<ActivityCirclesWidget> {
                             const SizedBox(height: 5.0),
                             Text(
                               activity["activity_type"]!,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.black,
                               ),
@@ -92,7 +92,7 @@ class _ActivityCirclesWidgetState extends State<ActivityCirclesWidget> {
                 children: List.generate(
                   (activities.length / 3).ceil(),
                       (index) => AnimatedContainer(
-                    duration: Duration(milliseconds: 300),
+                    duration: const Duration(milliseconds: 300),
                     margin: const EdgeInsets.symmetric(horizontal: 4.0),
                     height: 8.0,
                     width: _currentPage == index ? 16.0 : 8.0,

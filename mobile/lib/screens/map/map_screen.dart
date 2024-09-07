@@ -104,7 +104,10 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _showMarkersForCategory(String category) async {
     try {
+      // Fetch map markers based on the selected category
       final markersData = await HttpService.fetchMapMarkers(category);
+
+      // Update the state with new markers
       setState(() {
         _markers.clear();
         _updateUserMarker();
@@ -122,9 +125,13 @@ class _MapScreenState extends State<MapScreen> {
         }
       });
     } catch (e) {
-      print('Error loading markers: $e');
+      // Display an error message using ScaffoldMessenger
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading markers: ${e.toString()}')),
+      );
     }
   }
+
 
   Color _getCategoryColor(String category) {
     switch (category) {

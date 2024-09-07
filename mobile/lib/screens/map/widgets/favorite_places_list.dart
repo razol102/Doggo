@@ -57,16 +57,27 @@ class _FavoritePlacesListState extends State<FavoritePlacesList> with RouteAware
   }
 
   Future<Map<String, dynamic>> _getFavoritePlace(String placeType) async {
-    final place = await HttpService.getFavoritePlaceByType(widget.dogId, placeType);
-    if (place == null) {
+    try {
+      final place = await HttpService.getFavoritePlaceByType(widget.dogId, placeType);
+      if (place == null) {
+        return {
+          'place_name': 'Save your favorite $placeType',
+          'address': '',
+          'place_type': placeType
+        };
+      }
+      return place;
+    } catch (e) {
+      // Handle any errors that occur during the request
+      print('Failed to get favorite place: $e');
       return {
         'place_name': 'Save your favorite $placeType',
         'address': '',
         'place_type': placeType
       };
     }
-    return place;
   }
+
 
   @override
   Widget build(BuildContext context) {

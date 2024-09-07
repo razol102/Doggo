@@ -31,54 +31,65 @@ class _StartNewActivityScreenState extends State<StartNewActivityScreen> {
     print('current activity: ${widget.currentActivityId}');
   }
 
-  void _startActivity() {
+  void _startActivity() async {
     if (_activityId != null) return; // Prevent starting a new activity if one is already in progress
     setState(() => _isLoading = true);
-    HttpService.startNewActivity(widget.dogId, widget.activityType).then((activityId) async {
+
+    try {
+      final activityId = await HttpService.startNewActivity(widget.dogId, widget.activityType);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setInt('currentActivityId', activityId);
+
       setState(() {
         _activityId = activityId;
         _isLoading = false;
       });
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Activity started successfully!')),
         );
       }
-    }).catchError((e) {
+    } catch (e) {
       print('Error starting activity: $e');
       setState(() => _isLoading = false);
       if (mounted) {
-        _showErrorDialog('$e');
+        _showErrorDialog('Failed to start activity. Please try again later.');
       }
-    });
+    }
   }
 
-  void _endActivity() {
+
+  void _endActivity() async {
     if (_activityId == null) return; // Prevent ending an activity if none is in progress
     setState(() => _isLoading = true);
-    HttpService.endActivity(_activityId!).then((_) async {
+
+    try {
+      await HttpService.endActivity(_activityId!);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.remove('currentActivityId');
+
       setState(() {
         _activityId = null;
         _isLoading = false;
       });
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Activity ended successfully!')),
         );
       }
+
       Navigator.of(context).pop();
-    }).catchError((e) {
+    } catch (e) {
       print('Error ending activity: $e');
       setState(() => _isLoading = false);
       if (mounted) {
         _showErrorDialog('Failed to end activity. Please try again.');
       }
-    });
+    }
   }
+
 
   void _showErrorDialog(String message) {
     showDialog(

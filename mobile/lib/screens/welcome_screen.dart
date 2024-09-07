@@ -53,12 +53,18 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     int? userId = await PreferencesService.getUserId();  // Retrieve user ID
 
     if (userId != null) {
-      bool isLoggedIn = await HttpService.isLoggedIn(userId);  // Check if logged in
-      if (isLoggedIn) {
-        Navigator.pushReplacementNamed(context, BottomMenu.routeName);  // Navigate to BottomMenu
+      try {
+        bool isLoggedIn = await HttpService.isLoggedIn(userId);  // Check if logged in
+        if (isLoggedIn) {
+          Navigator.pushReplacementNamed(context, BottomMenu.routeName);  // Navigate to BottomMenu
+        }
+      } catch (e) {
+        // Handle error (e.g., show an error message to the user or log the error)
+        print('Error checking login status: $e');
       }
     }
   }
+
 
   void _showPermissionDeniedMessage() {
     showDialog(

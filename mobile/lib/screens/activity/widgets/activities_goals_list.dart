@@ -28,7 +28,6 @@ class ActivitiesGoalsList extends StatelessWidget {
         var wObj = ItemsArr[index];
         return InkWell(
           onTap: () {
-            // You can add navigation or any other action here when an item is tapped.
           },
           child: OutdoorActivityGoalRow(
             item: wObj,

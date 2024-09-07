@@ -22,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordObscured = true; // State variable to track password visibility
 
   Future<void> _login() async {
     try {
@@ -100,11 +101,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               hintText: "Password",
                               icon: 'assets/icons/lock_icon.png',
                               textInputType: TextInputType.text,
-                              isObscureText: true,
+                              isObscureText: _isPasswordObscured,
                               rightIcon: GestureDetector(
                                 onTap: () {
                                   // Handle show/hide password
                                   setState(() {
+                                    _isPasswordObscured = !_isPasswordObscured;
                                     _passwordController.text.isNotEmpty;
                                   });
                                 },

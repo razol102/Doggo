@@ -1,7 +1,6 @@
 import 'package:mobile/screens/activity/widgets/activities_goals_list.dart';
 import 'package:mobile/screens/home/widgets/BCS_pie_chart.dart';
 import 'package:mobile/screens/home/widgets/dog_activity_status.dart';
-import 'package:mobile/screens/home/widgets/workout_progress_line_chart.dart';
 import 'package:mobile/services/ble_service.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:mobile/services/preferences_service.dart';
@@ -70,28 +69,48 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   }
 
   void _fetchDogInfo() async {
-    dogId = await PreferencesService.getDogId();
-    if (dogId != null) {
-      final dogInfo = await HttpService.getDogInfo(dogId!);
-      final dogName = dogInfo['name'];
-      setState(() {
-        _dogName = dogName;
-      });
+    try {
+      // Fetch dogId from preferences
+      dogId = await PreferencesService.getDogId();
+
+      if (dogId != null) {
+        // Try fetching dog information
+        final dogInfo = await HttpService.getDogInfo(dogId!);
+        final dogName = dogInfo['name'];
+
+        // Update UI with dog name
+        setState(() {
+          _dogName = dogName;
+        });
+      }
+    } catch (e) {
+      // Handle any errors and display a SnackBar with the error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to fetch dog info: ${e.toString()}')),
+      );
     }
   }
 
+
   void _fetchDog3LatestActivities() async {
-    print('fetch');
-    final dogId = await PreferencesService.getDogId();
-    if (dogId != null) {
-      final activities = await HttpService.getOutdoorActivities(dogId, 3, 0); // request for the latest 3 activities
-      if (activities != null) {
-        setState(() {
-          activitiesArr = activities;
-        });
+    try {
+      final dogId = await PreferencesService.getDogId();
+      if (dogId != null) {
+        final activities = await HttpService.getOutdoorActivities(dogId, 3, 0); // request for the latest 3 activities
+        if (activities != null) {
+          setState(() {
+            activitiesArr = activities;
+          });
+        }
       }
+    } catch (e) {
+      print('Error fetching activities: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching activities. Please try again later.')),
+      );
     }
   }
+
 
   void _showActivityCirclesDialog(BuildContext context) {
     showDialog(

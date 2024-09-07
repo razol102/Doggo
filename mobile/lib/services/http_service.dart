@@ -6,7 +6,7 @@ class HttpService {
   static const String baseUrl = "http://34.230.176.208:5000";
 
   //--------------------------------------auth--------------------------------------
-  static Future<Map<String, dynamic>> login(String email, String password) async {
+  static Future<Map<String, dynamic>> login(String email, String password) async  {
     final url = Uri.parse('$baseUrl/api/user/login');
     final response = await http.put(
       url,
@@ -680,7 +680,7 @@ class HttpService {
     }
   }
   //--------------------------------------goals--------------------------------------
-  static Future<int> getDailyStepsGoal(int dogId) async { //TODO: check after backend implementation
+  static Future<int> getDailyStepsGoal(int dogId) async {
     final url = Uri.parse('$baseUrl/api/dog/dailyStepsGoal?dog_id=$dogId');
     final response = await http.get(
       url,
@@ -691,28 +691,6 @@ class HttpService {
       return jsonDecode(response.body)['daily_steps_goal'];
     } else {
       print('Failed to get dog daily steps goal: ${response.statusCode}');
-      throw Exception(jsonDecode(response.body)['error']);
-    }
-  }
-
-  static Future<void> createGoal(int dogId, int targetValue, String frequency, String category) async {
-    final url = Uri.parse('$baseUrl/api/dog/goals/add');
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'dog_id': dogId,
-        'target_value': targetValue,
-        'frequency': frequency,
-        'category': category
-      })
-    );
-
-    if (response.statusCode == 201) {
-      print('goal created');
-      return;
-    } else {
-      print('Failed to create goal: ${response.statusCode}');
       throw Exception(jsonDecode(response.body)['error']);
     }
   }
@@ -783,8 +761,30 @@ class HttpService {
     }
   }
 
-  static Future<void> updateGoalTemplate(int templateId) async {
-    final url = Uri.parse('$baseUrl/api/dog/goals?template_id=$templateId');
+  static Future<void> createGoal(int dogId, String targetValue, String frequency, String category) async {
+    final url = Uri.parse('$baseUrl/api/dog/goals/add');
+    final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'dog_id': dogId,
+          'target_value': targetValue,
+          'frequency': frequency,
+          'category': category
+        })
+    );
+
+    if (response.statusCode == 201) {
+      print('goal created');
+      return;
+    } else {
+      print('Failed to create goal: ${response.statusCode}');
+      throw Exception(jsonDecode(response.body)['error']);
+    }
+  }
+
+  static Future<void> updateGoalTemplate(int templateId, String updatedTarget) async {
+    final url = Uri.parse('$baseUrl/api/dog/goals?template_id=$templateId&target_value=$updatedTarget');
     final response = await  http.put(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -792,6 +792,7 @@ class HttpService {
 
     if (response.statusCode == 200) {
       print('goal template $templateId was updated');
+      return;
     } else {
       print('failed to update goal template $templateId : ${response.statusCode}');
       throw Exception(jsonDecode(response.body)['error']);
@@ -814,21 +815,23 @@ class HttpService {
   }
 
   //--------------------------------------bcs--------------------------------------
-
-
-  //--------------------------------------test--------------------------------------
-  static Future<Map<String, dynamic>> getRoot() async {
-    final url = Uri.parse('$baseUrl/');
+  static Future<int?> getBCS(int dogId) async {
+    final url = Uri.parse('$baseUrl/api/dog/bcs?dog_id=$dogId');
     final response = await http.get(
       url,
       headers: {'Content-Type': 'application/json'},
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      try {
+        return int.parse(response.body);
+      } catch(e) {
+        return null;
+      }
     } else {
-      throw Exception('Failed to load data: ${response.reasonPhrase}');
+      throw Exception('Failed to fetch bcs: ${response.statusCode}');
     }
   }
+
 
 }

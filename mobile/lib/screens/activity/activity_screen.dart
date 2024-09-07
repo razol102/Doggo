@@ -70,16 +70,25 @@ class _ActivityScreenState extends State<ActivityScreen> with RouteAware{
   void _fetchDog3LatestGoals() async {
     final dogId = await PreferencesService.getDogId();
     if (dogId != null) {
-      final goals = await HttpService.getGoalsList(dogId, 3, 0); // request for the latest 3 activities
-      if (goals != null) {
-        setState(() {
-          goalsArr = goals;
-        });
+      try {
+        final goals = await HttpService.getGoalsList(dogId, 3, 0); // request for the latest 3 goals
+        if (goals != null) {
+          setState(() {
+            goalsArr = goals;
+          });
+        }
+      } catch (e) {
+        print('Error fetching latest goals: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to fetch goals. Please try again.')),
+          );
+        }
       }
     }
   }
 
-  @override
+
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;

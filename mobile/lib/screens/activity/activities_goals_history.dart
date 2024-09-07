@@ -74,6 +74,9 @@ class _ActivitiesGoalsHistoryScreenState extends State<ActivitiesGoalsHistoryScr
       });
     } catch (e) {
       print("Error fetching ${widget.type}s: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching ${widget.type}s. Please try again later.')),
+      );
     } finally {
       setState(() {
         isLoading = false;

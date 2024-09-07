@@ -25,12 +25,16 @@ class _BcsPieChartState extends State<BcsPieChart> {
 
   Future<void> _fetchBcsScore() async {
     try {
-      // int fetchedScore = await HttpService.getBCS(widget.dogId);  // Fetch BCS from API
-      int fetchedScore = 7;
-      setState(() {
-        currentScore = fetchedScore;
-        isLoading = false;
-      });
+      int? fetchedScore = await HttpService.getBCS(widget.dogId);
+      // int fetchedScore = 7;
+      if (fetchedScore != null) {
+        setState(() {
+          currentScore = fetchedScore;
+          isLoading = false;
+        });
+      } else {
+        throw Exception();
+      }
     } catch (e) {
       // Handle the error by setting a default or showing a message
       setState(() {

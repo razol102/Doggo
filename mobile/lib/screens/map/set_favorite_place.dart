@@ -75,9 +75,13 @@ class _SetFavoritePlaceState extends State<SetFavoritePlace> {
         });
       }
     } catch (e) {
-      print('Failed to fetch favorite place: $e');
+      // Show error message in a SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to fetch favorite place: ${e.toString()}')),
+      );
     }
   }
+
 
   @override
   void initState() {
@@ -105,12 +109,16 @@ class _SetFavoritePlaceState extends State<SetFavoritePlace> {
     final latitude = _selectedPosition?.latitude ?? 0.0;
     final longitude = _selectedPosition?.longitude ?? 0.0;
 
+    // Validate fields
     if (placeName.isEmpty || address.isEmpty) {
-      print('Please fill in all fields');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
+      );
       return;
     }
 
     try {
+      // Attempt to save the favorite place
       await HttpService.setFavoritePlace(
         widget.dogId.toString(),
         placeName,
@@ -119,7 +127,12 @@ class _SetFavoritePlaceState extends State<SetFavoritePlace> {
         address,
         widget.placeType,
       );
-      print('Place added successfully');
+
+      // If successful, either move to the next screen or pop the current one
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Place added successfully')),
+      );
+
       if (widget.inCompleteRegister == true) {
         Navigator.push(
           context,
@@ -131,9 +144,13 @@ class _SetFavoritePlaceState extends State<SetFavoritePlace> {
         Navigator.pop(context);
       }
     } catch (e) {
-      print('Failed to add place: $e');
+      // Show error message in a SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add place: ${e.toString()}')),
+      );
     }
   }
+
 
   void _updateMarkers() {
       _markers = [

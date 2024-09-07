@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/screens/activity/widgets/activities_goals_list.dart';
 import 'package:mobile/services/http_service.dart';
+import '../../main.dart';
 import '../../utils/app_colors.dart';
+import 'add_update_goal_template.dart';
 
 class GoalsTemplatesScreen extends StatefulWidget {
   final int dogId;
@@ -15,9 +17,26 @@ class GoalsTemplatesScreen extends StatefulWidget {
   _GoalsTemplatesScreenState createState() => _GoalsTemplatesScreenState();
 }
 
-class _GoalsTemplatesScreenState extends State<GoalsTemplatesScreen> {
+class _GoalsTemplatesScreenState extends State<GoalsTemplatesScreen> with RouteAware {
   List<Map<String, dynamic>> templatesArr = [];
   bool isLoading = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute);
+  }
+
+  @override
+  void didPopNext() {
+    _fetchTemplates();
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -44,6 +63,11 @@ class _GoalsTemplatesScreenState extends State<GoalsTemplatesScreen> {
       });
     } catch (e) {
       print("Error fetching goal templates: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to fetch goal templates. Please try again.')),
+        );
+      }
     } finally {
       setState(() {
         isLoading = false;
@@ -66,6 +90,19 @@ class _GoalsTemplatesScreenState extends State<GoalsTemplatesScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddUpdateGoalTemplateScreen(templateId: null,), // null for add
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Container(
         decoration: BoxDecoration(

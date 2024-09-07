@@ -43,23 +43,37 @@ class _DogActivityStatusState extends State<DogActivityStatus>
   }
 
   Future<void> _fetchActivityStatus(DateTime date) async {
-    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
-    final dogId = await PreferencesService.getDogId();
-    if (dogId != null) {
-      final status = await HttpService.fetchDogActivityStatus(formattedDate, dogId);
-      final dailyStepsGoal = await HttpService.getDailyStepsGoal(dogId);
-      setState(() {
-        currentSteps = status['steps']!;
-        totalSteps = dailyStepsGoal;
-        calories = status['calories_burned']!;
-        distance = status['distance']!;
-        double newProgress = currentSteps / totalSteps;
-        _animation = Tween<double>(begin: _currentProgress, end: newProgress).animate(_controller);
-        _currentProgress = newProgress;
-        _controller.forward(from: 0);
-      });
+    try {
+      // Format the date to 'yyyy-MM-dd'
+      String formattedDate = DateFormat('yyyy-MM-dd').format(date);
+
+      // Fetch the dogId from preferences
+      final dogId = await PreferencesService.getDogId();
+
+      if (dogId != null) {
+        // Try fetching the activity status and daily steps goal
+        final status = await HttpService.fetchDogActivityStatus(formattedDate, dogId);
+        final dailyStepsGoal = await HttpService.getDailyStepsGoal(dogId);
+
+        // Update UI with fetched data
+        setState(() {
+          currentSteps = status['steps']!;
+          totalSteps = dailyStepsGoal;
+          calories = status['calories_burned']!;
+          distance = status['distance']!;
+
+          // Update animation progress
+          double newProgress = currentSteps / totalSteps;
+          _animation = Tween<double>(begin: _currentProgress, end: newProgress).animate(_controller);
+          _currentProgress = newProgress;
+          _controller.forward(from: 0);
+        });
+      }
+    } catch (e) {
+      print("an error occurred while trying fetch activity status: ${e.toString()}");
     }
   }
+
 
   void _onDateSelected(DateTime date) {
     setState(() {

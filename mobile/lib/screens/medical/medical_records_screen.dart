@@ -29,21 +29,44 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
   }
 
   Future<void> _loadEventsForMonth(DateTime date) async {
-    final dogId = await PreferencesService.getDogId();
-    final Map<String, dynamic> events = await HttpService.getMonthlyMedicalRecords(dogId!, date.year, date.month);
-    setState(() {
-      _events = events;
-    });
+    try {
+      final dogId = await PreferencesService.getDogId();
+      if (dogId != null) {
+        final Map<String, dynamic> events = await HttpService.getMonthlyMedicalRecords(dogId, date.year, date.month);
+        setState(() {
+          _events = events;
+        });
+      } else {
+        print('Dog ID is null');
+      }
+    } catch (e) {
+      print('Failed to load events for month: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading events. Please try again later.')),
+      );
+    }
   }
 
   Future<void> _loadDailyRecords(DateTime date) async {
-    final dogId = await PreferencesService.getDogId();
-    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
-    final List dailyRecords = await HttpService.getDailyMedicalRecords(dogId!, formattedDate);
-    setState(() {
-      _dailyRecords = dailyRecords;
-    });
+    try {
+      final dogId = await PreferencesService.getDogId();
+      if (dogId != null) {
+        String formattedDate = DateFormat('yyyy-MM-dd').format(date);
+        final List dailyRecords = await HttpService.getDailyMedicalRecords(dogId, formattedDate);
+        setState(() {
+          _dailyRecords = dailyRecords;
+        });
+      } else {
+        print('Dog ID is null');
+      }
+    } catch (e) {
+      print('Failed to load daily records: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading daily records. Please try again later.')),
+      );
+    }
   }
+
 
   String _formatTime(String dateTimeStr) {
     DateTime dateTime = DateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'", 'en_US').parse(dateTimeStr, true).toLocal();
@@ -126,10 +149,22 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
       );
     }
   }
+
   void _removeRecord(Map<String, dynamic> record) async {
-    await HttpService.deleteMedicalRecord(record['record_id']);
-    _loadDailyRecords(_selectedDay!); // Refresh the daily records list
+    try {
+      await HttpService.deleteMedicalRecord(record['record_id']);
+      // Refresh the daily records list after successful deletion
+      if (_selectedDay != null) {
+        await _loadDailyRecords(_selectedDay!);
+      }
+    } catch (e) {
+      print('Failed to remove record: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error removing record. Please try again later.')),
+      );
+    }
   }
+
 
 
   @override

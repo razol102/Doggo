@@ -78,10 +78,7 @@ class BleService {
     });
   }
 
-  void _onConnected(
-      String deviceId,
-      Function(int) updateBatteryLevel,
-      Function(int) updateStepCount) {
+  void _onConnected(String deviceId, Function(int) updateBatteryLevel, Function(int) updateStepCount) {
     print('Attempting to read characteristics...');
     final batteryCharacteristic = QualifiedCharacteristic(
       deviceId: deviceId,
@@ -130,7 +127,7 @@ class BleService {
 
   void _startPeriodicUpdates() {
     _timer?.cancel();
-    _timer = Timer.periodic(Duration(seconds: 5), (timer) { // TODO: Change the duration if needed
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
       if (_deviceId.isNotEmpty && isConnected) {
         final batteryCharacteristic = QualifiedCharacteristic(
           deviceId: _deviceId,

@@ -157,36 +157,37 @@ class _AddNewDogScreenState extends State<AddNewDogScreen> {
                   title: "Next >",
                   onPressed: () async {
                     if (_validateFields()) {
-                      int? currUserId = await PreferencesService.getUserId();
+                      try {
+                        int? currUserId = await PreferencesService.getUserId();
 
-                      // Add new dog
-                      int? dogId = await HttpService.addNewDog(
-                        name: _nameController.text,
-                        breed: selectedBreed!,
-                        gender: selectedGender!,
-                        dateOfBirth: _birthdateController.text,
-                        weight: double.tryParse(_weightController.text) ?? 0.0,
-                        height: double.tryParse(_heightController.text) ?? 0.0,
-                        userId: currUserId!,
-                      );
-                      if (dogId != null) {
-                        // Navigate to next step
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SetFavoritePlace(
-                              dogId: dogId,
-                              placeType: 'home',
-                              inCompleteRegister: true,
-                            ),
-                          ),
+                        // Add new dog
+                        int? dogId = await HttpService.addNewDog(
+                          name: _nameController.text,
+                          breed: selectedBreed!,
+                          gender: selectedGender!,
+                          dateOfBirth: _birthdateController.text,
+                          weight: double.tryParse(_weightController.text) ?? 0.0,
+                          height: double.tryParse(_heightController.text) ?? 0.0,
+                          userId: currUserId!,
                         );
-                      } else {
-                        // Show SnackBar with error message
+
+                        if (dogId != null) {
+                          // Navigate to next step
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SetFavoritePlace(
+                                dogId: dogId,
+                                placeType: 'home',
+                                inCompleteRegister: true,
+                              ),
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        // Show SnackBar with specific error message
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Failed to add the dog. Please try again.'),
-                          ),
+                          SnackBar(content: Text('Failed to add the dog: ${e.toString()}')),
                         );
                       }
                     }

@@ -122,20 +122,32 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
   }
 
   void _fetchDogInfo() async {
-    final dogId = await PreferencesService.getDogId();
-    if (dogId != null) {
-      final dogInfo = await HttpService.getDogInfo(dogId);
-      final dogName = dogInfo['name'];
-      final dogBreed = dogInfo['breed'];
-      final dogWeight = dogInfo['weight'].toString();
-      final dogDateOfBirth = dogInfo['date_of_birth'];
-      final dogAge = _calculateDogAge(dogDateOfBirth);
-      setState(() {
-        _dogName = dogName;
-        _dogBreed = dogBreed;
-        _dogWeight = dogWeight;
-        _dogAge = dogAge;
-      });
+    try {
+      // Fetch dogId from preferences
+      final dogId = await PreferencesService.getDogId();
+
+      if (dogId != null) {
+        // Try fetching dog information
+        final dogInfo = await HttpService.getDogInfo(dogId);
+        final dogName = dogInfo['name'];
+        final dogBreed = dogInfo['breed'];
+        final dogWeight = dogInfo['weight'].toString();
+        final dogDateOfBirth = dogInfo['date_of_birth'];
+        final dogAge = _calculateDogAge(dogDateOfBirth);
+
+        // Update UI with the fetched data
+        setState(() {
+          _dogName = dogName;
+          _dogBreed = dogBreed;
+          _dogWeight = dogWeight;
+          _dogAge = dogAge;
+        });
+      }
+    } catch (e) {
+      // Handle any errors and display a SnackBar with the error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to fetch dog info: ${e.toString()}')),
+      );
     }
   }
 

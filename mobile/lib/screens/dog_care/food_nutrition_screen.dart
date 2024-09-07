@@ -58,17 +58,23 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
             _foodAmountGramsController.text = _foodAmountGrams;
             _dailySnacksController.text = _dailySnacks;
             _notesController.text = _notes;
-
           });
-        } else { // No nutrition data
+        } else {
+          // No nutrition data
           _resetNutritionData();
         }
       }
     } catch (e) {
       print('Error fetching nutrition data: $e');
       _resetNutritionData();
+
+      // Show an error message using ScaffoldMessenger
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching nutrition data. Please try again later.')),
+      );
     }
   }
+
 
   void _resetNutritionData() {
     setState(() {
