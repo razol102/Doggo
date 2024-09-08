@@ -16,11 +16,11 @@ def register_user():
     email_query = "SELECT COUNT(*) FROM users WHERE email = %s"
     phone_number_query = "SELECT COUNT(*) FROM users WHERE phone_number = %s"
     adding_new_user_query = f"""
-                                    INSERT INTO {USERS_TABLE} 
-                                    (email, password, name, date_of_birth, phone_number) VALUES 
-                                    (%(email)s, %(password)s, %(name)s, %(date_of_birth)s, %(phone_number)s)
-                                    RETURNING user_id;
-                                    """
+                                INSERT INTO {USERS_TABLE} 
+                                (email, password, name, date_of_birth, phone_number) VALUES 
+                                (%(email)s, %(password)s, %(name)s, %(date_of_birth)s, %(phone_number)s)
+                                RETURNING user_id;
+                                """
 
     try:
         if not required_data.issubset(data.keys()):
@@ -28,7 +28,6 @@ def register_user():
             raise MissingFieldsError(missing_fields)
 
         db = load_database_config()
-
         data['password'] = generate_password_hash(data['password'])
 
         with psycopg2.connect(**db) as connection:
@@ -62,18 +61,24 @@ def login():
                 cursor.execute("SELECT user_id, password FROM {0} WHERE email = %s".format(USERS_TABLE),
                                (email_from_user,))
                 user_data = cursor.fetchone()
+
                 if user_data is None:
                     raise ValueError("User does not exist.")
-                elif check_password_hash(user_data[1], password_from_user):
+                elif not check_password_hash(user_data[1], password_from_user):
                     raise ValueError("Incorrect password.")
                 else:
                     cursor.execute(logging_in_query, (email_from_user,))
                     connection.commit()
                     user_id = user_data[0]
-                    cursor.execute("SELECT dog_id FROM {0} WHERE user_id = %s".format(USERS_DOGS_TABLE), (user_id,))
-                    dog_id = cursor.fetchone()[0]
+                    cursor.execute(f"SELECT dog_id FROM {USERS_DOGS_TABLE} WHERE user_id = %s", (user_id,))
+                    dog_res = cursor.fetchone()
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
+
+    if dog_res is None:
+        dog_id = None
+    else:
+        dog_id = dog_res[0]
 
     return jsonify({"user_id": user_id, "dog_id": dog_id}), HTTP_200_OK
 
@@ -144,6 +149,7 @@ def update_user_info():
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, USERS_TABLE, USER_ID_COLUMN, user_id)
+                data['password'] = generate_password_hash(data['password'])
                 cursor.execute(update_details_query, data)
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
