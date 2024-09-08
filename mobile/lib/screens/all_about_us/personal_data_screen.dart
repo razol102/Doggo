@@ -5,8 +5,8 @@ import 'package:mobile/common_widgets/date_selector.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:mobile/services/preferences_service.dart';
 import 'package:mobile/services/validation_methods.dart';
-import '../../common_widgets/round_textfield.dart';
-import '../../utils/app_colors.dart';
+import 'package:mobile/common_widgets/round_textfield.dart';
+import 'package:mobile/utils/app_colors.dart';
 
 class PersonalDataScreen extends StatefulWidget {
   static String routeName = "/PersonalDataScreen";
@@ -78,21 +78,6 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
         _userEmail = 'Error loading data';
         _userPhoneNumber = 'Error loading data';
         _userDateOfBirth = null;
-      });
-    }
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _userDateOfBirth ?? DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != _userDateOfBirth) {
-      setState(() {
-        _userDateOfBirth = picked;
-        _dateOfBirthController.text = DateFormat('yyyy-MM-dd').format(picked);
       });
     }
   }

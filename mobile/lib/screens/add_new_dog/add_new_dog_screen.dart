@@ -4,10 +4,10 @@ import 'package:mobile/common_widgets/gender_selector.dart';
 import 'package:mobile/screens/map/set_favorite_place.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:mobile/services/preferences_service.dart';
-import '../../common_widgets/round_gradient_button.dart';
-import '../../common_widgets/round_textfield.dart';
-import '../../services/validation_methods.dart';
-import '../../utils/app_colors.dart';
+import 'package:mobile/common_widgets/round_gradient_button.dart';
+import 'package:mobile/common_widgets/round_textfield.dart';
+import 'package:mobile/services/validation_methods.dart';
+import 'package:mobile/utils/app_colors.dart';
 import 'package:mobile/common_widgets/date_selector.dart';
 
 class AddNewDogScreen extends StatefulWidget {
@@ -97,7 +97,8 @@ class _AddNewDogScreenState extends State<AddNewDogScreen> {
                   style: TextStyle(
                       color: AppColors.blackColor,
                       fontSize: 20,
-                      fontWeight: FontWeight.w700),
+                      fontWeight: FontWeight.w700
+                  ),
                 ),
                 const SizedBox(height: 5),
                 const Text(

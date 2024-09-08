@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/screens/bottom_menu.dart';
-import '../../common_widgets/round_gradient_button.dart';
-import '../../common_widgets/round_textfield.dart';
-import '../../services/http_service.dart';
-import '../../utils/app_colors.dart';
+import 'package:mobile/common_widgets/round_gradient_button.dart';
+import 'package:mobile/common_widgets/round_textfield.dart';
+import 'package:mobile/services/http_service.dart';
+import 'package:mobile/utils/app_colors.dart';
 
 class ConfigureCollarScreen extends StatefulWidget {
   final int dogId;
@@ -66,7 +66,8 @@ class _ConfigureCollarScreenState extends State<ConfigureCollarScreen> {
                   style: TextStyle(
                       color: AppColors.blackColor,
                       fontSize: 20,
-                      fontWeight: FontWeight.w700),
+                      fontWeight: FontWeight.w700
+                  ),
                 ),
                 SizedBox(height: 10),
                 const Text(

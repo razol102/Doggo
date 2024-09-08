@@ -3,10 +3,8 @@ import 'package:mobile/services/preferences_service.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:intl/intl.dart';
-
 import 'package:mobile/utils/app_colors.dart';
-
-import 'add_update_medical_record_screen.dart';
+import 'package:mobile/screens/medical/add_update_medical_record_screen.dart';
 
 class MedicalRecordsScreen extends StatefulWidget {
   static const String routeName = "/MedicalRecordsScreen";
@@ -42,7 +40,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
     } catch (e) {
       print('Failed to load events for month: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading events. Please try again later.')),
+        const SnackBar(content: Text('Error loading events. Please try again later.')),
       );
     }
   }
@@ -62,7 +60,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
     } catch (e) {
       print('Failed to load daily records: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading daily records. Please try again later.')),
+        const SnackBar(content: Text('Error loading daily records. Please try again later.')),
       );
     }
   }
@@ -160,7 +158,7 @@ class _MedicalRecordsScreenState extends State<MedicalRecordsScreen> {
     } catch (e) {
       print('Failed to remove record: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error removing record. Please try again later.')),
+        const SnackBar(content: Text('Error removing record. Please try again later.')),
       );
     }
   }

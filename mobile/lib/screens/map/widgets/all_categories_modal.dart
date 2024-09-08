@@ -12,9 +12,9 @@ class AllCategoriesModal extends StatelessWidget {
       child: Column(
         children: [
           AppBar(
-            title: Text('All Categories'),
+            title: const Text('All Categories'),
             leading: IconButton(
-              icon: Icon(Icons.close),
+              icon: const Icon(Icons.close),
               onPressed: () => Navigator.pop(context),
             ),
           ),
@@ -49,7 +49,7 @@ class AllCategoriesModal extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, size: 50, color: color),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(title, style: TextStyle(color: color, fontWeight: FontWeight.bold)),
           ],
         ),

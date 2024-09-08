@@ -44,8 +44,8 @@ class CategoryButtons extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: ElevatedButton.icon(
         onPressed: onMorePressed,
-        icon: Icon(Icons.more_horiz, color: Colors.blue),
-        label: Text('More'),
+        icon: const Icon(Icons.more_horiz, color: Colors.blue),
+        label: const Text('More'),
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.blue, backgroundColor: Colors.white,
         ),

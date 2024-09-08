@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:mobile/services/preferences_service.dart';
 import 'package:mobile/services/validation_methods.dart';
-
-import '../../common_widgets/round_textfield.dart';
-import '../../utils/app_colors.dart';
+import 'package:mobile/common_widgets/round_textfield.dart';
+import 'package:mobile/utils/app_colors.dart';
 
 class FoodNutritionScreen extends StatefulWidget {
   static const String routeName = "/FoodNutritionScreen";
@@ -68,9 +67,8 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
       print('Error fetching nutrition data: $e');
       _resetNutritionData();
 
-      // Show an error message using ScaffoldMessenger
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching nutrition data. Please try again later.')),
+        const SnackBar(content: Text('Error fetching nutrition data. Please try again later.')),
       );
     }
   }

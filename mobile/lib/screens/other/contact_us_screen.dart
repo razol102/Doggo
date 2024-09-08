@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../utils/app_colors.dart';
+import 'package:mobile/utils/app_colors.dart';
 
 class ContactUsScreen extends StatelessWidget {
   static const String routeName = "/ContactUsScreen";
@@ -80,7 +80,7 @@ class ContactUsScreen extends StatelessWidget {
         title: Text(
           name,
           textAlign: TextAlign.start,
-          style: TextStyle(
+          style: const TextStyle(
             color: AppColors.blackColor,
           ),
         ),

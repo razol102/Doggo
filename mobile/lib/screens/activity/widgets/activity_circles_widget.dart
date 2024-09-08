@@ -45,7 +45,7 @@ class _ActivityCirclesWidgetState extends State<ActivityCirclesWidget> {
           child: Column(
             children: [
               SizedBox(
-                height: 120, // Adjust height as needed
+                height: 120,
                 child: PageView.builder(
                   controller: _pageController,
                   itemCount: (activities.length / 3).ceil(), // Number of pages

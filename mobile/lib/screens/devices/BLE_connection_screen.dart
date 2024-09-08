@@ -63,7 +63,7 @@ class _BleConnectionScreenState extends State<BleConnectionScreen> with WidgetsB
           _updateConnectionStatus();
         },
             (int stepCount) {
-          // Handle step count update if needed
+          // empty handle
         },
 
           () {
@@ -73,7 +73,6 @@ class _BleConnectionScreenState extends State<BleConnectionScreen> with WidgetsB
             });
             _bleService.stopScan(); // Stop any ongoing scans
             _bleService.disconnect(); // Ensure the device is properly disconnected
-            // Optionally, show a notification or alert dialog to the user
             _showDisconnectedDialog();
           }
       );
@@ -85,14 +84,14 @@ class _BleConnectionScreenState extends State<BleConnectionScreen> with WidgetsB
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Device Disconnected'),
-          content: Text('The BLE device has been disconnected.'),
+          title: const Text('Device Disconnected'),
+          content: const Text('The BLE device has been disconnected.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -113,27 +112,27 @@ class _BleConnectionScreenState extends State<BleConnectionScreen> with WidgetsB
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('BLE Screen'),
+        title: const Text('BLE Screen'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(_statusMessage, style: TextStyle(fontSize: 18)),
-            SizedBox(height: 20),
+            Text(_statusMessage, style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _bleService.isConnected ? null : _startScan,
               child: Text(_bleService.isConnected ? 'Connected' : 'Scan and Connect'),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: _bleService.isConnected ? _disconnectFromDevice : null,
-              child: Text('Disconnect'),
+              child: const Text('Disconnect'),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _updateConnectionStatus,
-              child: Text('Refresh Connection Status'),
+              child: const Text('Refresh Connection Status'),
             ),
           ],
         ),

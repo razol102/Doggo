@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/utils/app_colors.dart';
-import '../../common_widgets/round_gradient_button.dart';
-import '../../services/http_service.dart';
+import 'package:mobile/common_widgets/round_gradient_button.dart';
+import 'package:mobile/services/http_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StartNewActivityScreen extends StatefulWidget {
@@ -111,6 +111,71 @@ class _StartNewActivityScreenState extends State<StartNewActivityScreen> {
     );
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     backgroundColor: AppColors.whiteColor,
+  //     appBar: AppBar(
+  //       backgroundColor: AppColors.whiteColor,
+  //       centerTitle: true,
+  //       elevation: 0,
+  //       title: const Text(
+  //         "Activity Details",
+  //         style: TextStyle(
+  //           color: AppColors.blackColor,
+  //           fontSize: 16,
+  //           fontWeight: FontWeight.bold,
+  //         ),
+  //       ),
+  //     ),
+  //     body: _isLoading
+  //         ? const Center(child: CircularProgressIndicator())
+  //         : Padding(
+  //       padding: const EdgeInsets.all(16.0),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.center,
+  //         children: [
+  //           Container(
+  //             width: double.infinity,
+  //             height: 250,
+  //             decoration: BoxDecoration(
+  //               borderRadius: BorderRadius.circular(10),
+  //             ),
+  //             child: ClipRRect(
+  //               borderRadius: BorderRadius.circular(10),
+  //               child: Image.asset(
+  //                 'assets/images/${widget.activityType}_background.png',
+  //                 fit: BoxFit.cover,
+  //               ),
+  //             ),
+  //           ),
+  //           const SizedBox(height: 20),
+  //           Text(
+  //             widget.activityType == "other"
+  //                 ? "Get ready for your activity!"
+  //                 : "Get ready for your ${widget.activityType}!",
+  //             style: const TextStyle(
+  //               color: Colors.black,
+  //               fontSize: 18,
+  //               fontWeight: FontWeight.bold,
+  //             ),
+  //           ),
+  //           const SizedBox(height: 20),
+  //           RoundGradientButton(
+  //             title: "Start",
+  //             onPressed: _activityId == null ? _startActivity : () {}, // Disable start if activity is already running
+  //           ),
+  //           const SizedBox(height: 10),
+  //           RoundGradientButton(
+  //             title: "End",
+  //             onPressed: _activityId != null ? _endActivity : () {}, // Disable end if no activity is running
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -161,18 +226,20 @@ class _StartNewActivityScreenState extends State<StartNewActivityScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            RoundGradientButton(
-              title: "Start",
-              onPressed: _activityId == null ? _startActivity : () {}, // Disable start if activity is already running
-            ),
-            const SizedBox(height: 10),
-            RoundGradientButton(
-              title: "End",
-              onPressed: _activityId != null ? _endActivity : () {}, // Disable end if no activity is running
-            ),
+            if (_activityId == null) // Show "Start" button when no activity is running
+              RoundGradientButton(
+                title: "Start",
+                onPressed: _startActivity,
+              ),
+            if (_activityId != null) // Show "End" button when an activity is running
+              RoundGradientButton(
+                title: "End",
+                onPressed: _endActivity,
+              ),
           ],
         ),
       ),
     );
   }
+
 }

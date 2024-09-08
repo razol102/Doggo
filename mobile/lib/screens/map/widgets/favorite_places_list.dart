@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/screens/map/set_favorite_place.dart';
 import 'package:mobile/services/http_service.dart';
-
-import '../../../main.dart';
+import 'package:mobile/main.dart';
 
 class FavoritePlacesList extends StatefulWidget {
   final int dogId;
@@ -95,7 +94,7 @@ class _FavoritePlacesListState extends State<FavoritePlacesList> with RouteAware
             itemBuilder: (context, index) {
               final place = favoritePlaces[index];
               return ListTile(
-                leading: Icon(Icons.favorite, color: Colors.red),
+                leading: const Icon(Icons.favorite, color: Colors.red),
                 title: Text(place['place_name']),
                 subtitle: place['address'].isNotEmpty ? Text(place['address']) : null,
                 onTap: () {

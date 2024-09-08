@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/screens/activity/widgets/activities_goals_list.dart';
 import 'package:mobile/services/http_service.dart';
-
-import '../../utils/app_colors.dart';
+import 'package:mobile/utils/app_colors.dart';
 
 class ActivitiesGoalsHistoryScreen extends StatefulWidget {
   final int dogId;
-  final String type; // New parameter for type
+  final String type;
 
   const ActivitiesGoalsHistoryScreen({
     super.key,
     required this.dogId,
-    required this.type, // Accept type from outside
+    required this.type,
   });
 
   @override
@@ -167,7 +166,7 @@ class _ActivitiesGoalsHistoryScreenState extends State<ActivitiesGoalsHistoryScr
                 ),
               ),
             Container(
-              color: Colors.white.withOpacity(0.5), // Semi-transparent white for bottom section
+              color: Colors.white.withOpacity(0.5),
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

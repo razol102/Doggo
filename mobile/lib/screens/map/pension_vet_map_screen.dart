@@ -136,7 +136,7 @@ class _PensionVetMapScreenState extends State<PensionVetMapScreen> {
       _markers = [
         Marker(
           point: LatLng(_latitude!, _longitude!),
-          child: Icon(Icons.location_pin, color: Colors.red, size: 40),
+          child: const Icon(Icons.location_pin, color: Colors.red, size: 40),
           width: 40,
           height: 40,
         ),

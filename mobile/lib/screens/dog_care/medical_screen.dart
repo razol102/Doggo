@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/common_widgets/setting_row.dart';
-import '../../utils/app_colors.dart';
-import '../map/pension_vet_map_screen.dart';
-import '../medical/medical_records_screen.dart';
+import 'package:mobile/utils/app_colors.dart';
+import 'package:mobile/screens/map/pension_vet_map_screen.dart';
+import 'package:mobile/screens/medical/medical_records_screen.dart';
 
 class MedicalScreen extends StatefulWidget {
   static String routeName = "/MedicalScreen";
@@ -17,7 +17,7 @@ class _MedicalScreenState extends State<MedicalScreen> {
 
   List medicalArr = [
     {"image": "assets/icons/medical_icon.png", "name": "Veterinarian Information", "tag": "1"},
-    {"image": "assets/icons/medical_icon.png", "name": "Vaccinations", "tag": "2"},
+    // {"image": "assets/icons/medical_icon.png", "name": "Vaccinations", "tag": "2"},
     {"image": "assets/icons/medical_icon.png", "name": "Medical Records", "tag": "3"},
   ];
 

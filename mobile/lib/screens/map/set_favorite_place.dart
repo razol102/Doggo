@@ -36,8 +36,6 @@ class _SetFavoritePlaceState extends State<SetFavoritePlace> {
   LatLng? _selectedPosition;
   final TextEditingController _placeNameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  // final TextEditingController _latitudeController = TextEditingController();
-  // final TextEditingController _longitudeController = TextEditingController();
 
   List<Marker> _markers = [];
 

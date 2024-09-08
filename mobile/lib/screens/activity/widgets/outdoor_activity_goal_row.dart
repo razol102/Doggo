@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile/utils/app_colors.dart';
 import 'package:simple_animation_progress_bar/simple_animation_progress_bar.dart';
 import 'package:mobile/services/http_service.dart';
-import '../add_update_goal_template.dart';
-import '../start_new_activity.dart';
+import 'package:mobile/screens/activity/add_update_goal_template.dart';
+import 'package:mobile/screens/activity/start_new_activity.dart';
 
 class OutdoorActivityGoalRow extends StatelessWidget {
   final Map item;
@@ -74,7 +74,6 @@ class OutdoorActivityGoalRow extends StatelessWidget {
                   Text("Target Value: ${details["target_value"]}"),
                   Text("Start Date: ${details["start_date"]}"),
                   Text("End Date: ${details["end_date"]}"),
-                  Text("Done: ${details["done"] ? 'Yes' : 'No'}"),
                 ] else if (type == "template") ...[
                   Text("Category: ${details["category"]}"),
                   Text("Target Value: ${details["target_value"]}"),

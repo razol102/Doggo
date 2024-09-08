@@ -53,7 +53,7 @@ class MapView extends StatelessWidget {
           left: 10,
           right: 10,
           child: PlaceSearchBar(onSearch: onSearch),
-        ): SizedBox(),
+        ): const SizedBox(),
         Positioned(
           bottom: 16,
           right: 16,

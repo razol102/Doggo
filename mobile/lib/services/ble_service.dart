@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
-
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:mobile/services/preferences_service.dart';
-import 'http_service.dart';
+import 'package:mobile/services/http_service.dart';
 
 class BleService {
   static final BleService _instance = BleService._internal();
@@ -127,7 +126,7 @@ class BleService {
 
   void _startPeriodicUpdates() {
     _timer?.cancel();
-    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       if (_deviceId.isNotEmpty && isConnected) {
         final batteryCharacteristic = QualifiedCharacteristic(
           deviceId: _deviceId,

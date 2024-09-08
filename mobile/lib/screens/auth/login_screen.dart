@@ -1,13 +1,12 @@
-
 import 'package:flutter/material.dart';
-import '../../services/preferences_service.dart';
-import '../bottom_menu.dart';
-import 'forgot_password_screen.dart';
-import 'signup_step1_screen.dart';
-import '../../common_widgets/round_button.dart';
-import '../../utils/app_colors.dart';
-import '../../../common_widgets/round_textfield.dart';
-import '../../services/http_service.dart';
+import 'package:mobile/services/preferences_service.dart';
+import 'package:mobile/screens/bottom_menu.dart';
+import 'package:mobile/screens/auth/forgot_password_screen.dart';
+import 'package:mobile/screens/auth/signup_step1_screen.dart';
+import 'package:mobile/common_widgets/round_button.dart';
+import 'package:mobile/utils/app_colors.dart';
+import 'package:mobile/common_widgets/round_textfield.dart';
+import 'package:mobile/services/http_service.dart';
 
 class LoginScreen extends StatefulWidget {
   static String routeName = "/LoginScreen";
@@ -117,6 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             SizedBox(height: constraints.maxHeight * 0.01),
+                            // Forgot password -
                             // Align(
                             //   alignment: Alignment.centerRight,
                             //   child: GestureDetector(
@@ -146,6 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               titleColor: AppColors.secondaryColor1,
                             ),
                             SizedBox(height: constraints.maxHeight * 0.04),
+                            // Login with facebook / google
                             // Row(
                             //   children: [
                             //     Expanded(

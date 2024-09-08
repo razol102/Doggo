@@ -1,8 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../../utils/app_colors.dart';
-import '../../../services/http_service.dart'; // Assuming this is where the HttpService is located
+import 'package:mobile/utils/app_colors.dart';
+import 'package:mobile/services/http_service.dart';
 
 class BcsPieChart extends StatefulWidget {
   final int dogId;  // Pass the dogId to fetch the BCS
@@ -26,7 +25,6 @@ class _BcsPieChartState extends State<BcsPieChart> {
   Future<void> _fetchBcsScore() async {
     try {
       int? fetchedScore = await HttpService.getBCS(widget.dogId);
-      // int fetchedScore = 7;
       if (fetchedScore != null) {
         setState(() {
           currentScore = fetchedScore;
@@ -120,7 +118,7 @@ class _BcsPieChartState extends State<BcsPieChart> {
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: isLoading || currentScore == null
-                        ? CircularProgressIndicator(
+                        ? const CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(
                           AppColors.whiteColor),
                     )

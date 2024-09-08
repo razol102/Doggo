@@ -6,9 +6,8 @@ import 'package:mobile/common_widgets/gender_selector.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:mobile/services/preferences_service.dart';
 import 'package:mobile/services/validation_methods.dart';
-
-import '../../common_widgets/round_textfield.dart';
-import '../../utils/app_colors.dart';
+import 'package:mobile/common_widgets/round_textfield.dart';
+import 'package:mobile/utils/app_colors.dart';
 
 class DogDataScreen extends StatefulWidget {
   static const String routeName = "/DogDataScreen";

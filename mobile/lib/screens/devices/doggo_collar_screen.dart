@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:mobile/services/preferences_service.dart';
-import '../../common_widgets/round_textfield.dart';
-import '../../utils/app_colors.dart';
+import 'package:mobile/common_widgets/round_textfield.dart';
+import 'package:mobile/utils/app_colors.dart';
 import 'package:intl/intl.dart';
 
 class DoggoCollarScreen extends StatefulWidget {
@@ -149,7 +149,8 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
                   style: TextStyle(
                       color: AppColors.blackColor,
                       fontSize: 20,
-                      fontWeight: FontWeight.w700),
+                      fontWeight: FontWeight.w700
+                  ),
                 ),
                 const SizedBox(height: 10),
                 const SizedBox(height: 25),
@@ -176,7 +177,7 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
                 const SizedBox(height: 25),
                 Text(
                   'Last update: $_lastUpdateTime',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.blackColor,
                     fontSize: 11,
                   ),

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:mobile/screens/auth/login_screen.dart';
 import 'package:mobile/services/validation_methods.dart';
-import 'signup_step2_screen.dart';
-import '../../common_widgets/round_button.dart';
-import '../../utils/app_colors.dart';
-import '../../common_widgets/round_textfield.dart';
+import 'package:mobile/screens/auth/signup_step2_screen.dart';
+import 'package:mobile/common_widgets/round_button.dart';
+import 'package:mobile/utils/app_colors.dart';
+import 'package:mobile/common_widgets/round_textfield.dart';
 import 'package:mobile/common_widgets/date_selector.dart';
 
 class SignUpStep1Screen extends StatefulWidget {

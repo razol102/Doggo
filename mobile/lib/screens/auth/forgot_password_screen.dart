@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../common_widgets/round_button.dart';
-import '../../utils/app_colors.dart';
-import '../../common_widgets/round_textfield.dart';
+import 'package:mobile/common_widgets/round_button.dart';
+import 'package:mobile/utils/app_colors.dart';
+import 'package:mobile/common_widgets/round_textfield.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   static String routeName = "/ForgotPasswordScreen";

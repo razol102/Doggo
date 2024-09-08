@@ -1,13 +1,12 @@
 import 'dart:io';
-
 import 'package:mobile/screens/home/home_screen.dart';
 import 'package:mobile/screens/profile/profile_screen.dart';
 import 'package:mobile/utils/app_colors.dart';
 import 'package:flutter/material.dart';
-
-import 'activity/activity_screen.dart';
-import 'map/map_screen.dart';
+import 'package:mobile/screens/activity/activity_screen.dart';
+import 'package:mobile/screens/map/map_screen.dart';
 import 'package:mobile/screens/social_network/social_network_screen.dart';
+
 class BottomMenu extends StatefulWidget {
   static String routeName = "/BottomMenu";
 

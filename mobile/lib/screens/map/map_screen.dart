@@ -4,11 +4,11 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mobile/utils/app_colors.dart';
 import 'package:mobile/screens/map/widgets/map_view.dart';
-import '../../services/preferences_service.dart';
-import 'widgets/category_buttons.dart';
-import 'widgets/all_categories_modal.dart';
-import 'widgets/favorite_places_list.dart';
-import '../../services/http_service.dart';
+import 'package:mobile/services/preferences_service.dart';
+import 'package:mobile/screens/map/widgets/category_buttons.dart';
+import 'package:mobile/screens/map/widgets/all_categories_modal.dart';
+import 'package:mobile/screens/map/widgets/favorite_places_list.dart';
+import 'package:mobile/services/http_service.dart';
 
 class MapScreen extends StatefulWidget {
   static String routeName = "/MapScreen";
@@ -78,12 +78,12 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _updateUserMarker() {
-    _markers.removeWhere((marker) => marker.key == Key('userLocation'));
+    _markers.removeWhere((marker) => marker.key == const Key('userLocation'));
     _markers.add(
       Marker(
-        key: Key('userLocation'),
+        key: const Key('userLocation'),
         point: _currentPosition,
-        child: Icon(Icons.my_location, color: AppColors.secondaryColor1, size: 20),
+        child: const Icon(Icons.my_location, color: AppColors.secondaryColor1, size: 20),
       ),
     );
   }
@@ -95,7 +95,7 @@ class _MapScreenState extends State<MapScreen> {
       }
       _searchMarker = Marker(
         point: position,
-        child: Icon(Icons.place, color: AppColors.secondaryColor1, size: 40),
+        child: const Icon(Icons.place, color: AppColors.secondaryColor1, size: 40),
       );
       _markers.add(_searchMarker!);
       _mapController.move(position, 14.0);
@@ -159,7 +159,7 @@ class _MapScreenState extends State<MapScreen> {
   void _clearMarkers() {
     setState(() {
       _markers.clear();
-      _updateUserMarker(); // Optionally keep the user location marker
+      _updateUserMarker();
     });
   }
 
@@ -176,7 +176,7 @@ class _MapScreenState extends State<MapScreen> {
               currentPosition: _currentPosition,
               onUpdateLocation: _updateUserLocation,
               onSearch: _handleSearch,
-              onClearMarkers: _clearMarkers, // Pass the callback here
+              onClearMarkers: _clearMarkers,
             ),
           ),
           Expanded(
