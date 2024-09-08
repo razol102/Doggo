@@ -1,5 +1,6 @@
 import psycopg2
 from flask import Blueprint, request, jsonify
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from src.utils.config import load_database_config
 from src.utils.helpers import *
@@ -12,20 +13,23 @@ def register_user():
     data = request.json
     required_data = {"email", "password", "name", "date_of_birth", "phone_number"}
 
+    email_query = "SELECT COUNT(*) FROM users WHERE email = %s"
+    phone_number_query = "SELECT COUNT(*) FROM users WHERE phone_number = %s"
+    adding_new_user_query = f"""
+                                    INSERT INTO {USERS_TABLE} 
+                                    (email, password, name, date_of_birth, phone_number) VALUES 
+                                    (%(email)s, %(password)s, %(name)s, %(date_of_birth)s, %(phone_number)s)
+                                    RETURNING user_id;
+                                    """
+
     try:
         if not required_data.issubset(data.keys()):
             missing_fields = required_data - data.keys()
             raise MissingFieldsError(missing_fields)
-        # need to check all data which can't be Null...
+
         db = load_database_config()
-        email_query = "SELECT COUNT(*) FROM users WHERE email = %s"
-        phone_number_query = "SELECT COUNT(*) FROM users WHERE phone_number = %s"
-        adding_new_user_query = """
-                                INSERT INTO {0} 
-                                (email, password, name, date_of_birth, phone_number) VALUES 
-                                (%(email)s, %(password)s, %(name)s, %(date_of_birth)s, %(phone_number)s)
-                                RETURNING user_id;
-                                """.format(USERS_TABLE)
+
+        data['password'] = generate_password_hash(data['password'])
 
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
@@ -60,7 +64,7 @@ def login():
                 user_data = cursor.fetchone()
                 if user_data is None:
                     raise ValueError("User does not exist.")
-                elif user_data[1] != password_from_user:
+                elif check_password_hash(user_data[1], password_from_user):
                     raise ValueError("Incorrect password.")
                 else:
                     cursor.execute(logging_in_query, (email_from_user,))
@@ -71,8 +75,6 @@ def login():
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    print("{0} is logged in!".format(user_id))
-    print("Dog id is: {0}".format(dog_id))
     return jsonify({"user_id": user_id, "dog_id": dog_id}), HTTP_200_OK
 
 
