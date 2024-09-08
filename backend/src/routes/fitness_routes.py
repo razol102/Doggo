@@ -119,7 +119,6 @@ def get_dog_bcs():
                                     FROM {DOGS_TABLE} 
                                     WHERE {DOG_ID_COLUMN} = %s;
                                     """
-
     try:
         db = load_database_config()
 
