@@ -422,12 +422,14 @@ def create_goal(cursor, template_data, template_id):
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
         """
 
-    goal_end_date = get_end_date_by_frequency(template_data['frequency'])
-
     initial_fitness = get_initial_fitness_for_goal(cursor, template_data['dog_id'], template_data['frequency'],
                                                    template_data['category'], template_data['target_value'])
+
+    template_data['target_value'] = type(initial_fitness)(template_data['target_value'])
+    initial_fitness = min(initial_fitness, template_data['target_value'])
     # If the dog passed already the target_value --> the goal is completed already.
     is_completed = initial_fitness == template_data['target_value']
+    goal_end_date = get_end_date_by_frequency(template_data['frequency'])
 
     cursor.execute(insert_goal_query, (template_data['dog_id'], goal_end_date, initial_fitness,
                                        template_data['target_value'], template_data['category'], template_id,
