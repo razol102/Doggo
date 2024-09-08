@@ -14,8 +14,6 @@
     Doggo: Mobile Application for Dog Owners
     <br />
     <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the project design »</strong></a>
-    <br />
-    <br />
     <a href="https://qr-code.click/i/p/66db5a8daeaf1">View Demo</a>
   </p>
 </div>
@@ -55,16 +53,9 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
+Doggo is a mobile application that helps dog owners effortlessly monitor and manage their pet's health, activity, and well-being. Doggo empowers the owners to stay connected with their furry friends like never before. Whether you're tracking your dog's daily exercise, planning outdoor adventures, or scheduling important vet appointments. Doggo provides feedback, motivation, and rewards to dogs for their fitness activities and achievements.
 
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should implement DRY principles to the rest of your life :smile:
-
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
-
-Use the `BLANK_README.md` to get started.
+Doggo comes with a compact attachment that easily fits onto your dog's collar or harness, tracking their activity and seamlessly communicating with the mobile app.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
