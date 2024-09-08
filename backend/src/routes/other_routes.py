@@ -9,6 +9,18 @@ other_routes = Blueprint('other_routes', __name__)
 
 @other_routes.route("/", methods=['GET'])
 def health_check():
+    # try:
+    #     db = load_database_config()
+    #
+    #     with psycopg2.connect(**db) as connection:
+    #         with connection.cursor() as cursor:
+    #             res_check = get_initial_fitness_for_goal(cursor, 101, 'weekly', 'steps', 2000)
+    #             print(type(res_check))
+    # except (Exception, ValueError, psycopg2.DatabaseError) as error:
+    #     return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
+    #
+    # return jsonify(res_check), HTTP_200_OK
+
     db = load_database_config()
     print(db)
     print("checking....")

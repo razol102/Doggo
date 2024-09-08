@@ -52,7 +52,7 @@ def get_dog_goal_template():
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    if template_res["category"] != "distance":
+    if template_res["category"] != DISTANCE_CATEGORY:
         template_res["target_value"] = int(template_res["target_value"])
 
     return jsonify(template_res), HTTP_200_OK
@@ -87,7 +87,7 @@ def get_dog_goals_list():
         return "", HTTP_204_STATUS_NO_CONTENT
     else:
         for goal_dict in list_of_goal_dicts:
-            set_goals_data_by_category(goal_dict)
+            set_goal_data_by_category(goal_dict)
 
     return jsonify(list_of_goal_dicts), HTTP_200_OK
 
@@ -114,7 +114,7 @@ def get_dog_goal_log():
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    set_goals_data_by_category(goal_res)
+    set_goal_data_by_category(goal_res)
 
     return goal_res, HTTP_200_OK
 

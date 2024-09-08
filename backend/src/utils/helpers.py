@@ -229,18 +229,6 @@ def get_dog_weight_and_height(cursor, dog_id):
     return cursor.fetchone()
 
 
-def get_dog_weight_and_breed(cursor, dog_id):
-    get_dog_weight_query = f"""
-        SELECT {WEIGHT_COLUMN}, breed
-        FROM {DOGS_TABLE}
-        WHERE {DOG_ID_COLUMN} = %s;
-        """
-
-    cursor.execute(get_dog_weight_query, (dog_id, ))
-
-    return cursor.fetchone()
-
-
 def update_dog_activity(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db):
 
     add_fitness_data_to_active_activity_query = f"""
@@ -406,8 +394,8 @@ def delete_user_dogs(cursor, user_id):
         cursor.execute(delete_dog_query, (dog_id,))
 
 
-def set_goals_data_by_category(goal):
-    if goal["category"] != "distance":
+def set_goal_data_by_category(goal):
+    if goal["category"] != DISTANCE_CATEGORY:
         goal["current_value"] = int(goal["current_value"])
         goal["target_value"] = int(goal["target_value"])
     else:
@@ -428,29 +416,108 @@ def get_day_record_map(cursor, month, year):
 
 
 def create_goal(cursor, template_data, template_id):
-    # check if the current is already even or higher than the target.
-    # sum days from last week/month (according to frequency)
-    frequency = template_data['frequency']
-    # if category = 'frequency'
-    today_fitness = 0
-    get_current_fitness_query = f"""
-        SELECT {template_data['category']} FROM {FITNESS_TABLE}
-        WHERE {DOG_ID_COLUMN} = %s AND {FITNESS_DATE_COLUMN} = CURRENT_DATE
-        """
     insert_goal_query = f"""
-        INSERT INTO {GOALS_TABLE} (dog_id, end_date, current_value, target_value, category, template_id)
-        VALUES (%s, %s, %s, %s, %s, %s);
+        INSERT INTO {GOALS_TABLE} (dog_id, end_date, current_value, target_value, category, template_id, 
+        is_finished, done)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
         """
 
+    initial_fitness = get_initial_fitness_for_goal(cursor, template_data['dog_id'], template_data['frequency'],
+                                                   template_data['category'], template_data['target_value'])
+
+    template_data['target_value'] = type(initial_fitness)(template_data['target_value'])
+    initial_fitness = min(initial_fitness, template_data['target_value'])
+    # If the dog passed already the target_value --> the goal is completed already.
+    is_completed = initial_fitness == template_data['target_value']
     goal_end_date = get_end_date_by_frequency(template_data['frequency'])
-    cursor.execute(get_current_fitness_query, (template_data['dog_id'], ))
+
+    cursor.execute(insert_goal_query, (template_data['dog_id'], goal_end_date, initial_fitness,
+                                       template_data['target_value'], template_data['category'], template_id,
+                                       is_completed, is_completed))
+
+
+def get_initial_fitness_for_goal(cursor, dog_id, frequency, category, target_value):
+    if frequency == DAILY_FREQUENCY:
+        initial_fitness = get_today_fitness_category(cursor, dog_id, category)
+    elif frequency == WEEKLY_FREQUENCY:
+        initial_fitness = get_weekly_fitness_category(cursor, dog_id, category)
+    else:   # frequency == MONTHLY_FREQUENCY
+        initial_fitness = get_monthly_fitness_category(cursor, dog_id, category)
+
+    if category != DISTANCE_CATEGORY:
+        initial_fitness = int(initial_fitness)
+    else:
+        initial_fitness = round(initial_fitness, 2)
+
+    print(initial_fitness)
+
+    return initial_fitness
+
+
+def get_today_fitness_category(cursor, dog_id, category):
+    get_current_fitness_category_query = f"""
+            SELECT {category} FROM {FITNESS_TABLE}
+            WHERE {DOG_ID_COLUMN} = %s AND {FITNESS_DATE_COLUMN} = CURRENT_DATE
+            """
+    cursor.execute(get_current_fitness_category_query, (dog_id,))
     query_res = cursor.fetchone()
 
     if query_res is not None:
-        today_fitness = query_res[0]
+        daily_fitness = query_res[0]
+    else:
+        daily_fitness = 0
 
-    cursor.execute(insert_goal_query, (template_data['dog_id'], goal_end_date, today_fitness,
-                                       template_data['target_value'], template_data['category'], template_id))
+    return daily_fitness
+
+
+def get_weekly_fitness_category(cursor, dog_id, category):
+    daily_fitness = 0
+
+    # Checks if today is Sunday (DOW stands for Day of Week, where Sunday is 0).
+    get_weekly_fitness_category_query = f"""
+    SELECT {category} FROM {FITNESS_TABLE}
+    WHERE {DOG_ID_COLUMN} = %s
+    AND {FITNESS_DATE_COLUMN} >= 
+        CASE
+            WHEN EXTRACT(DOW FROM CURRENT_DATE) = 0 
+            THEN CURRENT_DATE
+            ELSE CURRENT_DATE - EXTRACT(DOW FROM CURRENT_DATE) * INTERVAL '1 day'
+        END
+    AND {FITNESS_DATE_COLUMN} <= 
+        CASE
+            WHEN EXTRACT(DOW FROM CURRENT_DATE) = 0
+            THEN CURRENT_DATE
+            ELSE CURRENT_DATE - INTERVAL '1 day'
+        END
+    """
+
+    cursor.execute(get_weekly_fitness_category_query, (dog_id,))
+    fitness_window = cursor.fetchall()
+    print(fitness_window)
+    for day in fitness_window:
+        print(day[0])
+        daily_fitness += day[0]
+
+    return daily_fitness
+
+
+def get_monthly_fitness_category(cursor, dog_id, category):
+    daily_fitness = 0
+
+    get_monthly_fitness_category_query = f"""
+        SELECT {category} FROM {FITNESS_TABLE}
+        WHERE {DOG_ID_COLUMN} = %s
+        AND {FITNESS_DATE_COLUMN} >= date_trunc('month', CURRENT_DATE)
+        """
+
+    cursor.execute(get_monthly_fitness_category_query, (dog_id,))
+    fitness_window = cursor.fetchall()
+
+    for day in fitness_window:
+        print(day[0])
+        daily_fitness += day[0]
+
+    return daily_fitness
 
 
 def get_end_date_by_frequency(frequency):
@@ -460,15 +527,12 @@ def get_end_date_by_frequency(frequency):
     if frequency == "daily":
         end_date = today + timedelta(days=1)
     elif frequency == "weekly":
-        if today.weekday() == 6:  # If today is Sunday (Sunday is day 6)
+        if today.weekday() == SUNDAY:  # If today is Sunday (Sunday is day 6)
             end_date = today + timedelta(7)  # Set end_date to next Sunday
         else:
             end_date = today + timedelta(6 - today.weekday())  # Set to the upcoming Sunday
     elif frequency == "monthly":
-        if today.month == DECEMBER:
-            end_date = today.replace(day=1, month=1, year=today.year + 1)
-        else:
-            end_date = today.replace(day=1, month=today.month + 1)
+        end_date = get_beginning_next_month(today)
 
     return end_date
 
@@ -497,3 +561,12 @@ def delete_previous_template_if_exists(cursor, frequency, category):
 
     if query_res is not None:
         delete_goal_template(cursor, query_res[0])
+
+
+def get_beginning_next_month(current_date):
+    if current_date.month == DECEMBER:
+        beginning_next_month = current_date.replace(day=1, month=1, year=current_date.year + 1)
+    else:
+        beginning_next_month = current_date.replace(day=1, month=current_date.month + 1)
+
+    return beginning_next_month
