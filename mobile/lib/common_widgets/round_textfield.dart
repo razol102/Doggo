@@ -10,6 +10,7 @@ class RoundTextField extends StatelessWidget {
   final Widget? rightIcon;
   final bool readOnly;
   final String? errorText;
+  final String? title;
 
   const RoundTextField({
     super.key,
@@ -21,6 +22,7 @@ class RoundTextField extends StatelessWidget {
     this.rightIcon,
     this.readOnly = false,
     this.errorText,
+    this.title
   });
 
   @override
@@ -28,6 +30,16 @@ class RoundTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (title != null)
+          Padding(padding: const EdgeInsets.only(left: 12),
+          child: Text(
+            title!,
+            style: const TextStyle(
+              color: AppColors.grayColor,
+              fontSize: 12,
+              ),
+            ),
+          ),
         Container(
           decoration: BoxDecoration(
             color: AppColors.lightGrayColor,

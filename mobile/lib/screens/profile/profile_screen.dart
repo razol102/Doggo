@@ -33,7 +33,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
   String? _dogBreed;
   String? _dogWeight;
   String? _dogAge;
-  int? _dogId;
+  String? _dogDescription;
   String? _dogImagePath = "assets/images/dog_profile.png";
 
   List devicesArr = [
@@ -62,7 +62,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
       final dogId = await PreferencesService.getDogId();
       if (dogId != null) {
         setState(() {
-          _dogId = dogId;
           _dogImagePath = _getImagePath(dogId); // Fetch the image path based on the dogId
         });
         _fetchDogInfo();
@@ -166,6 +165,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
         final dogBreed = dogInfo['breed'];
         final dogWeight = dogInfo['weight'].toString();
         final dogDateOfBirth = dogInfo['date_of_birth'];
+        final dogDescription = dogInfo['description'];
         final dogAge = _calculateDogAge(dogDateOfBirth);
 
         // Update UI with the fetched data
@@ -174,6 +174,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
           _dogBreed = dogBreed;
           _dogWeight = dogWeight;
           _dogAge = dogAge;
+          _dogDescription = dogDescription;
         });
       }
     } catch (e) {
@@ -293,9 +294,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const Text(
-                          "My best friend!",
-                          style: TextStyle(
+                        Text(
+                          _dogDescription ?? "",
+                          style: const TextStyle(
                             color: AppColors.grayColor,
                             fontSize: 12,
                           ),

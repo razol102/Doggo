@@ -163,9 +163,9 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
               children: [
                 Image.asset(
                   "assets/images/nutrition_background.png",
-                  width: media.width * 0.7,
+                  width: media.width * 0.5,
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 5),
                 const Text(
                   "Dog Nutrition Info",
                   style: TextStyle(
@@ -174,8 +174,9 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 15),
                 RoundTextField(
+                  title: "Food Brand",
                   textEditingController: _foodBrandController,
                   hintText: (_foodBrand == 'No nutrition information available' && _isEditing) ? "Food brand" : _foodBrand,
                   icon: "assets/icons/food_brand_icon.png",
@@ -185,6 +186,7 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
+                  title: "Food Type",
                   textEditingController: _foodTypeController,
                   hintText: (_foodType == 'No nutrition information available' && _isEditing) ? "Food type" : _foodType,
                   icon: "assets/icons/food_type_icon.png",
@@ -194,6 +196,7 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
+                  title: "Weight (grams)",
                   textEditingController: _foodAmountGramsController,
                   hintText: (_foodAmountGrams == 'No nutrition information available' && _isEditing) ? "Food amount (grams)" : _foodAmountGrams,
                     icon: "assets/icons/food_amount_icon.png",
@@ -203,6 +206,7 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
+                  title: "Daily Snacks",
                   textEditingController: _dailySnacksController,
                   hintText: _dailySnacks.isEmpty ? "0" : _dailySnacks,
                   icon: "assets/icons/snacks_icon.png",
@@ -212,6 +216,7 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
+                  title: "Notes",
                   textEditingController: _notesController,
                   hintText: _notes.isEmpty ? "-" : _notes,
                   icon: "assets/icons/notes_icon.png",

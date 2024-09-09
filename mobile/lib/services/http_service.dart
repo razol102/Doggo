@@ -83,7 +83,8 @@ class HttpService {
     required String dateOfBirth,
     required double weight,
     required double height,
-    required int userId
+    required int userId,
+    required String description
   }) async {
     final url = Uri.parse('$baseUrl/api/dog/add');
     final response = await http.post(
@@ -96,7 +97,8 @@ class HttpService {
         'date_of_birth': dateOfBirth,
         'weight': weight,
         'height': height,
-        'user_id': userId
+        'user_id': userId,
+        'description': description
       }),
     );
 
@@ -182,7 +184,8 @@ class HttpService {
     }
   }
 
-  static Future<void> updateDogProfile(int dogId, String name, String breed, String gender, String dateOfBirth, double weight, int height) async {
+  static Future<void> updateDogProfile(int dogId, String name, String breed, String gender, String dateOfBirth, double weight, int height, String description) async {
+    print(dateOfBirth);
     final url = Uri.parse('$baseUrl/api/dog/profile');
     final response = await http.put(
       url,
@@ -195,7 +198,8 @@ class HttpService {
         'date_of_birth': dateOfBirth,
         'weight': weight,
         'height': height,
-        'image': ""
+        'image': "",
+        'description': description
       }),
     );
 
@@ -208,6 +212,18 @@ class HttpService {
 
   }
 
+  static Future<bool> isValidPassword (int userId, String password) async {
+    final url = Uri.parse('$baseUrl/api/user/check_password?user_id=$userId&password=$password');
+    final response = await http.get(
+      url,
+      headers: {'Content-Type': 'application/json'},
+    );
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body)["is_valid"];
+    } else {
+      throw Exception('Failed to fetch dog activity status: ${response.statusCode}');
+    }
+  }
   //--------------------------------------fitness--------------------------------------
   static Future<Map<String, dynamic>> fetchDogActivityStatus(String formattedDate, int dogId) async {
 

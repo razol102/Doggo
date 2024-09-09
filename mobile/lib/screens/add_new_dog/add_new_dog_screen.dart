@@ -26,11 +26,13 @@ class _AddNewDogScreenState extends State<AddNewDogScreen> {
   final TextEditingController _birthdateController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _heightController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   // Variables to store error messages
   String? _nameError;
   String? _weightError;
   String? _heightError;
+  String? _descriptionError;
 
   // Validate fields before proceeding
   bool _validateFields() {
@@ -75,6 +77,18 @@ class _AddNewDogScreenState extends State<AddNewDogScreen> {
       });
     }
 
+    // Validate description
+    String? descriptionValidationResult = ValidationMethods.validateNotEmpty(_descriptionController.text, "Description");
+    if (descriptionValidationResult != null) {
+      setState(() {
+        _descriptionError = descriptionValidationResult;
+      });
+      isValid = false;
+    } else {
+      setState(() {
+        _descriptionError = null;
+      });
+    }
     return isValid;
   }
 
@@ -154,6 +168,13 @@ class _AddNewDogScreenState extends State<AddNewDogScreen> {
                   errorText: _heightError,  // Display error for height
                 ),
                 const SizedBox(height: 15),
+                RoundTextField(
+                  textEditingController: _descriptionController,
+                  hintText: "Description",
+                  icon: "assets/icons/notes_icon.png",
+                  textInputType: TextInputType.text,
+                  errorText: _descriptionError, // Display error for description
+                ),
                 RoundGradientButton(
                   title: "Next >",
                   onPressed: () async {
@@ -170,6 +191,7 @@ class _AddNewDogScreenState extends State<AddNewDogScreen> {
                           weight: double.tryParse(_weightController.text) ?? 0.0,
                           height: double.tryParse(_heightController.text) ?? 0.0,
                           userId: currUserId!,
+                          description: _descriptionController.text
                         );
 
                         if (dogId != null) {
