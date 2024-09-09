@@ -54,7 +54,7 @@ class _StartNewActivityScreenState extends State<StartNewActivityScreen> {
       print('Error starting activity: $e');
       setState(() => _isLoading = false);
       if (mounted) {
-        _showErrorDialog('Failed to start activity. Please try again later.');
+        _showErrorDialog('Failed to start activity. $e');
       }
     }
   }
@@ -110,71 +110,6 @@ class _StartNewActivityScreenState extends State<StartNewActivityScreen> {
       },
     );
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     backgroundColor: AppColors.whiteColor,
-  //     appBar: AppBar(
-  //       backgroundColor: AppColors.whiteColor,
-  //       centerTitle: true,
-  //       elevation: 0,
-  //       title: const Text(
-  //         "Activity Details",
-  //         style: TextStyle(
-  //           color: AppColors.blackColor,
-  //           fontSize: 16,
-  //           fontWeight: FontWeight.bold,
-  //         ),
-  //       ),
-  //     ),
-  //     body: _isLoading
-  //         ? const Center(child: CircularProgressIndicator())
-  //         : Padding(
-  //       padding: const EdgeInsets.all(16.0),
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.center,
-  //         children: [
-  //           Container(
-  //             width: double.infinity,
-  //             height: 250,
-  //             decoration: BoxDecoration(
-  //               borderRadius: BorderRadius.circular(10),
-  //             ),
-  //             child: ClipRRect(
-  //               borderRadius: BorderRadius.circular(10),
-  //               child: Image.asset(
-  //                 'assets/images/${widget.activityType}_background.png',
-  //                 fit: BoxFit.cover,
-  //               ),
-  //             ),
-  //           ),
-  //           const SizedBox(height: 20),
-  //           Text(
-  //             widget.activityType == "other"
-  //                 ? "Get ready for your activity!"
-  //                 : "Get ready for your ${widget.activityType}!",
-  //             style: const TextStyle(
-  //               color: Colors.black,
-  //               fontSize: 18,
-  //               fontWeight: FontWeight.bold,
-  //             ),
-  //           ),
-  //           const SizedBox(height: 20),
-  //           RoundGradientButton(
-  //             title: "Start",
-  //             onPressed: _activityId == null ? _startActivity : () {}, // Disable start if activity is already running
-  //           ),
-  //           const SizedBox(height: 10),
-  //           RoundGradientButton(
-  //             title: "End",
-  //             onPressed: _activityId != null ? _endActivity : () {}, // Disable end if no activity is running
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
