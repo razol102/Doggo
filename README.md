@@ -19,7 +19,6 @@
   </p>
 </div>
 
-<!-- ABOUT THE PROJECT -->
 ## About The Project
 
 Doggo is a mobile application that helps dog owners effortlessly monitor and manage their pet's health, activity, and well-being. Doggo empowers the owners to stay connected with their furry friends like never before. Whether you're tracking your dog's daily exercise, planning outdoor adventures, or scheduling important vet appointments. Doggo provides feedback, motivation, and rewards to dogs for their fitness activities and achievements.
@@ -28,7 +27,6 @@ Doggo comes with a compact attachment that easily fits onto your dog's collar or
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- Key Features -->
 ## Key Features
 
 * **Health & Activity Monitoring:** Track your dog’s exercise, and health with a collar attachment synced to the app.
@@ -75,19 +73,61 @@ Doggo comes with a compact attachment that easily fits onto your dog's collar or
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-<!-- GETTING STARTED -->
 ## Getting Started
+### Prerequisites
+Before you begin, ensure you have met the following requirements:
 
-change!!
+* Docker: Installed and running
+* AWS CLI (if deploying to AWS)
+
+### Getting Started with Docker
+#### 1. Download and Run the Docker Image
+You don’t need to configure the app or deal with credentials. Simply pull and run the pre-built Docker image from Docker Hub.
+
+##### Pull the Docker Image
+To download the Docker image:
+```bash
+docker pull niznaor/doggo-app:latest
+```
+
+##### Run the Docker Container
+To run the container and expose the app on port 5000:
+```bash
+docker run -d -p 5000:5000 niznaor/doggo-app:latest
+```
+This command will start the Flask application inside a Docker container, and you can access it at http://localhost:5000.
+
+### Deployment on AWS EC2 (Optional)
+If you want to deploy the Docker container to AWS EC2:
+
+##### 1. SSH into your EC2 instance
+
+##### 2. Install Docker on your EC2 instance (if not already installed)
+```bash
+sudo yum update -y
+sudo amazon-linux-extras install docker
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+```
+
+##### 3. Log out and log back in to your EC2 instance to apply the changes.
+
+##### 4. Pull the Docker image from Docker Hub
+```bash
+docker pull your-dockerhub-username/backend-demo
+```
+
+##### 5. Run the Docker container on EC2
+```bash
+docker run -d -p 80:5000 --name backend-demo your-dockerhub-username/backend-demo
+```
+
+This will expose the Flask application on port 80 of your EC2 instance.
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Usage
-
-change!!
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- CONTACT -->
 ## Project Builders
 
 Doggo was built by the following individuals:

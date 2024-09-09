@@ -78,6 +78,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
       case 28:
         imagePath = "assets/images/nala_profile.png";
         break;
+      case 40:
+        imagePath = "assets/images/alfi_profile.jpg";
+        break;
+      case 41:
+        imagePath = "assets/images/tommy_profile.jpg";
+        break;
       default:
         imagePath = "assets/images/dog_profile.png";
         break;

@@ -14,19 +14,25 @@ class ActivitiesGoalsHistoryScreen extends StatefulWidget {
   });
 
   @override
-  _ActivitiesGoalsHistoryScreenState createState() => _ActivitiesGoalsHistoryScreenState();
+  _ActivitiesGoalsHistoryScreenState createState() =>
+      _ActivitiesGoalsHistoryScreenState();
 }
 
-class _ActivitiesGoalsHistoryScreenState extends State<ActivitiesGoalsHistoryScreen> {
+class _ActivitiesGoalsHistoryScreenState
+    extends State<ActivitiesGoalsHistoryScreen> {
   List<Map<String, dynamic>> itemsArr = [];
   bool isLoading = false;
   int currentPage = 1;
-  final int limit = 5;
+  late int limit;
   bool hasMoreData = true;
 
   @override
   void initState() {
     super.initState();
+
+    // Set limit based on the type (5 for activities, 4 for goals)
+    limit = widget.type == 'activity' ? 5 : 4;
+
     _fetchItems();
   }
 
@@ -43,28 +49,31 @@ class _ActivitiesGoalsHistoryScreenState extends State<ActivitiesGoalsHistoryScr
     });
 
     try {
+      // Fetch one more item than the limit to check if more data exists
       List<Map<String, dynamic>>? newItems;
 
       if (widget.type == 'activity') {
-        // Fetch activities
         newItems = await HttpService.getOutdoorActivities(
           widget.dogId,
-          limit,
+          limit + 1, // Fetch limit + 1 items
           (currentPage - 1) * limit,
         );
       } else if (widget.type == 'goal') {
-        // Fetch goals
         newItems = await HttpService.getGoalsList(
           widget.dogId,
-          limit,
+          limit + 1, // Fetch limit + 1 items
           (currentPage - 1) * limit,
         );
       }
 
       setState(() {
         if (newItems != null && newItems.isNotEmpty) {
-          itemsArr = [...itemsArr, ...newItems];
-          if (newItems.length < limit) {
+          // If more than the limit is fetched, set hasMoreData to true and remove the extra item
+          if (newItems.length > limit) {
+            itemsArr = [...itemsArr, ...newItems.take(limit)];
+            hasMoreData = true;
+          } else {
+            itemsArr = [...itemsArr, ...newItems];
             hasMoreData = false;
           }
         } else {
