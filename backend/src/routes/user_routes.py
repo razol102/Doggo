@@ -55,7 +55,7 @@ def login():
 
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
-                cursor.execute(f"SELECT {USER_ID_COLUMN}, password FROM {0} WHERE email = %s",
+                cursor.execute(f"SELECT {USER_ID_COLUMN}, password FROM {USERS_TABLE} WHERE email = %s",
                                (email_from_user,))
                 user_data = cursor.fetchone()
 
