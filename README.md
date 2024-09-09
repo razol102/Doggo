@@ -13,7 +13,7 @@
   <p align="center">
     Doggo: Mobile Application for Dog Owners
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the project design »</strong></a>
+    <a href="documents/Doggo Project Design.pdf"><strong>Explore the project design »</strong></a>
     <br />
     <a href="https://qr-code.click/i/p/66db5a8daeaf1">View Demo</a>
   </p>
@@ -126,8 +126,6 @@ This will expose the Flask application on port 80 of your EC2 instance.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 ## Project Builders
 
 Doggo was built by the following individuals:
@@ -136,14 +134,10 @@ Doggo was built by the following individuals:
 * [Raz Olewsky](https://github.com/razol102) - raz12316@gmail.com
 
 
-
 Project Link: [https://github.com/shir-tz/Doggo](https://github.com/shir-tz/Doggo)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
-<!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
 We would like to extend our heartfelt gratitude to the following individuals who have significantly contributed to the success of the Doggo project:
