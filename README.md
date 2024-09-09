@@ -81,7 +81,12 @@ Before you begin, ensure you have met the following requirements:
 * Docker: Installed and running
 * AWS CLI: Configured with necessary IAM permissions
 * Git: Installed for version control
-  
+
+### Setup Instructions
+1. Clone the Repository
+   https://github.com/shir-tz/Doggo.git
+   cd backend-demo
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Usage
