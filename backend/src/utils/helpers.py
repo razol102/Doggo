@@ -417,21 +417,21 @@ def get_day_record_map(cursor, month, year):
 
 def create_goal(cursor, template_data, template_id):
     insert_goal_query = f"""
-        INSERT INTO {GOALS_TABLE} (dog_id, end_date, current_value, target_value, category, template_id, 
+        INSERT INTO {GOALS_TABLE} (dog_id, start_date, end_date, current_value, target_value, category, template_id, 
         is_finished, done)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
 
     initial_fitness = get_initial_fitness_for_goal(cursor, template_data['dog_id'], template_data['frequency'],
                                                    template_data['category'], template_data['target_value'])
 
-    template_data['target_value'] = type(initial_fitness)(template_data['target_value'])
     initial_fitness = min(initial_fitness, template_data['target_value'])
+
     # If the dog passed already the target_value --> the goal is completed already.
     is_completed = initial_fitness == template_data['target_value']
-    goal_end_date = get_end_date_by_frequency(template_data['frequency'])
+    goal_start_date, goal_end_date = get_start_and_end_date(template_data['frequency'])
 
-    cursor.execute(insert_goal_query, (template_data['dog_id'], goal_end_date, initial_fitness,
+    cursor.execute(insert_goal_query, (template_data['dog_id'], goal_start_date, goal_end_date, initial_fitness,
                                        template_data['target_value'], template_data['category'], template_id,
                                        is_completed, is_completed))
 
@@ -444,12 +444,15 @@ def get_initial_fitness_for_goal(cursor, dog_id, frequency, category, target_val
     else:   # frequency == MONTHLY_FREQUENCY
         initial_fitness = get_monthly_fitness_category(cursor, dog_id, category)
 
+    print("1: {0}".format(initial_fitness))
+
     if category != DISTANCE_CATEGORY:
         initial_fitness = int(initial_fitness)
     else:
         initial_fitness = round(initial_fitness, 2)
 
-    print(initial_fitness)
+    print("2: {0}".format(initial_fitness))
+    print("3: {0}".format(type(initial_fitness)))
 
     return initial_fitness
 
@@ -520,18 +523,40 @@ def get_monthly_fitness_category(cursor, dog_id, category):
     return daily_fitness
 
 
+def get_start_and_end_date(frequency):
+    start_date = get_start_date_by_frequency(frequency)
+    end_date = get_end_date_by_frequency(frequency)
+
+    return start_date, end_date
+
+
+def get_start_date_by_frequency(frequency):
+    today = datetime.today().date()
+    start_date = None
+
+    if frequency == DAILY_FREQUENCY:
+        start_date = today
+    elif frequency == WEEKLY_FREQUENCY:
+        days_since_sunday = today.weekday()  # weekday() gives 0 for Monday, 6 for Sunday
+        start_date = today - timedelta(days=(days_since_sunday + 1) % 7)  # Returns last Sunday
+    elif frequency == MONTHLY_FREQUENCY:
+        start_date = today.replace(day=1)
+
+    return start_date
+
+
 def get_end_date_by_frequency(frequency):
     today = datetime.today().date()
     end_date = None
 
-    if frequency == "daily":
+    if frequency == DAILY_FREQUENCY:
         end_date = today + timedelta(days=1)
-    elif frequency == "weekly":
+    elif frequency == WEEKLY_FREQUENCY:
         if today.weekday() == SUNDAY:  # If today is Sunday (Sunday is day 6)
             end_date = today + timedelta(7)  # Set end_date to next Sunday
         else:
             end_date = today + timedelta(6 - today.weekday())  # Set to the upcoming Sunday
-    elif frequency == "monthly":
+    elif frequency == MONTHLY_FREQUENCY:
         end_date = get_beginning_next_month(today)
 
     return end_date
@@ -551,12 +576,12 @@ def delete_goal_template(cursor, template_id):
 
 def delete_previous_template_if_exists(cursor, frequency, category):
     # Deleting an existing template with the same frequency and category to avoid duplication
-    get_same_goal_template_query = f"""
-            SELECT {TEMPLATE_ID_COLUMN}
-            FROM {GOAL_TEMPLATES_TABLE}
-            WHERE frequency = %s AND category = %s;
-            """
-    cursor.execute(get_same_goal_template_query, (frequency, category))
+    delete_same_goal_template_query = f"""
+                DELETE FROM {GOAL_TEMPLATES_TABLE}
+                WHERE frequency = %s AND category = %s
+                RETURNING {TEMPLATE_ID_COLUMN};
+                """
+    cursor.execute(delete_same_goal_template_query, (frequency, category))
     query_res = cursor.fetchone()
 
     if query_res is not None:

@@ -143,5 +143,5 @@ def disconnect_collar():
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
 
-    return jsonify({"message": f"collar {collar_id} is disconnected from dogs"}), HTTP_200_OK
+    return "", HTTP_200_OK
 

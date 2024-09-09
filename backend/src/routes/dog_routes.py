@@ -13,8 +13,8 @@ def add_new_dog():
     required_data = {"user_id", "name", "date_of_birth"}
 
     add_new_dog_query = f""" INSERT INTO {DOGS_TABLE}
-                          (name, breed, gender, date_of_birth, weight, height) 
-                          VALUES (%(name)s, %(breed)s, %(gender)s, %(date_of_birth)s, %(weight)s, %(height)s)
+                          (name, breed, gender, date_of_birth, weight, height, description) 
+                          VALUES (%(name)s, %(breed)s, %(gender)s, %(date_of_birth)s, %(weight)s, %(height)s, %(description)s)
                           RETURNING dog_id; """
 
     add_user_dog_query = f""" INSERT INTO {USERS_DOGS_TABLE} (user_id, dog_id) 
@@ -44,10 +44,11 @@ def add_new_dog():
 @dog_routes.route('/api/dog/profile', methods=['GET'])
 def get_dog_info():
     dog_id = request.args.get('dog_id')
-    db = load_database_config()
     get_details_query = "SELECT * FROM {0} WHERE dog_id = %s;".format(DOGS_TABLE)
 
     try:
+        db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 cursor.execute(get_details_query, (dog_id,))
@@ -64,7 +65,8 @@ def get_dog_info():
         "date_of_birth": dog_details[4],
         "weight": dog_details[5],
         "height": dog_details[6],
-        #        "image": dog_details[7],
+        # "image": dog_details[7],
+        "description": dog_details[9]
     }
 
     return jsonify(dog_data), HTTP_200_OK
@@ -80,7 +82,7 @@ def update_dog_info():
                            UPDATE {DOGS_TABLE}
                            SET name = %(name)s, breed = %(breed)s, 
                            gender = %(gender)s, date_of_birth = %(date_of_birth)s,
-                           weight = %(weight)s, height = %(height)s, image = %(image)s
+                           weight = %(weight)s, height = %(height)s, image = %(image)s, description = %(description)s
                            WHERE dog_id = %(dog_id)s;
                            """
     try:

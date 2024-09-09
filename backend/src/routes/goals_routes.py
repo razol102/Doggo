@@ -11,6 +11,7 @@ def get_dog_goal_templates_list():
                             SELECT *
                             FROM {GOAL_TEMPLATES_TABLE} 
                             WHERE {DOG_ID_COLUMN} = %s
+                            ORDER BY template_id DESC
                             """
     try:
         db = load_database_config()
@@ -129,6 +130,11 @@ def add_goal_template():
         RETURNING template_id;
         """
 
+    if template_data['category'] == DISTANCE_CATEGORY:
+        template_data['target_value'] = float(template_data['target_value'])
+    else:
+        template_data['target_value'] = int(template_data['target_value'])
+
     try:
         db = load_database_config()
 
@@ -137,8 +143,7 @@ def add_goal_template():
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, template_data['dog_id'])
                 delete_previous_template_if_exists(cursor, template_data['frequency'], template_data['category'])
                 cursor.execute(add_goal_template_query, template_data)
-                template_id = cursor.fetchone()[0]
-                create_goal(cursor, template_data, template_id)
+                create_goal(cursor, template_data, cursor.fetchone()[0])
                 connection.commit()
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
@@ -180,13 +185,17 @@ def update_goal_template():
 def delete_goal_template():
     template_id = request.args.get("template_id")
 
+    delete_goal_template_query = f"""
+        DELETE FROM {GOAL_TEMPLATES_TABLE}
+        WHERE {TEMPLATE_ID_COLUMN} = %s;
+    """
+
     try:
         db = load_database_config()
 
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
-                check_if_exists(cursor, GOAL_TEMPLATES_TABLE, TEMPLATE_ID_COLUMN, template_id)
-                delete_goal_template(cursor, template_id)
+                cursor.execute(delete_goal_template_query, (template_id,))
                 connection.commit()
     except (Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST

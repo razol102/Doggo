@@ -139,18 +139,29 @@ def update_user_info():
     user_id = data.get("user_id")
     db = load_database_config()
 
-    update_details_query = """
-                            UPDATE {0}
+    update_details_without_password_query = f"""
+                            UPDATE {USERS_TABLE}
+                            SET email = %(email)s, name = %(name)s,
+                            date_of_birth = %(date_of_birth)s, phone_number = %(phone_number)s
+                            WHERE user_id = %(user_id)s;
+                            """
+
+    update_details_with_password_query = f"""
+                            UPDATE {USERS_TABLE}
                             SET email = %(email)s, password = %(password)s, name = %(name)s,
                             date_of_birth = %(date_of_birth)s, phone_number = %(phone_number)s
                             WHERE user_id = %(user_id)s;
-                            """.format(USERS_TABLE)
+                            """
+
     try:
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, USERS_TABLE, USER_ID_COLUMN, user_id)
-                data['password'] = generate_password_hash(data['password'])
-                cursor.execute(update_details_query, data)
+                if len(data['password']) == 0:
+                    cursor.execute(update_details_without_password_query, data)
+                else:
+                    data['password'] = generate_password_hash(data['password'])
+                    cursor.execute(update_details_with_password_query, data)
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
 
@@ -194,3 +205,24 @@ def is_user_connected():
     return jsonify({"user_connection": is_connected[0]}), HTTP_200_OK
 
 
+@user_routes.route('/api/user/check_password', methods=['GET'])
+def check_password():
+    user_id = request.args.get('user_id')
+    password = request.args.get('password')
+
+    get_hash_password = f"SELECT password FROM {USERS_TABLE} WHERE {USER_ID_COLUMN} = %s;"
+
+    try:
+        db = load_database_config()
+
+        with psycopg2.connect(**db) as connection:
+            with connection.cursor() as cursor:
+                check_if_exists(cursor, USERS_TABLE, USER_ID_COLUMN, user_id)
+                cursor.execute(get_hash_password, (user_id,))
+                hash_password = cursor.fetchone()[0]
+    except(Exception, ValueError, psycopg2.DatabaseError) as error:
+        return jsonify({"error": str(error)}), 400
+
+    is_password_valid = check_password_hash(hash_password, password)
+
+    return jsonify({"is_valid": is_password_valid}), HTTP_200_OK
