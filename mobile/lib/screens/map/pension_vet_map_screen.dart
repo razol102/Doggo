@@ -136,7 +136,7 @@ class _PensionVetMapScreenState extends State<PensionVetMapScreen> {
       _markers = [
         Marker(
           point: LatLng(_latitude!, _longitude!),
-          child: Icon(Icons.location_pin, color: Colors.red, size: 40),
+          child: const Icon(Icons.location_pin, color: Colors.red, size: 40),
           width: 40,
           height: 40,
         ),
@@ -260,7 +260,7 @@ class _PensionVetMapScreenState extends State<PensionVetMapScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Column(
               children: [
                 _screenType == "pension" ?
@@ -290,10 +290,10 @@ class _PensionVetMapScreenState extends State<PensionVetMapScreen> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 5),
                 Container(
                   height: 290,
-                  margin: const EdgeInsets.symmetric(vertical: 15),
+                  margin: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
                     border: Border.all(color: AppColors.grayColor),
                     borderRadius: BorderRadius.circular(10),
@@ -336,8 +336,9 @@ class _PensionVetMapScreenState extends State<PensionVetMapScreen> {
                       style: const TextStyle(color: Colors.red, fontSize: 12),
                     ),
                   ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 RoundTextField(
+                  title: _screenType == "pension" ?  "Pension Name" : "Veterinarian Name",
                   textEditingController: _nameController,
                   hintText: _name.isEmpty ? "Loading..." : _name,
                   icon: "assets/icons/name_icon.png",
@@ -345,8 +346,9 @@ class _PensionVetMapScreenState extends State<PensionVetMapScreen> {
                   readOnly: !_isEditing,
                   errorText: _nameError,
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 8),
                 RoundTextField(
+                  title: "Phone Number",
                   textEditingController: _phoneController,
                   hintText: _phone.isEmpty ? "Loading..." : _phone,
                   icon: "assets/icons/phone_icon.png",
@@ -354,7 +356,7 @@ class _PensionVetMapScreenState extends State<PensionVetMapScreen> {
                   readOnly: !_isEditing,
                   errorText: _phoneError,
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 8),
               ],
             ),
           ),

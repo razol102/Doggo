@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/screens/add_new_dog/add_new_dog_screen.dart';
-import 'package:mobile/screens/all_about_us/dog_data_screen.dart';
-import 'package:mobile/screens/all_about_us/personal_data_screen.dart';
 import 'package:mobile/screens/bottom_menu.dart';
-import 'package:mobile/screens/activity/activity_screen.dart';
-import 'package:mobile/screens/dog_care/food_nutrition_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:mobile/services/preferences_service.dart';  // Import PreferencesService
-import 'auth/signup_step1_screen.dart';
-import 'auth/login_screen.dart';
-import '../../common_widgets/round_gradient_button.dart';
+import 'package:mobile/services/preferences_service.dart';
+import 'package:mobile/screens/auth/signup_step1_screen.dart';
+import 'package:mobile/screens/auth/login_screen.dart';
+import 'package:mobile/common_widgets/round_gradient_button.dart';
 import 'package:mobile/utils/app_colors.dart';
-import 'package:mobile/screens/home/home_screen.dart';
 import 'package:mobile/services/http_service.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -59,7 +53,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           Navigator.pushReplacementNamed(context, BottomMenu.routeName);  // Navigate to BottomMenu
         }
       } catch (e) {
-        // Handle error (e.g., show an error message to the user or log the error)
         print('Error checking login status: $e');
       }
     }
@@ -131,7 +124,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     RoundGradientButton(
                       title: "Login",
                       onPressed: () {
-                       // Navigator.pushNamed(context, FoodNutritionScreen.routeName);
                        Navigator.pushNamed(context, LoginScreen.routeName);
                       },
                     ),

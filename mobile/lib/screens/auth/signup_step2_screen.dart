@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/screens/add_new_dog/add_new_dog_screen.dart';
 import 'package:mobile/services/validation_methods.dart';
-import '../../common_widgets/round_button.dart';
-import '../../services/http_service.dart';
-import '../../services/preferences_service.dart';
-import '../../utils/app_colors.dart';
-import '../../common_widgets/round_textfield.dart';
+import 'package:mobile/common_widgets/round_button.dart';
+import 'package:mobile/services/http_service.dart';
+import 'package:mobile/services/preferences_service.dart';
+import 'package:mobile/utils/app_colors.dart';
+import 'package:mobile/common_widgets/round_textfield.dart';
 
 class SignUpStep2Screen extends StatefulWidget {
   static String routeName = "/SignUpStep2Screen";

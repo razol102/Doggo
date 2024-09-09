@@ -14,10 +14,10 @@ import 'package:mobile/utils/app_colors.dart';
 import 'package:mobile/common_widgets/setting_row.dart';
 import 'package:mobile/common_widgets/title_subtitle_cell.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/common_widgets/round_button.dart';
+import 'package:mobile/services/preferences_service.dart';
+import 'package:mobile/screens/map/pension_vet_map_screen.dart';
 
-import '../../../common_widgets/round_button.dart';
-import '../../services/preferences_service.dart';
-import '../map/pension_vet_map_screen.dart';
 
 class UserProfileScreen extends StatefulWidget {
   static String routeName = "/UserProfileScreen";
@@ -33,6 +33,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
   String? _dogBreed;
   String? _dogWeight;
   String? _dogAge;
+  String? _dogDescription;
+  String? _dogImagePath = "assets/images/dog_profile.png";
 
   List devicesArr = [
     {"image": "assets/icons/doggo_collar_icon.png", "name": "Doggo Collar", "tag": "1"},
@@ -54,6 +56,36 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
     {"image": "assets/icons/contact_us_icon.png", "name": "Contact Us", "tag": "8"},
 
   ];
+
+  Future<void> _initializeDogIdAndImage() async {
+    try {
+      final dogId = await PreferencesService.getDogId();
+      if (dogId != null) {
+        setState(() {
+          _dogImagePath = _getImagePath(dogId); // Fetch the image path based on the dogId
+        });
+        _fetchDogInfo();
+      }
+    } catch (e) {
+      print("Error initializing dogId and image path: ${e.toString()}");
+    }
+  }
+
+  // method for exhibition only!
+  String _getImagePath(int dogId) {
+    String imagePath;
+    switch(dogId) {
+      case 28:
+        imagePath = "assets/images/nala_profile.png";
+        break;
+      default:
+        imagePath = "assets/images/dog_profile.png";
+        break;
+    }
+
+    return imagePath;
+
+  }
 
   Future<void> _logout() async {
     try {
@@ -133,6 +165,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
         final dogBreed = dogInfo['breed'];
         final dogWeight = dogInfo['weight'].toString();
         final dogDateOfBirth = dogInfo['date_of_birth'];
+        final dogDescription = dogInfo['description'];
         final dogAge = _calculateDogAge(dogDateOfBirth);
 
         // Update UI with the fetched data
@@ -141,6 +174,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
           _dogBreed = dogBreed;
           _dogWeight = dogWeight;
           _dogAge = dogAge;
+          _dogDescription = dogDescription;
         });
       }
     } catch (e) {
@@ -191,7 +225,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
   @override
   void initState() {
     super.initState();
-    _fetchDogInfo();
+    _initializeDogIdAndImage();
   }
 
   @override
@@ -208,7 +242,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
           style: TextStyle(
               color: AppColors.blackColor,
               fontSize: 16,
-              fontWeight: FontWeight.w700),
+              fontWeight: FontWeight.w700
+          ),
         ),
         actions: [
           InkWell(
@@ -238,9 +273,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(30),
-                    child: Image.asset(
-                      "assets/images/nala_profile.png",
-                      // "assets/images/dog_profile.png",
+                    child: Image.asset(_dogImagePath!,
                       width: 50,
                       height: 50,
                       fit: BoxFit.cover,
@@ -262,8 +295,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
                           ),
                         ),
                         Text(
-                          "Old but gold!",
-                          style: TextStyle(
+                          _dogDescription ?? "",
+                          style: const TextStyle(
                             color: AppColors.grayColor,
                             fontSize: 12,
                           ),
@@ -305,7 +338,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
                       subtitleFontSize: 12,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 15,
                   ),
                   Expanded(
@@ -318,7 +351,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
                       subtitleFontSize: 12,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 15,
                   ),
                   Expanded(
@@ -459,6 +492,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> with RouteAware{
               const SizedBox(
                 height: 25,
               ),
+              // Notifications
               // Container(
               //   padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
               //   decoration: BoxDecoration(

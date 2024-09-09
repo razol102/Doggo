@@ -3,10 +3,11 @@ import 'package:mobile/common_widgets/round_gradient_button.dart';
 import 'package:mobile/screens/activity/widgets/frequency_selector.dart';
 import 'package:mobile/screens/activity/widgets/goal_category_selector.dart';
 import 'package:mobile/utils/app_colors.dart';
-import '../../common_widgets/round_textfield.dart';
-import '../../services/http_service.dart';
-import '../../services/preferences_service.dart';
-import '../../services/validation_methods.dart';
+import 'package:mobile/common_widgets/round_textfield.dart';
+import 'package:mobile/services/http_service.dart';
+import 'package:mobile/services/preferences_service.dart';
+import 'package:mobile/services/validation_methods.dart';
+
 
 class AddUpdateGoalTemplateScreen extends StatefulWidget {
   final int? templateId; // Pass templateId for update; null for add
@@ -89,7 +90,7 @@ class _AddUpdateGoalTemplateScreenState extends State<AddUpdateGoalTemplateScree
     try {
       if (widget.templateId == null) {
         // Add new goal template
-        final int? dogId = await PreferencesService.getDogId(); // Retrieve dogId from preferences
+        final int? dogId = await PreferencesService.getDogId();
         await HttpService.createGoal(
           dogId!,
           _targetValueController.text,
@@ -150,7 +151,7 @@ class _AddUpdateGoalTemplateScreenState extends State<AddUpdateGoalTemplateScree
         ),
         leading: widget.templateId != null
             ? IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.blackColor),
+          icon: const Icon(Icons.arrow_back, color: AppColors.blackColor),
           onPressed: () => Navigator.pop(context),
         )
             : null,

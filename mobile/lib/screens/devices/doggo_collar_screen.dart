@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:mobile/services/preferences_service.dart';
-import '../../common_widgets/round_textfield.dart';
-import '../../utils/app_colors.dart';
+import 'package:mobile/common_widgets/round_textfield.dart';
+import 'package:mobile/utils/app_colors.dart';
 import 'package:intl/intl.dart';
 
 class DoggoCollarScreen extends StatefulWidget {
@@ -142,18 +142,19 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
             padding: const EdgeInsets.only(right: 15, left: 15),
             child: Column(
               children: [
-                Image.asset("assets/images/doggo_collar_background.png", width: media.width),
-                const SizedBox(height: 15),
+                Image.asset("assets/images/doggo_collar_background.png", width: media.width*0.8),
+                const SizedBox(height: 8),
                 const Text(
                   "Doggo Collar Info",
                   style: TextStyle(
                       color: AppColors.blackColor,
                       fontSize: 20,
-                      fontWeight: FontWeight.w700),
+                      fontWeight: FontWeight.w700
+                  ),
                 ),
-                const SizedBox(height: 10),
                 const SizedBox(height: 25),
                 RoundTextField(
+                  title: "Collar ID",
                   hintText: _collarId.isEmpty ? "Loading..." : _collarId,
                   icon: "assets/icons/doggo_collar_icon.png",
                   textInputType: TextInputType.text,
@@ -161,6 +162,7 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
+                  title: "Battery Level",
                   hintText: _batteryLevel == 'loading...' ? _batteryLevel : "$_batteryLevel%",
                   icon: "assets/icons/battery_icon.png",
                   textInputType: TextInputType.text,
@@ -168,6 +170,7 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
+                  title: "Connection Status",
                   hintText: _connectionStatus,
                   icon: "assets/icons/connection_status_icon.png",
                   textInputType: TextInputType.text,
@@ -176,11 +179,13 @@ class _DoggoCollarScreenState extends State<DoggoCollarScreen> {
                 const SizedBox(height: 25),
                 Text(
                   'Last update: $_lastUpdateTime',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.blackColor,
                     fontSize: 11,
                   ),
                 ),
+                const SizedBox(height: 25),
+
               ],
             ),
           ),

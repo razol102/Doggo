@@ -3,12 +3,12 @@ import 'package:mobile/screens/activity/goals_templates_screen.dart';
 import 'package:mobile/screens/activity/start_new_activity.dart';
 import 'package:mobile/screens/activity/widgets/activities_goals_list.dart';
 import 'package:mobile/screens/activity/widgets/activity_circles_widget.dart';
-import '../../common_widgets/round_button.dart';
-import '../../main.dart';
-import '../../services/http_service.dart';
-import '../../services/preferences_service.dart';
-import '../../utils/app_colors.dart';
-import 'activities_goals_history.dart';
+import 'package:mobile/common_widgets/round_button.dart';
+import 'package:mobile/main.dart';
+import 'package:mobile/services/http_service.dart';
+import 'package:mobile/services/preferences_service.dart';
+import 'package:mobile/utils/app_colors.dart';
+import 'package:mobile/screens/activity/activities_goals_history.dart';
 
 class ActivityScreen extends StatefulWidget {
   static String routeName = "/ActivityScreen";
@@ -62,7 +62,7 @@ class _ActivityScreenState extends State<ActivityScreen> with RouteAware{
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to retrieve dog ID')),
+        const SnackBar(content: Text('Failed to retrieve dog ID')),
       );
     }
   }
@@ -107,16 +107,16 @@ class _ActivityScreenState extends State<ActivityScreen> with RouteAware{
               fontWeight: FontWeight.w700),
         ),
       ),
-      body: SingleChildScrollView( // Add this to enable scrolling
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              padding: const EdgeInsets.all(16), // Padding inside the container
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                gradient: LinearGradient(colors: AppColors.primaryG), // Gradient background
-                borderRadius: BorderRadius.circular(media.width * 0.065), // Rounded corners
+                gradient: LinearGradient(colors: AppColors.primaryG),
+                borderRadius: BorderRadius.circular(media.width * 0.065),
               ),
               child: Stack(
                 alignment: Alignment.center,
@@ -166,12 +166,13 @@ class _ActivityScreenState extends State<ActivityScreen> with RouteAware{
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed to retrieve dog ID')),
+                      const SnackBar(content: Text('Failed to retrieve dog ID')),
                     );
                   }
                 },
                 backgroundColor: AppColors.primaryColor2,
-                titleColor: AppColors.whiteColor),
+                titleColor: AppColors.whiteColor
+            ),
             const Divider(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

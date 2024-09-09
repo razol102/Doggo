@@ -31,14 +31,14 @@ class _DateCirclesState extends State<DateCircles> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: List.generate(7, (index) {
         return GestureDetector(
-          onTap: () => _onCircleTap(index), // Add onTap handler
+          onTap: () => _onCircleTap(index),
           child: Column(
             children: [
               Text(
                 weekDays[index],
-                style: TextStyle(fontSize: 10),
+                style: const TextStyle(fontSize: 10),
               ),
-              SizedBox(height: 5,),
+              const SizedBox(height: 5,),
               CircleAvatar(
                 backgroundColor: _selectedIndex == index
                     ? AppColors.primaryColor1

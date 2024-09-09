@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/screens/activity/widgets/activities_goals_list.dart';
 import 'package:mobile/services/http_service.dart';
-import '../../main.dart';
-import '../../utils/app_colors.dart';
-import 'add_update_goal_template.dart';
+import 'package:mobile/main.dart';
+import 'package:mobile/utils/app_colors.dart';
+import 'package:mobile/screens/activity/add_update_goal_template.dart';
 
 class GoalsTemplatesScreen extends StatefulWidget {
   final int dogId;

@@ -5,8 +5,8 @@ import 'package:mobile/common_widgets/date_selector.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:mobile/services/preferences_service.dart';
 import 'package:mobile/services/validation_methods.dart';
-import '../../common_widgets/round_textfield.dart';
-import '../../utils/app_colors.dart';
+import 'package:mobile/common_widgets/round_textfield.dart';
+import 'package:mobile/utils/app_colors.dart';
 
 class PersonalDataScreen extends StatefulWidget {
   static String routeName = "/PersonalDataScreen";
@@ -27,7 +27,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
   String _userEmail = 'Loading...';
   String _userPhoneNumber = 'Loading...';
   DateTime? _userDateOfBirth;
-  String _oldPassword = ''; // Store the current password
+  final String _oldPassword = ''; // Store the current password
 
   String? _nameError;
   String? _emailError;
@@ -36,6 +36,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
   String? _oldPasswordError;
   String? _newPasswordError;
   String? _confirmPasswordError;
+  int? _userId;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -53,9 +54,9 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
 
   Future<void> _fetchUserData() async {
     try {
-      int? userId = await PreferencesService.getUserId();
-      if (userId != null) {
-        final userInfo = await HttpService.getUserInfo(userId);
+      _userId = await PreferencesService.getUserId();
+      if (_userId != null) {
+        final userInfo = await HttpService.getUserInfo(_userId!);
         setState(() {
           _userName = userInfo['name'];
           _userEmail = userInfo['email'];
@@ -63,7 +64,6 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
           _userDateOfBirth = DateFormat("EEE, dd MMM yyyy HH:mm:ss 'GMT'")
               .parse(userInfo['date_of_birth'], true)
               .toLocal();
-          _oldPassword = userInfo['password']; // Save the fetched password
 
           _nameController.text = _userName;
           _emailController.text = _userEmail;
@@ -82,60 +82,56 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
     }
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _userDateOfBirth ?? DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != _userDateOfBirth) {
-      setState(() {
-        _userDateOfBirth = picked;
-        _dateOfBirthController.text = DateFormat('yyyy-MM-dd').format(picked);
-      });
-    }
-  }
-
   Future<void> _saveUserProfile() async {
     setState(() {
       _nameError = ValidationMethods.validateNotEmpty(_nameController.text, 'Name');
       _emailError = ValidationMethods.validateEmail(_emailController.text);
       _phoneError = ValidationMethods.validatePhoneNumber(_phoneNumberController.text);
-      _dateError = ValidationMethods.validateNotEmpty(_dateOfBirthController.text, 'Dat of birth');
+      _dateError = ValidationMethods.validateNotEmpty(_dateOfBirthController.text, 'Date of birth');
       _oldPasswordError = null;
       _newPasswordError = null;
       _confirmPasswordError = null;
-
-      if (_isChangingPassword) {
-        if (_oldPasswordController.text != _oldPassword) {
-          _oldPasswordError = "Incorrect old password";
-        }
-        if (_newPasswordController.text.isEmpty) {
-          _newPasswordError = "New password cannot be empty";
-        } else if (_newPasswordController.text != _confirmPasswordController.text) {
-          _confirmPasswordError = "Passwords do not match";
-        }
-      }
     });
 
+    if (_isChangingPassword) {
+      try {
+        bool isValidPass = await HttpService.isValidPassword(_userId!, _oldPasswordController.text);
+        setState(() {
+          if (!isValidPass) {
+            _oldPasswordError = "Incorrect old password";
+          }
+          if (_newPasswordController.text.isEmpty) {
+            _newPasswordError = "New password cannot be empty";
+          } else if (_newPasswordController.text != _confirmPasswordController.text) {
+            _confirmPasswordError = "Passwords do not match";
+          }
+        });
+      } catch (e) {
+        print("Failed to call HttpService.isValidPassword: $e");
+      }
+    }
+
     // Check if there are any errors
-    if (_nameError != null || _emailError != null || _phoneError != null || _dateError != null ||
-        _oldPasswordError != null || _newPasswordError != null || _confirmPasswordError != null) {
+    if (_nameError != null ||
+        _emailError != null ||
+        _phoneError != null ||
+        _dateError != null ||
+        _oldPasswordError != null ||
+        _newPasswordError != null ||
+        _confirmPasswordError != null) {
       // Don't proceed if there are errors
       return;
     }
 
     try {
-      int? userId = await PreferencesService.getUserId();
-      if (userId != null) {
+      if (_userId != null) {
         // Determine which password to send
         String password = _isChangingPassword
             ? _newPasswordController.text
-            : _oldPassword; // Send old password if not changing
+            : _oldPassword; // Send empty password if not changing
 
         await HttpService.updateUserProfile(
-          userId,
+          _userId!,
           _emailController.text,
           password,
           _nameController.text,
@@ -165,6 +161,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     var media = MediaQuery.of(context).size;
@@ -199,7 +196,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
               children: [
                 Image.asset(
                   "assets/images/personal_data_background.png",
-                  width: media.width * 0.8,
+                  width: media.width * 0.6,
                 ),
                 const Text(
                   "Personal Data Info",
@@ -212,6 +209,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                 const SizedBox(height: 10),
                 const SizedBox(height: 25),
                 RoundTextField(
+                  title: "Full Name",
                   textEditingController: _nameController,
                   hintText: _userName.isEmpty ? "Loading..." : _userName,
                   icon: "assets/icons/name_icon.png",
@@ -221,6 +219,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
+                  title: "Email",
                   textEditingController: _emailController,
                   hintText: _userEmail.isEmpty ? "Loading..." : _userEmail,
                   icon: "assets/icons/message_icon.png",
@@ -247,6 +246,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                   initialValue: _initialPhoneNumber,
                 ) :
                 RoundTextField(
+                  title: "Phone Number",
                   textEditingController: _phoneNumberController,
                   hintText: _userPhoneNumber.isEmpty ? "Loading..." : _userPhoneNumber,
                   icon: "assets/icons/phone_icon.png",
@@ -257,6 +257,7 @@ class _PersonalDataScreenState extends State<PersonalDataScreen> {
                 _isEditing?
                 DateSelector(birthdateController: _dateOfBirthController) :
                 RoundTextField(
+                  title: "Date of Birth",
                   hintText: _userDateOfBirth == null ? "Error retrieving date of birth" : _userDateOfBirth.toString(),
                   icon: "assets/icons/date_icon.png",
                   textInputType: TextInputType.datetime,

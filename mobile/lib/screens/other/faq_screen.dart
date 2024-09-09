@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/services/http_service.dart';
-import '../../utils/app_colors.dart';
+import 'package:mobile/utils/app_colors.dart';
 
 class FaqScreen extends StatefulWidget {
   static String routeName = "/FaqScreen";
@@ -72,8 +72,8 @@ class _FaqScreenState extends State<FaqScreen> {
               children: [
                 Center(
                   child: Image.asset(
-                    "assets/images/faq_background.png", // Replace with your image
-                    width: media.width * 0.8, // Adjust the width as needed
+                    "assets/images/faq_background.png",
+                    width: media.width * 0.8,
                     fit: BoxFit.cover,
                   ),
                 ),

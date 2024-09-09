@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile/services/http_service.dart';
 import 'package:mobile/services/preferences_service.dart';
 import 'package:mobile/services/validation_methods.dart';
-
-import '../../common_widgets/round_textfield.dart';
-import '../../utils/app_colors.dart';
+import 'package:mobile/common_widgets/round_textfield.dart';
+import 'package:mobile/utils/app_colors.dart';
 
 class FoodNutritionScreen extends StatefulWidget {
   static const String routeName = "/FoodNutritionScreen";
@@ -68,9 +67,8 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
       print('Error fetching nutrition data: $e');
       _resetNutritionData();
 
-      // Show an error message using ScaffoldMessenger
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching nutrition data. Please try again later.')),
+        const SnackBar(content: Text('Error fetching nutrition data. Please try again later.')),
       );
     }
   }
@@ -165,9 +163,9 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
               children: [
                 Image.asset(
                   "assets/images/nutrition_background.png",
-                  width: media.width * 0.7,
+                  width: media.width * 0.5,
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 5),
                 const Text(
                   "Dog Nutrition Info",
                   style: TextStyle(
@@ -176,8 +174,9 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 15),
                 RoundTextField(
+                  title: "Food Brand",
                   textEditingController: _foodBrandController,
                   hintText: (_foodBrand == 'No nutrition information available' && _isEditing) ? "Food brand" : _foodBrand,
                   icon: "assets/icons/food_brand_icon.png",
@@ -187,6 +186,7 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
+                  title: "Food Type",
                   textEditingController: _foodTypeController,
                   hintText: (_foodType == 'No nutrition information available' && _isEditing) ? "Food type" : _foodType,
                   icon: "assets/icons/food_type_icon.png",
@@ -196,6 +196,7 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
+                  title: "Weight (grams)",
                   textEditingController: _foodAmountGramsController,
                   hintText: (_foodAmountGrams == 'No nutrition information available' && _isEditing) ? "Food amount (grams)" : _foodAmountGrams,
                     icon: "assets/icons/food_amount_icon.png",
@@ -205,6 +206,7 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
+                  title: "Daily Snacks",
                   textEditingController: _dailySnacksController,
                   hintText: _dailySnacks.isEmpty ? "0" : _dailySnacks,
                   icon: "assets/icons/snacks_icon.png",
@@ -214,6 +216,7 @@ class _FoodNutritionScreenState extends State<FoodNutritionScreen> {
                 ),
                 const SizedBox(height: 15),
                 RoundTextField(
+                  title: "Notes",
                   textEditingController: _notesController,
                   hintText: _notes.isEmpty ? "-" : _notes,
                   icon: "assets/icons/notes_icon.png",
