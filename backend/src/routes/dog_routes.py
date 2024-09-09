@@ -21,7 +21,7 @@ def add_new_dog():
                             VALUES (%s, %s)"""
 
     try:
-        check_required_data(required_data)
+        check_required_data(required_data, data)
 
         db = load_database_config()
         user_id = data.get("user_id")

@@ -22,7 +22,7 @@ def register_user():
                                 RETURNING user_id;
                                 """
     try:
-        check_required_data(required_data)
+        check_required_data(required_data, data)
         db = load_database_config()
 
         with psycopg2.connect(**db) as connection:

@@ -12,9 +12,9 @@ from src.utils.exceptions import *
 from src.utils.logger import logger
 
 
-def check_required_data(required_data):
-    if not required_data.issubset(required_data.keys()):
-        missing_fields = required_data - required_data.keys()
+def check_required_data(required_data, received_data):
+    if not required_data.issubset(received_data.keys()):
+        missing_fields = required_data - received_data.keys()
         raise MissingFieldsError(missing_fields)
 
 
