@@ -12,12 +12,12 @@ def add_collar():
     data = request.json
     collar_id = data.get("collar_id")
     dog_id = data.get("dog_id")
-    attach_dog_collar_query = """ UPDATE {0}
+    attach_dog_collar_query = f""" UPDATE {COLLARS_TABLE}
                                   SET dog_id = %s
-                                  WHERE collar_id = %s; """.format(COLLARS_TABLE)
-    db = load_database_config()
-
+                                  WHERE collar_id = %s; """
     try:
+        db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, COLLARS_TABLE, COLLAR_ID_COLUMN, collar_id)
@@ -34,10 +34,11 @@ def add_collar():
 @collar_routes.route("/api/collar/get", methods=['GET'])
 def get_collar_id_by_dog_id():
     dog_id = request.args.get('dog_id')
-    db = load_database_config()
-    get_collar_id_query = "SELECT collar_id FROM {0} WHERE dog_id = %s;".format(COLLARS_TABLE)
+    get_collar_id_query = f"SELECT collar_id FROM {COLLARS_TABLE} WHERE dog_id = %s;"
 
     try:
+        db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
@@ -54,10 +55,11 @@ def get_collar_id_by_dog_id():
 @collar_routes.route("/api/collar/battery", methods=['GET'])
 def get_battery_level():
     collar_id = request.args.get('collar_id')
-    db = load_database_config()
     get_battery_level_query = f"SELECT battery_level FROM {COLLARS_TABLE} WHERE collar_id = %s;"
 
     try:
+        db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, COLLARS_TABLE, COLLAR_ID_COLUMN, collar_id)
@@ -73,9 +75,10 @@ def get_battery_level():
 def update_battery_collar():
     dog_id = request.args.get('dog_id')
     new_battery_level = request.args.get('battery_level')
-    db = load_database_config()
 
     try:
+        db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 collar_id = get_collar_from_dog(cursor, dog_id)
@@ -89,11 +92,11 @@ def update_battery_collar():
 @collar_routes.route("/api/collar/availability", methods=['GET'])
 def is_collar_available():
     collar_id = request.args.get('collar_id')
-    db = load_database_config()
-
     get_attached_dog_query = f"SELECT {DOG_ID_COLUMN} FROM {COLLARS_TABLE} WHERE {COLLAR_ID_COLUMN} = %s;"
 
     try:
+        db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, COLLARS_TABLE, COLLAR_ID_COLUMN, collar_id)
@@ -109,11 +112,12 @@ def is_collar_available():
 @collar_routes.route("/api/collar/connectionStatus", methods=['GET'])
 def get_collar_connection():
     collar_id = request.args.get('collar_id')
-    db = load_database_config()
 
     get_collar_connection_query = f"SELECT ble_connected, wifi_connected FROM {COLLARS_TABLE} WHERE {COLLAR_ID_COLUMN} = %s;"
 
     try:
+        db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, COLLARS_TABLE, COLLAR_ID_COLUMN, collar_id)
@@ -128,13 +132,13 @@ def get_collar_connection():
 @collar_routes.route("/api/collar/disconnect", methods=['PUT'])
 def disconnect_collar():
     collar_id = request.args.get('collar_id')
-    db = load_database_config()
-
     disconnect_collar_query =   f"""UPDATE {COLLARS_TABLE}
                                 SET {DOG_ID_COLUMN} = NULL
                                 WHERE {COLLAR_ID_COLUMN} = %s
                                 """
     try:
+        db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, COLLARS_TABLE, COLLAR_ID_COLUMN, collar_id)

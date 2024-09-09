@@ -123,7 +123,6 @@ def get_dog_goal_log():
 @goals_routes.route("/api/dog/goals/add", methods=['POST'])
 def add_goal_template():
     template_data = request.json
-
     add_goal_template_query = f"""
         INSERT INTO {GOAL_TEMPLATES_TABLE} (dog_id, target_value, frequency, category)
         VALUES (%(dog_id)s, %(target_value)s, %(frequency)s, %(category)s)

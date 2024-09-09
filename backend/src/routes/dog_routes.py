@@ -21,9 +21,7 @@ def add_new_dog():
                             VALUES (%s, %s)"""
 
     try:
-        if not required_data.issubset(data.keys()):
-            missing_fields = required_data - data.keys()
-            raise MissingFieldsError(missing_fields)
+        check_required_data(required_data)
 
         db = load_database_config()
         user_id = data.get("user_id")
@@ -76,7 +74,6 @@ def get_dog_info():
 def update_dog_info():
     data = request.json
     dog_id = data.get("dog_id")
-    db = load_database_config()
 
     update_details_query = f"""
                            UPDATE {DOGS_TABLE}
@@ -86,6 +83,8 @@ def update_dog_info():
                            WHERE dog_id = %(dog_id)s;
                            """
     try:
+        db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)
@@ -99,10 +98,11 @@ def update_dog_info():
 @dog_routes.route('/api/dog/profile', methods=['DELETE'])
 def delete_dog():
     dog_id = request.args.get('dog_id')
-    db = load_database_config()
     delete_dog_query = "DELETE FROM {0} WHERE dog_id = %s;".format(DOGS_TABLE)
 
     try:
+        db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, DOGS_TABLE, DOG_ID_COLUMN, dog_id)

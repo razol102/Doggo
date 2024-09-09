@@ -21,14 +21,9 @@ def register_user():
                                 (%(email)s, %(password)s, %(name)s, %(date_of_birth)s, %(phone_number)s)
                                 RETURNING user_id;
                                 """
-
     try:
-        if not required_data.issubset(data.keys()):
-            missing_fields = required_data - data.keys()
-            raise MissingFieldsError(missing_fields)
-
+        check_required_data(required_data)
         db = load_database_config()
-        data['password'] = generate_password_hash(data['password'])
 
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
@@ -36,6 +31,7 @@ def register_user():
                     raise Exception("Email is already in use.")
                 elif is_in_use(cursor, phone_number_query, data.get('phone_number')):
                     raise Exception("Phone number is already in use.")
+                data['password'] = generate_password_hash(data['password'])
                 cursor.execute(adding_new_user_query, data)
                 user_id = cursor.fetchone()[0]
                 connection.commit()
@@ -50,15 +46,16 @@ def login():
     data = request.json
     email_from_user = data.get('email')
     password_from_user = data.get('password')
-    db = load_database_config()
-    logging_in_query = """ UPDATE users
+    logging_in_query = f""" UPDATE {USERS_TABLE}
                            SET logged_in = TRUE
                            WHERE email = %s; """
     try:
+        db = load_database_config()
         check_email_and_password_from_user(email_from_user, password_from_user)
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
-                cursor.execute("SELECT user_id, password FROM {0} WHERE email = %s".format(USERS_TABLE),
+                cursor.execute(f"SELECT {USER_ID_COLUMN}, password FROM {0} WHERE email = %s",
                                (email_from_user,))
                 user_data = cursor.fetchone()
 
@@ -75,7 +72,7 @@ def login():
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), HTTP_400_BAD_REQUEST
 
-    if dog_res is None:
+    if dog_res is None: # No dog is attached to the user
         dog_id = None
     else:
         dog_id = dog_res[0]
@@ -90,7 +87,6 @@ def logout():
     logging_out_query = """ UPDATE {0}
                         SET last_activity = NOW(), logged_in = FALSE
                         WHERE user_id = %s; """.format(USERS_TABLE)
-
     try:
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
@@ -100,25 +96,27 @@ def logout():
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
 
-    print("{0} is logged out!".format(user_id))
-
     return jsonify({"message": "You're logged out!"}), HTTP_200_OK
 
 
 @user_routes.route('/api/user/profile', methods=['GET'])
 def get_user_info():
     user_id = request.args.get('user_id')
-    db = load_database_config()
-    get_details_query = "SELECT email, password, name, date_of_birth, phone_number FROM {0} WHERE user_id = %s;".format(
-        USERS_TABLE)
+    get_details_query = f"""SELECT email, password, name, date_of_birth, phone_number 
+                            FROM {USERS_TABLE} 
+                            WHERE user_id = %s;"""
 
     try:
+        db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 cursor.execute(get_details_query, (user_id,))
                 user_details = cursor.fetchone()
+
                 if not user_details:
                     raise ValueError("User does not exist.")
+
     except(Exception, ValueError, psycopg2.DatabaseError) as error:
         return jsonify({"error": str(error)}), 400
 
@@ -137,7 +135,6 @@ def get_user_info():
 def update_user_info():
     data = request.json
     user_id = data.get("user_id")
-    db = load_database_config()
 
     update_details_without_password_query = f"""
                             UPDATE {USERS_TABLE}
@@ -154,6 +151,8 @@ def update_user_info():
                             """
 
     try:
+        db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, USERS_TABLE, USER_ID_COLUMN, user_id)
@@ -171,10 +170,11 @@ def update_user_info():
 @user_routes.route('/api/user/profile', methods=['DELETE'])
 def delete_user():
     user_id = request.args.get('user_id')
-    db = load_database_config()
-    delete_user_query = "DELETE FROM {0} WHERE user_id = %s;".format(USERS_TABLE)
+    delete_user_query = f"DELETE FROM {USERS_TABLE} WHERE {USER_ID_COLUMN} = %s;"
 
     try:
+        db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, USERS_TABLE, USER_ID_COLUMN, user_id)
@@ -190,10 +190,11 @@ def delete_user():
 @user_routes.route('/api/user/connection', methods=['GET'])
 def is_user_connected():
     user_id = request.args.get('user_id')
-    db = load_database_config()
     connection_user_query = "SELECT logged_in FROM {0} WHERE {1} = %s;".format(USERS_TABLE, USER_ID_COLUMN)
 
     try:
+        db = load_database_config()
+
         with psycopg2.connect(**db) as connection:
             with connection.cursor() as cursor:
                 check_if_exists(cursor, USERS_TABLE, USER_ID_COLUMN, user_id)

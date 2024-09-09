@@ -12,6 +12,12 @@ from src.utils.exceptions import *
 from src.utils.logger import logger
 
 
+def check_required_data(required_data):
+    if not required_data.issubset(required_data.keys()):
+        missing_fields = required_data - required_data.keys()
+        raise MissingFieldsError(missing_fields)
+
+
 def is_in_use(cursor, query, data_to_check):
     cursor.execute(query, (data_to_check,))
     return cursor.fetchone()[0] > 0
@@ -98,47 +104,40 @@ def update_dog_goals(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db
 def update_steps_goals(cursor, dog_id, steps_to_db):
     update_steps_goals_query = f"""
     UPDATE {GOALS_TABLE}
-    SET current_value = CASE
-        WHEN current_value + %s > target_value THEN target_value
-        ELSE current_value + %s
-    END
-    WHERE {DOG_ID_COLUMN} = %s AND category = 'steps' AND done = FALSE;
+    SET current_value = %s
+    WHERE {DOG_ID_COLUMN} = %s AND category = %s AND done = FALSE;
     """
 
-    cursor.execute(update_steps_goals_query, (steps_to_db, steps_to_db, dog_id))
+    cursor.execute(update_steps_goals_query, (steps_to_db, dog_id, STEPS_CATEGORY))
 
 
 def update_distance_goals(cursor, dog_id, distance_to_db):
     update_distance_goals_query = f"""
     UPDATE {GOALS_TABLE}
-    SET current_value = CASE
-        WHEN current_value + %s > target_value THEN target_value
-        ELSE current_value + %s
-    END
-    WHERE {DOG_ID_COLUMN} = %s AND category = 'distance' AND done = FALSE;
+    SET current_value = %s
+    WHERE {DOG_ID_COLUMN} = %s AND category = %s AND done = FALSE;
     """
 
-    cursor.execute(update_distance_goals_query, (distance_to_db, distance_to_db, dog_id))
+    cursor.execute(update_distance_goals_query, (distance_to_db, dog_id, DISTANCE_CATEGORY))
 
 
 def update_calories_goals(cursor, dog_id, calories_to_db):
     update_calories_goals_query = f"""
     UPDATE {GOALS_TABLE}
-    SET current_value = CASE
-        WHEN current_value + %s > target_value THEN target_value
-        ELSE current_value + %s
-    END
-    WHERE {DOG_ID_COLUMN} = %s AND category = 'calories_burned' AND done = FALSE;
+    SET current_value = %s
+    WHERE {DOG_ID_COLUMN} = %s AND category = %s AND done = FALSE;
     """
 
-    cursor.execute(update_calories_goals_query, (calories_to_db, calories_to_db, dog_id))
+    cursor.execute(update_calories_goals_query, (calories_to_db, dog_id, CALORIES_BURNED_CATEGORY))
 
 
 def finish_completed_goals(cursor, dog_id):
     finish_completed_goals_query = f"""
     UPDATE {GOALS_TABLE}
     SET done = TRUE, is_finished = TRUE
-    WHERE {DOG_ID_COLUMN} = %s AND target_value = current_value;
+    WHERE {DOG_ID_COLUMN} = %s 
+    AND CAST(target_value AS FLOAT) <= CAST(current_value AS FLOAT)
+    AND is_finished = FALSE;
     """
 
     cursor.execute(finish_completed_goals_query, (dog_id, ))
@@ -417,18 +416,15 @@ def get_day_record_map(cursor, month, year):
 
 def create_goal(cursor, template_data, template_id):
     insert_goal_query = f"""
-        INSERT INTO {GOALS_TABLE} (dog_id, start_date, end_date, current_value, target_value, category, template_id, 
-        is_finished, done)
+        INSERT INTO {GOALS_TABLE} (dog_id, start_date, end_date, current_value, 
+        target_value, category, template_id, is_finished, done)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
-
     initial_fitness = get_initial_fitness_for_goal(cursor, template_data['dog_id'], template_data['frequency'],
                                                    template_data['category'], template_data['target_value'])
 
-    initial_fitness = min(initial_fitness, template_data['target_value'])
-
     # If the dog passed already the target_value --> the goal is completed already.
-    is_completed = initial_fitness == template_data['target_value']
+    is_completed = initial_fitness >= template_data['target_value']
     goal_start_date, goal_end_date = get_start_and_end_date(template_data['frequency'])
 
     cursor.execute(insert_goal_query, (template_data['dog_id'], goal_start_date, goal_end_date, initial_fitness,
@@ -444,15 +440,10 @@ def get_initial_fitness_for_goal(cursor, dog_id, frequency, category, target_val
     else:   # frequency == MONTHLY_FREQUENCY
         initial_fitness = get_monthly_fitness_category(cursor, dog_id, category)
 
-    print("1: {0}".format(initial_fitness))
-
     if category != DISTANCE_CATEGORY:
         initial_fitness = int(initial_fitness)
     else:
         initial_fitness = round(initial_fitness, 2)
-
-    print("2: {0}".format(initial_fitness))
-    print("3: {0}".format(type(initial_fitness)))
 
     return initial_fitness
 
@@ -474,38 +465,27 @@ def get_today_fitness_category(cursor, dog_id, category):
 
 
 def get_weekly_fitness_category(cursor, dog_id, category):
-    daily_fitness = 0
+    last_sunday_date = get_last_sunday_date(datetime.today().date())
+    total_fitness = 0
 
-    # Checks if today is Sunday (DOW stands for Day of Week, where Sunday is 0).
     get_weekly_fitness_category_query = f"""
-    SELECT {category} FROM {FITNESS_TABLE}
-    WHERE {DOG_ID_COLUMN} = %s
-    AND {FITNESS_DATE_COLUMN} >= 
-        CASE
-            WHEN EXTRACT(DOW FROM CURRENT_DATE) = 0 
-            THEN CURRENT_DATE
-            ELSE CURRENT_DATE - EXTRACT(DOW FROM CURRENT_DATE) * INTERVAL '1 day'
-        END
-    AND {FITNESS_DATE_COLUMN} <= 
-        CASE
-            WHEN EXTRACT(DOW FROM CURRENT_DATE) = 0
-            THEN CURRENT_DATE
-            ELSE CURRENT_DATE - INTERVAL '1 day'
-        END
+        SELECT {category} 
+        FROM {FITNESS_TABLE}
+        WHERE {DOG_ID_COLUMN} = %s
+        AND {FITNESS_DATE_COLUMN} >= %s;
     """
 
-    cursor.execute(get_weekly_fitness_category_query, (dog_id,))
+    cursor.execute(get_weekly_fitness_category_query, (dog_id, last_sunday_date))
     fitness_window = cursor.fetchall()
-    print(fitness_window)
-    for day in fitness_window:
-        print(day[0])
-        daily_fitness += day[0]
 
-    return daily_fitness
+    if fitness_window:
+        total_fitness = sum(fitness for (fitness,) in fitness_window)
+
+    return total_fitness
 
 
 def get_monthly_fitness_category(cursor, dog_id, category):
-    daily_fitness = 0
+    total_fitness = 0
 
     get_monthly_fitness_category_query = f"""
         SELECT {category} FROM {FITNESS_TABLE}
@@ -516,11 +496,10 @@ def get_monthly_fitness_category(cursor, dog_id, category):
     cursor.execute(get_monthly_fitness_category_query, (dog_id,))
     fitness_window = cursor.fetchall()
 
-    for day in fitness_window:
-        print(day[0])
-        daily_fitness += day[0]
+    if fitness_window:
+        total_fitness = sum(fitness for (fitness,) in fitness_window)
 
-    return daily_fitness
+    return total_fitness
 
 
 def get_start_and_end_date(frequency):
@@ -537,8 +516,7 @@ def get_start_date_by_frequency(frequency):
     if frequency == DAILY_FREQUENCY:
         start_date = today
     elif frequency == WEEKLY_FREQUENCY:
-        days_since_sunday = today.weekday()  # weekday() gives 0 for Monday, 6 for Sunday
-        start_date = today - timedelta(days=(days_since_sunday + 1) % 7)  # Returns last Sunday
+        start_date = get_last_sunday_date(today)
     elif frequency == MONTHLY_FREQUENCY:
         start_date = today.replace(day=1)
 
@@ -561,6 +539,12 @@ def get_end_date_by_frequency(frequency):
 
     return end_date
 
+
+def get_last_sunday_date(today):
+    days_since_sunday = today.weekday()  # weekday() gives 0 for Monday, 6 for Sunday
+    last_sunday_date = today - timedelta(days=(days_since_sunday + 1) % 7)  # Returns last Sunday
+
+    return last_sunday_date
 
 def delete_goal_template(cursor, template_id):
     delete_template_query = f"DELETE FROM {GOAL_TEMPLATES_TABLE} WHERE {TEMPLATE_ID_COLUMN} = %s;"

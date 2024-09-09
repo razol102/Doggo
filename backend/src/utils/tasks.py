@@ -1,3 +1,4 @@
+import os
 import time
 from datetime import timedelta, datetime
 from threading import Thread
@@ -142,23 +143,19 @@ def finish_goals(cursor, current_date):
 
 
 def set_goals(cursor, current_date):
-    # tomorrow_date = current_date + timedelta(days=1)
-    # set_goals_by_frequency(cursor, tomorrow_date, DAILY_FREQUENCY)
-    next_sunday_date = current_date + timedelta(days=7)
-    set_goals_by_frequency(cursor, next_sunday_date, WEEKLY_FREQUENCY)
-    next_beginning_month_date = get_beginning_next_month(current_date)
-    set_goals_by_frequency(cursor, next_beginning_month_date, MONTHLY_FREQUENCY)
+    tomorrow_date = current_date + timedelta(days=1)
+    set_goals_by_frequency(cursor, tomorrow_date, DAILY_FREQUENCY)
 
-    # if current_date.weekday() == SUNDAY:
-    #     next_sunday_date = current_date + timedelta(days=7)
-    #     set_goals_by_frequency(cursor, next_sunday_date, DAILY_FREQUENCY)
-    #
-    # if current_date.day == FIRST_OF_MONTH:
-    #     next_beginning_month_date = get_beginning_next_month(current_date)
-    #     set_goals_by_frequency(cursor, next_beginning_month_date, DAILY_FREQUENCY)
+    if current_date.weekday() == SUNDAY:
+        next_sunday_date = current_date + timedelta(days=7)
+        set_goals_by_frequency(cursor, next_sunday_date, WEEKLY_FREQUENCY)
+
+    if current_date.day == FIRST_OF_MONTH:
+        next_beginning_month_date = get_beginning_next_month(current_date)
+        set_goals_by_frequency(cursor, next_beginning_month_date, MONTHLY_FREQUENCY)
 
 
-def set_goals_by_frequency(cursor, current_date, template_frequency):
+def set_goals_by_frequency(cursor, end_date, template_frequency):
     get_goal_template_query = f"""
         SELECT {TEMPLATE_ID_COLUMN}, {DOG_ID_COLUMN}, target_value, category 
         FROM {GOAL_TEMPLATES_TABLE}
@@ -173,6 +170,6 @@ def set_goals_by_frequency(cursor, current_date, template_frequency):
     goal_templates = cursor.fetchall()
 
     for template in goal_templates:
-        template = template + (current_date,)
+        template = template + (end_date,)
         cursor.execute(create_goal_query, template)
 
