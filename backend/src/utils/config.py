@@ -1,20 +1,21 @@
-from configparser import ConfigParser
+import os
 
 
-def load_database_config(filename="/app/configurations.ini"):
-    parser = ConfigParser()
-    try:
-        parser.read(filename)
+def load_database_config():
 
-        # Extract and convert database credentials from the INI file
-        db = {
-            'host': parser.get('postgresql', 'db_host').strip(),
-            'port': parser.getint('postgresql', 'db_port'),
-            'dbname': parser.get('postgresql', 'db_name').strip(),
-            'user': parser.get('postgresql', 'db_user').strip(),
-            'password': parser.get('postgresql', 'db_password').strip()
-        }
-        return db
+    db_host = os.getenv('DB_HOST')
+    db_port = os.getenv('DB_PORT')
+    db_name = os.getenv('DB_NAME')
+    db_user = os.getenv('DB_USER')
+    db_password = os.getenv('DB_PASSWORD')
 
-    except Exception as e:
-        raise RuntimeError(f"Error reading configuration file: {e}")
+    # Create a dictionary with the database configuration
+    db = {
+        'host': db_host,
+        'port': int(db_port),
+        'dbname': db_name,
+        'user': db_user,
+        'password': db_password
+    }
+
+    return db
