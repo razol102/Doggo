@@ -76,6 +76,30 @@ STEP_LENGTH_RANGES = {
     'EXTRA_LARGE_DOG': (65, 80)
 }
 
+# ideal weight
+BREED_STANDARDS = {
+    'labrador': {'male': (27, 36), 'female': (25, 32)},
+    'german shepherd': {'male': (30, 40), 'female': (22, 32)},
+    'beagle': {'male': (10, 11), 'female': (9, 10)},
+    'border collie': {'male': (14, 20), 'female': (12, 19)},
+    'labrador retriever': {'male': (29, 36), 'female': (25, 32)},
+    'golden retriever': {'male': (30, 34), 'female': (25, 29)},
+    'bulldog': {'male': (23, 25), 'female': (18, 23)},
+    'poodle': {'male': (20, 32), 'female': (18, 30)},
+    'rottweiler': {'male': (50, 60), 'female': (35, 48)},
+    'yorkshire terrier': {'male': (2, 4), 'female': (2, 4)},
+    'dachshund': {'male': (7, 15), 'female': (7, 15)},
+    'boxer': {'male': (30, 36), 'female': (25, 30)},
+    'shih tzu': {'male': (4, 7), 'female': (4, 7)},
+    'doberman pinscher': {'male': (40, 45), 'female': (32, 35)},
+    'siberian husky': {'male': (20, 27), 'female': (16, 23)},
+    'great dane': {'male': (54, 90), 'female': (45, 59)},
+    'chihuahua': {'male': (1.5, 3), 'female': (1.5, 3)},
+    'collie': {'male': (20, 29), 'female': (18, 25)},
+    'husky': {'male': (20, 27), 'female': (16, 23)},
+    # Add more breeds as necessary...
+}
+
 
 def get_dog_weight_range(weight):
     if TOY_DOG_WEIGHT[0] <= weight <= TOY_DOG_WEIGHT[1]:
@@ -152,40 +176,16 @@ def get_burned_calories(weight, distance):
     return calories_burned
 
 
-breed_standards = {
-    'labrador': {'male': (27, 36), 'female': (25, 32)},
-    'german shepherd': {'male': (30, 40), 'female': (22, 32)},
-    'beagle': {'male': (10, 11), 'female': (9, 10)},
-    'border collie': {'male': (14, 20), 'female': (12, 19)},
-    'labrador retriever': {'male': (29, 36), 'female': (25, 32)},
-    'golden retriever': {'male': (30, 34), 'female': (25, 29)},
-    'bulldog': {'male': (23, 25), 'female': (18, 23)},
-    'poodle': {'male': (20, 32), 'female': (18, 30)},
-    'rottweiler': {'male': (50, 60), 'female': (35, 48)},
-    'yorkshire terrier': {'male': (2, 4), 'female': (2, 4)},
-    'dachshund': {'male': (7, 15), 'female': (7, 15)},
-    'boxer': {'male': (30, 36), 'female': (25, 30)},
-    'shih tzu': {'male': (4, 7), 'female': (4, 7)},
-    'doberman pinscher': {'male': (40, 45), 'female': (32, 35)},
-    'siberian husky': {'male': (20, 27), 'female': (16, 23)},
-    'great dane': {'male': (54, 90), 'female': (45, 59)},
-    'chihuahua': {'male': (1.5, 3), 'female': (1.5, 3)},
-    'collie': {'male': (20, 29), 'female': (18, 25)},
-    'husky': {'male': (20, 27), 'female': (16, 23)},
-    # Add more breeds as necessary...
-}
-
-
 def estimate_bcs(weight, gender, breed):
     breed = breed.lower()
     gender = gender.lower()
 
     # Check if breed is available in the standard data
-    if breed not in breed_standards:
+    if breed not in BREED_STANDARDS:
         raise ValueError(f"Breed '{breed}' is not available in the database.")
 
     # Get the ideal weight range for the breed and gender
-    breed_info = breed_standards[breed]
+    breed_info = BREED_STANDARDS[breed]
     if gender not in breed_info:
         raise ValueError(f"Gender '{gender}' not available for breed '{breed}'.")
 

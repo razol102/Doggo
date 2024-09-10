@@ -1,10 +1,6 @@
 from calendar import monthrange
 from datetime import date, timedelta, datetime
-import time
-import psycopg2
-from flask import jsonify
 
-from src.utils.config import load_database_config
 from src.utils.constants import *
 from src.utils.conversion_tables import get_burned_calories, \
     get_converted_steps, get_calculated_distance
@@ -104,17 +100,16 @@ def update_dog_goals(cursor, dog_id, steps_to_db, distance_to_db, calories_to_db
 def update_steps_goals(cursor, dog_id, steps_to_db):
     update_steps_goals_query = f"""
     UPDATE {GOALS_TABLE}
-    SET current_value = %s
+    SET current_value = current_value + %s
     WHERE {DOG_ID_COLUMN} = %s AND category = %s AND done = FALSE;
     """
-
     cursor.execute(update_steps_goals_query, (steps_to_db, dog_id, STEPS_CATEGORY))
 
 
 def update_distance_goals(cursor, dog_id, distance_to_db):
     update_distance_goals_query = f"""
     UPDATE {GOALS_TABLE}
-    SET current_value = %s
+    SET current_value = current_value + %s
     WHERE {DOG_ID_COLUMN} = %s AND category = %s AND done = FALSE;
     """
 
@@ -124,7 +119,7 @@ def update_distance_goals(cursor, dog_id, distance_to_db):
 def update_calories_goals(cursor, dog_id, calories_to_db):
     update_calories_goals_query = f"""
     UPDATE {GOALS_TABLE}
-    SET current_value = %s
+    SET current_value = current_value + %s
     WHERE {DOG_ID_COLUMN} = %s AND category = %s AND done = FALSE;
     """
 
@@ -243,13 +238,13 @@ def update_dog_activity(cursor, dog_id, steps_to_db, distance_to_db, calories_to
 
 
 def check_for_active_activity(cursor, dog_id):
-    get_active_activity =   f"""
+    get_active_activity_count =   f"""
                             SELECT COUNT(*) 
                             FROM {ACTIVITIES_TABLE} 
                             WHERE {DOG_ID_COLUMN} = %s AND end_time IS NULL
                             ;"""
 
-    cursor.execute(get_active_activity, (dog_id,))
+    cursor.execute(get_active_activity_count, (dog_id,))
     activities_count = cursor.fetchone()[0]
 
     if activities_count != 0:
@@ -421,7 +416,7 @@ def create_goal(cursor, template_data, template_id):
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
     initial_fitness = get_initial_fitness_for_goal(cursor, template_data['dog_id'], template_data['frequency'],
-                                                   template_data['category'], template_data['target_value'])
+                                                   template_data['category'])
 
     # If the dog passed already the target_value --> the goal is completed already.
     is_completed = initial_fitness >= template_data['target_value']
@@ -432,7 +427,7 @@ def create_goal(cursor, template_data, template_id):
                                        is_completed, is_completed))
 
 
-def get_initial_fitness_for_goal(cursor, dog_id, frequency, category, target_value):
+def get_initial_fitness_for_goal(cursor, dog_id, frequency, category):
     if frequency == DAILY_FREQUENCY:
         initial_fitness = get_today_fitness_category(cursor, dog_id, category)
     elif frequency == WEEKLY_FREQUENCY:
@@ -546,15 +541,14 @@ def get_last_sunday_date(today):
 
     return last_sunday_date
 
-def delete_goal_template(cursor, template_id):
-    delete_template_query = f"DELETE FROM {GOAL_TEMPLATES_TABLE} WHERE {TEMPLATE_ID_COLUMN} = %s;"
+
+def delete_goal_from_template(cursor, template_id):
 
     delete_active_goal_query = f"""
         DELETE FROM {GOALS_TABLE} 
         WHERE {TEMPLATE_ID_COLUMN} = %s AND is_finished = FALSE;
         """
 
-    cursor.execute(delete_template_query, (template_id,))
     cursor.execute(delete_active_goal_query, (template_id,))
 
 
@@ -569,7 +563,7 @@ def delete_previous_template_if_exists(cursor, frequency, category):
     query_res = cursor.fetchone()
 
     if query_res is not None:
-        delete_goal_template(cursor, query_res[0])
+        delete_goal_from_template(cursor, query_res[0])
 
 
 def get_beginning_next_month(current_date):
