@@ -5,7 +5,7 @@
 <br />
 <div align="center">
 <a href="https://github.com/shir-tz/Doggo">
-    <img src="Media/logo/Doggo Loggo.png" alt="Logo" width="200" height="200">
+    <img src="documents/media/logo/Doggo Loggo.png" alt="Logo" width="200" height="200">
 </a>
 
   <h3 align="center">IoT Seminar 2024</h3>

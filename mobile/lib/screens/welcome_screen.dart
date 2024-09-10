@@ -82,7 +82,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -124,7 +124,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     RoundGradientButton(
                       title: "Login",
                       onPressed: () {
-                       Navigator.pushNamed(context, LoginScreen.routeName);
+                        Navigator.pushNamed(context, LoginScreen.routeName);
                       },
                     ),
                   ],
@@ -174,6 +174,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           ),
         ),
       ),
+
     );
   }
 }

@@ -2,17 +2,18 @@
 #include <Arduino_BMI270_BMM150.h>
 #include <Arduino_LSM6DS3.h>
 #include <WiFiNINA.h>
+#include <FlashStorage.h>
 
 // BLE services and characteristics
 BLEService batteryService("180F"); // Standard battery service
-BLEUnsignedCharCharacteristic batteryLevelChar("2A19", BLERead | BLENotify);
+BLEUnsignedCharCharacteristic batteryLevelCharacteristic("2A19", BLERead | BLENotify);
 
 BLEService stepService("180D"); // Custom service for steps
 BLEUnsignedIntCharacteristic stepCountCharacteristic("2A37", BLERead | BLENotify);
 
 // Wi-Fi credentials
-const char* ssid = "Razol_2.4EX";
-const char* password = "0525706537";
+const char* ssid = "MTA WiFi";
+const char* password = "";
 
 // Server URL
 const char* server = "34.230.176.208"; // Server URL
@@ -21,6 +22,7 @@ volatile int stepCount = 0;
 long lastStepTime = 0;
 
 // Collar ID variable
+const char* collarName = "DoggoCollar";
 uint32_t collarID = 0;
 
 // BLE and Wi-Fi connection timeouts (in milliseconds)
@@ -39,14 +41,22 @@ enum ConnectionState {
 ConnectionState currentState = DISCONNECTED;
 unsigned long connectionStartTime = 0;
 
+// Flash storage for step count
+FlashStorage(storedStepCount, int);
+
 void setup() {
   Serial.begin(9600);
-  while (!Serial);
+  // Remove the while(!Serial) to allow the device to start without Serial connection
 
   // Initialize IMU
   if (!IMU.begin()) {
-    Serial.println("Failed to initialize IMU!");
-    while (1);
+    // Handle IMU initialization failure
+    while (1) {
+      digitalWrite(LED_BUILTIN, HIGH);
+      delay(100);
+      digitalWrite(LED_BUILTIN, LOW);
+      delay(100);
+    }
   }
 
   // Obtain Chip ID
@@ -54,17 +64,41 @@ void setup() {
     collarID |= ((uint32_t) *(uint8_t*)(0x0080A00C + i) << (i * 8));
   }
 
-  Serial.print("Collar ID: ");
-  Serial.println(collarID, HEX);
+  // Initialize BLE
+  if (!BLE.begin()) {
+    // Handle BLE initialization failure
+    while (1) {
+      digitalWrite(LED_BUILTIN, HIGH);
+      delay(200);
+      digitalWrite(LED_BUILTIN, LOW);
+      delay(200);
+    }
+  }
 
-  currentState = DISCONNECTED;
+  // Set the local name for the BLE device
+  BLE.setLocalName(collarName);
+
+  // Initialize WiFi
+  WiFi.setTimeout(wifiTimeout);
+  
+  // Restore step count from Flash
+  stepCount = storedStepCount.read();
+  if (stepCount < 0) stepCount = 0; // Ensure valid step count
+
+  BLE.setAdvertisedService(batteryService); 
+  batteryService.addCharacteristic(batteryLevelCharacteristic);
+  BLE.addService(batteryService);
+  
+  // Set up step service
+  BLE.setAdvertisedService(stepService); 
+  stepService.addCharacteristic(stepCountCharacteristic);
+  BLE.addService(stepService);
 }
 
 void loop() {
   if (detectStep()) {
     stepCount++;
-    Serial.print("New step detected. Total steps: ");
-    Serial.println(stepCount);
+    storedStepCount.write(stepCount); // Save step count to Flash
   }
 
   switch (currentState) {
@@ -85,31 +119,48 @@ void loop() {
       break;
   }
 
-//  delay(100);
+  // Implement power-saving delay
+  delay(100);
+}
+
+bool detectStep() {
+  float x, y, z;
+
+  if (IMU.accelerationAvailable()) {
+    IMU.readAcceleration(x, y, z);
+    float magnitude = sqrt(x * x + y * y + z * z);
+
+    long currentTime = millis();
+    if (magnitude > 1.2 && (currentTime - lastStepTime) > 200) { // Adjust sensitivity and debounce time as needed
+      lastStepTime = currentTime;
+      return true;
+    }
+  }
+  return false;
 }
 
 void attemptBLEConnection() {
   Serial.println("Attempting BLE connection");
-  BLE.end();  // End any existing BLE session
-  if (!BLE.begin()) {
-    Serial.println("Restarting BLE failed!");
+  BLE.begin();
+  BLE.setAdvertisedService(batteryService); 
+  batteryService.addCharacteristic(batteryLevelCharacteristic);
+  BLE.addService(batteryService);
+  
+  // Set up step service
+  BLE.setAdvertisedService(stepService); 
+  stepService.addCharacteristic(stepCountCharacteristic);
+  BLE.addService(stepService);
+  delay(100);
+  BLE.stopAdvertise(); // Stop any ongoing advertisement
+  delay(100);
+  
+  if (!BLE.advertise()) {
+    Serial.println("Failed to start advertising");
     currentState = DISCONNECTED;
     return;
   }
-  BLE.setLocalName("DoggoCollar");
-  // Init battery service
-  BLE.setAdvertisedService(batteryService);
-  batteryService.addCharacteristic(batteryLevelChar);
-  // Init steps service
-  stepService.addCharacteristic(stepCountCharacteristic);
-  // Add all services
-  BLE.addService(batteryService);
-  BLE.addService(stepService);
-  // Update service values
-  batteryLevelChar.writeValue(getBatteryLevel());
-  stepCountCharacteristic.writeValue(stepCount);
-
-  BLE.advertise();
+  
+  Serial.println("Started BLE advertising");
   currentState = CONNECTING_BLE;
   connectionStartTime = millis();
 }
@@ -123,15 +174,12 @@ void checkBLEConnection() {
     BLE.stopAdvertise();
     currentState = DISCONNECTED;
     attemptWiFiConnection();
-  }
+    }
 }
 
 void handleBLEConnection() {
   BLEDevice central = BLE.central();
   if (central && central.connected()) {
-    if (detectStep()) {
-      stepCount++;
-    }
     stepCountCharacteristic.writeValue(stepCount);
     updateBatteryLevel();
     BLE.poll();
@@ -164,16 +212,10 @@ void checkWiFiConnection() {
 }
 
 void handleWiFiConnection() {
-
   static unsigned long lastTransmissionTime = 0;
-  //const unsigned long transmissionInterval = 10000; // 10 sec --- only for project performance 
   const unsigned long transmissionInterval = 5000; // 5 sec
 
   if (WiFi.status() == WL_CONNECTED) {
-    if (detectStep()) {
-      stepCount++;
-    }
-    
     unsigned long currentTime = millis();
     if (currentTime - lastTransmissionTime >= transmissionInterval) {
       sendDataViaHTTP(getBatteryLevel(), stepCount, collarID);
@@ -197,7 +239,7 @@ void updateBatteryLevel() {
     int batteryLevel = getBatteryLevel();
     
     if (currentState == CONNECTED_BLE) {
-      batteryLevelChar.writeValue(batteryLevel);
+      batteryLevelCharacteristic.writeValue(batteryLevel);
     }
   }
 }
@@ -205,22 +247,6 @@ void updateBatteryLevel() {
 int getBatteryLevel() {
   int batteryLevel = analogRead(A0); // Mock battery level read
   return map(batteryLevel, 0, 1023, 0, 100); // Convert to percentage
-}
-
-bool detectStep() {
-  float x, y, z;
-
-  if (IMU.accelerationAvailable()) {
-    IMU.readAcceleration(x, y, z);
-    float magnitude = sqrt(x * x + y * y + z * z);
-
-    long currentTime = millis();
-    if (magnitude > 1.2 && (currentTime - lastStepTime) > 200) { // Adjust sensitivity and debounce time as needed
-      lastStepTime = currentTime;
-      return true;
-    }
-  }
-  return false;
 }
 
 void sendDataViaHTTP(int battery, int steps, uint32_t collarID) {
@@ -236,13 +262,6 @@ void sendDataViaHTTP(int battery, int steps, uint32_t collarID) {
     client.println("Content-Length: " + String(putData.length()));
     client.println();
     client.println(putData);
-
-    Serial.println("sent to backend: ");
-    Serial.println(steps);
-    Serial.println("steps ");
-    Serial.println(battery);
-    Serial.println("% battery level |");
-
   } else {
     Serial.println("Connection to server failed.");
   }
