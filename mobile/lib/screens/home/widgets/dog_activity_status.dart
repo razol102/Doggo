@@ -65,6 +65,12 @@ class _DogActivityStatusState extends State<DogActivityStatus> with SingleTicker
       case 28:
         imagePath = "assets/images/nala_profile.png";
         break;
+      case 39:
+        imagePath = "assets/images/sherlock_profile.jpg";
+        break;
+      case 38:
+        imagePath = "assets/images/rozy_profile.jpg";
+        break;
       case 40:
         imagePath = "assets/images/alfi_profile.jpg";
         break;
